@@ -1,0 +1,767 @@
+<div class="container-fluid dashboard-content mb-3 pb-3" id="page" style="max-height: 100%;">
+    <div class="data-container">
+      <div class="">
+        <div class="header">
+          <h3 class="page-header" >ESI Unallocated </h3>
+          
+        </div>
+      </div>
+
+
+      <div class="data-card" id="data-card">
+
+        <ng-scrollbar #scrollable style="width:100% !important;" track="all" pointerEventsMethod="scrollbar"
+          [autoHeightDisabled]="false" [disabled]="false">
+          <div class="" id="dataTable">
+  
+            <!-- ... -->
+  
+            <table class="table" style="width:100%;overflow: auto;border-spacing: 0px 10px;">
+              <thead class="headers" style="background:#F8F9FA !important;">
+                <tr>
+                  <th scope="col" rowspan="2" *ngIf="!(selectedColumn.indexOf(0)>0)">Job No. <span
+                      [ngClass]="['pointer',isDesc?'desc':'asc']"></span> </th>
+  
+                  <th scope="col" rowspan="2" *ngIf="!(selectedColumn.indexOf(25)>0)">JobType</th>
+  
+                  <th scope="col" rowspan="2" *ngIf="!(selectedColumn.indexOf(29)>0)">Camera ID</th>
+  
+                  <th *ngIf="!(selectedColumn.indexOf(26)>0)" rowspan="2" scope="col">Department</th>
+                  <th scope="col" *ngIf="!(selectedColumn.indexOf(2)>0)" rowspan="2" (click)="isDesc=!isDesc">Sub Area
+                  </th>
+                  <th scope="col" width="2em" *ngIf="!(selectedColumn.indexOf(3)>0)" rowspan="2" (click)="isDesc=!isDesc">
+                    Job Description
+                  </th>
+                  <th scope="col" *ngIf="!(selectedColumn.indexOf(5)>0)" rowspan="2" (click)="isDesc=!isDesc">No of
+                    Isolating Points
+                  </th>
+                  <th scope="col" *ngIf="!(selectedColumn.indexOf(6)>0)" rowspan="2" (click)="isDesc=!isDesc">Isolating
+                    Location</th>
+                  <th *ngIf="!(selectedColumn.indexOf(27)>0)" rowspan="2" scope="col">Switch Board Name</th>
+                  <th scope="col" rowspan="2" *ngIf="!(selectedColumn.indexOf(4)>0)" (click)="isDesc=!isDesc">Feeder
+                    Number
+                  </th>
+                  <th scope="col" rowspan="2" *ngIf="!(selectedColumn.indexOf(7)>0)" (click)="isDesc=!isDesc">IP Address
+                  </th>
+                  <th scope="col" rowspan="2" *ngIf="!(selectedColumn.indexOf(28)>0)">Tag Name</th>
+                  <th scope="col" rowspan="2" *ngIf="!(selectedColumn.indexOf(8)>0)" (click)="isDesc=!isDesc">Job Status
+                  </th>
+  
+                  <th scope="col" rowspan="2" *ngIf="!(selectedColumn.indexOf(18)>0)">Power Status</th>
+                  <th scope="col" rowspan="2" *ngIf="!(selectedColumn.indexOf(17)>0)">Magnetic Sticker</th>
+                  <th [attr.colspan]="roHeaderCount" scope="col"
+                    class="border-start border-end bg-warning bg-ro text-dark">
+                    RO Details</th>
+                  <th [attr.colspan]="riHeaderCount" scope="col" class="border-end bg-ri text-dark">RI Details</th>
+                  <th scope="col" *ngIf="!(selectedColumn.indexOf(24)>0)" [attr.rowspan]="2"> Not Recognized</th>
+                  <th scope="col" *ngIf="!(selectedColumn.indexOf(14)>0)" rowspan="2">PPE Violations</th>
+                  <th scope="col" rowspan="2">History</th>
+  
+                  <th scope="col" *ngIf="!(selectedColumn.indexOf(16)>0)" rowspan="2" (click)="isDesc=!isDesc">Edit</th>
+                  <!-- <th scope="col" rowspan="2">Remark</th> -->
+                  <th scope="col" rowspan="2"></th>
+                </tr>
+                <tr>
+                  <th scope="col" *ngIf="!(selectedColumn.indexOf(9)>0)" class="border-start border-end">RO Time</th>
+                  <th scope="col" *ngIf="!(selectedColumn.indexOf(10)>0)" class="border-start border-end">RO Method</th>
+  
+                  <th scope="col" *ngIf="!(selectedColumn.indexOf(12)>0)" class="border-start border-end">Tagging</th>
+                  <th scope="col" *ngIf="!(selectedColumn.indexOf(13)>0)" class="border-start border-end">Locking</th>
+                  <th scope="col" *ngIf="!(selectedColumn.indexOf(20)>0)" class="border-start border-end">5 Meter
+                    Violation</th>
+                  <th scope="col" *ngIf="!(selectedColumn.indexOf(15)>0)" class="border-start border-end"> Remark </th>
+  
+                  <th scope="col" *ngIf="!(selectedColumn.indexOf(19)>0)" class="border-start border-end">RI Time</th>
+  
+                  <th scope="col" *ngIf="!(selectedColumn.indexOf(21)>0)">RI Method</th>
+  
+                  <th scope="col" *ngIf="!(selectedColumn.indexOf(22)>0)">UnTagging</th>
+                  <th scope="col" *ngIf="!(selectedColumn.indexOf(23)>0)">UnLocking</th>
+                  <th scope="col" *ngIf="!(selectedColumn.indexOf(25)>0)">5 Meter Violation</th>
+                  <th scope="col" *ngIf="!(selectedColumn.indexOf(15)>0)" class="border-end"> Remark </th>
+                </tr>
+                <tr rowspan="2">
+                </tr>
+              </thead>
+
+              <tbody style="z-index: 700;">
+
+                <tr *ngFor="let data of jobsheetData|async;let i=index"
+                  [ngClass]="{'inprogress':(data.live_status ),'edited':(data.exception_status && !data.live_status), 'highlight':data.type=='HT'?data.data.panel_data.panel_id=='NA':false,'break':data.isbreak}">
+                  <td *ngIf="!(selectedColumn.indexOf(0)>0)">{{data.job_no}}</td>
+                  <td *ngIf="!(selectedColumn.indexOf(25)>0)">{{data.type}}</td>
+                  <td *ngIf="!(selectedColumn.indexOf(29)>0)">{{data.data.camera_id}}</td>
+  
+                  <td *ngIf="!(selectedColumn.indexOf(26)>0)">{{data.department}}</td>
+                  <td *ngIf="!(selectedColumn.indexOf(2)>0)">{{data.sub_area}}</td>
+                  <td *ngIf="!(selectedColumn.indexOf(3)>0)">
+                    {{data.job_description}}</td>
+  
+  
+                  <td *ngIf="!(selectedColumn.indexOf(5)>0)" [attr.colspan]="data.no_of_isoloating_points">
+                    {{data.no_of_isolating_points}} </td>
+                  <td *ngIf="!(selectedColumn.indexOf(6)>0)">
+                    {{data.isolating_location}}</td>
+                  <td *ngIf="!(selectedColumn.indexOf(7)>0)">
+                    <div *ngIf="data.type=='HT';else noHT">
+                      {{data.board}}</div>
+                  </td>
+  
+                  <td *ngIf="!(selectedColumn.indexOf(4)>0)">
+                    <div class="div" *ngIf="data.type=='HT';else common_no">{{data.data.panel_data.panel_id}}<br />
+                    </div>
+                    <ng-template #common_no>{{data.common_no}}</ng-template>
+                  </td>
+                  <td *ngIf="!(selectedColumn.indexOf(7)>0)" tyle="width:6rem !important"
+                   >
+                    <div class="column-flex">
+                      <span> {{data.data.ip_address?data.data.ip_address:"--"}}&nbsp;&nbsp;</span>
+                      <!-- <div tyle="width:6rem !important"
+                        class="d-flex justify-centent-center btn btn-sm default-outline mt-2">
+                        <span class="me-2" style="cursor: pointer;"><fa-icon icon="video"
+                            class="me-1"></fa-icon></span><span>Feed</span>
+                      </div> -->
+                    </div>
+                  </td>
+                  <td *ngIf="!(selectedColumn.indexOf(28)>0)">
+                    <div *ngIf="data.type=='HT';else noHT" (click)="selectEditField(EditField,data,'tagname')">{{data.tagname?data.tagname:'---'}}</div>
+                  </td>
+                  <td *ngIf="!(selectedColumn.indexOf(8)>0)">
+                    <div *ngIf="data.riro_data!=null&&data.riro_data.length!==0">
+                      <div
+                        [ngClass]="{'success-badge':data.data.panel_data.panel_status,'info-badge':!data.data.panel_data.panel_status}">
+                        {{data.data.panel_data.panel_status?'Completed':data.riro_data[0]!=null?data.riro_data[0].rack_process=='rack_out'?'Work In Progress':'Pending':'Pending'}}
+  
+                      </div>&nbsp;&nbsp;
+  
+  
+                      <div *ngIf="data.type.toLowerCase() =='hydraulic'||data.type.toLowerCase() =='pneumatic'">
+                        <div [ngClass]="data.riro_data[0].panel_status?'success-badge':'info-badge'">
+                          {{data.riro_data[0].panel_status?'Completed':'Pending'}}</div>
+                      </div>
+                    </div>
+                  </td>
+  
+                  <td *ngIf="!(selectedColumn.indexOf(18)>0)">
+                    <div style="width:6rem;text-align:center !important;"
+                      class="d-flex align-items-center justify-content-center"
+                      [ngClass]="{'success-badge':data.isolation_status=='isolated','danger-badge':data.isolation_status=='live','info-badge':data.isolation_status==null}">
+                      {{data.isolation_status?data.isolation_status:'Unknown'}}
+                    </div>
+                  </td>
+  
+  
+                  <td *ngIf="!(selectedColumn.indexOf(17)>0)" class="border-end">
+                    <div *ngIf="data.riro_data!==null&&data.riro_data.length!==0">
+  
+                      <div *ngIf="data.type=='HT';else noHT">
+                        <div *ngIf="data.riro_data[1]!=null;else riro1">
+                          <div *ngIf="data.riro_data[1].magnetic_flasher!=null;else elsep" class="column-flex"
+                            style="width: 8rem;">
+                            <div style="width: 5rem;cursor: pointer;text-align: center;"
+                              (click)="FlasherImage(data.riro_data[1],Flasher,data)"
+                              *ngIf="data.riro_data[1].magnetic_flasher.status!=null;else elsep"
+                              [ngClass]="{'success-badge':data.riro_data[1].magnetic_flasher.status=='yes','danger-badge':data.riro_data[1].magnetic_flasher.status=='no'}">
+                              <fa-icon class="me-2" icon="images"
+                                *ngIf="data.riro_data[1].magnetic_flasher.flasher_image">
+                              </fa-icon>
+                              {{data.riro_data[1].magnetic_flasher.status=='yes'?'Yes':'No'}}
+                            </div><br />
+                            <span class="mt-1" *ngIf="data.riro_data[1].magnetic_flasher.status=='yes'">
+                              {{data.riro_data[1].magnetic_flasher.flasher_time?(data.riro_data[1].magnetic_flasher.flasher_time|dateFormater
+                              ):''}}</span>
+                          </div>
+                        </div>
+                        <ng-template #riro1>
+                          <div *ngIf="data.riro_data[0]!=null;else noFlasher">
+                            <div *ngIf="data.riro_data[0].magnetic_flasher!=null;else elsep" style="width: 8rem;"
+                              class="column-flex">
+                              <div style="width: 5rem;cursor: pointer;"
+                                (click)="FlasherImage(data.riro_data[0],Flasher,data)"
+                                *ngIf="data.riro_data[0].magnetic_flasher.status!=null;else elsep"
+                                [ngClass]="{'success-badge':data.riro_data[0].magnetic_flasher.status=='yes','danger-badge':data.riro_data[0].magnetic_flasher.status=='no'}">
+                                <fa-icon class="me-2" icon="images"
+                                  *ngIf="data.riro_data[0].magnetic_flasher.flasher_image">
+                                </fa-icon>
+                                {{data.riro_data[0].magnetic_flasher.status=='yes'?'Yes':'No'}}
+                              </div><br />
+                              <span class="mt-1" *ngIf="data.riro_data[0].magnetic_flasher.status=='yes'">
+                                {{data.riro_data[0].magnetic_flasher.flasher_time?(data.riro_data[0].magnetic_flasher.flasher_time|dateFormater
+                                ):''}}</span>
+  
+                              <ng-template #elsep>---</ng-template>
+                            </div>
+                          </div>
+                        </ng-template>
+                        <ng-template #noFlasher>---</ng-template>
+                      </div>
+                    </div>
+                  </td>
+                  <td *ngIf="!(selectedColumn.indexOf(9)>0)" class="border-start border-end">
+                    <div *ngIf="data.type=='HT';else elseHT">
+  
+                      <div *ngIf="data.riro_data[0]!=null;else elsep">
+                        <div *ngIf="data.riro_data[0].rack_method!=null;else elsep">
+                          <div *ngIf="data.riro_data[0].rack_process=='rack_out'">
+                            <div class="mt-2" style="width: 8rem;"
+                              *ngIf="data.riro_data[0].rack_process!=null;else elsep">
+                              <span>{{data.riro_data[0].irrd_in_time|dateFormater}}</span> <br>-
+                              <br><span>{{data.riro_data[0].irrd_out_time|dateFormater}}</span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <ng-template #elseHT>
+                      <div *ngIf="data.type=='conveyor'">
+                        <button class="btn default-outline" (click)="ConveyorImage(conveyorImg,data,'Conveyor')"
+                          *ngIf="data.type=='conveyor'">conveyor Image</button>
+                      </div>
+                    </ng-template>
+                    <div *ngIf="data.type.toLowerCase()=='hydraulic'||data.type.toLowerCase()=='pneumatic'">
+                      NA
+  
+                    </div>
+                  </td>
+                  <td *ngIf="!(selectedColumn.indexOf(10)>0)" class="border-start border-end">
+                    <div *ngIf="data.type=='HT';else noHT">
+  
+                      <div *ngIf="data.riro_data[0]!=null;else elsep">
+                        <div *ngIf="data.riro_data[0].rack_method!=null;else elsep">
+  
+                          <div class="" *ngIf="data.riro_data[0].rack_method!=null;else elsep"
+                            (dblclick)="data.riro_data[0].riro_key_id?selectEditField(EditField,data.riro_data[0],'rack_method'):''">
+                            <div [ngClass]="data.riro_data[0].rack_method==='automatic'?'success-badge':'danger-badge'">
+                              {{data.riro_data[0].rack_method?data.riro_data[0].rack_method:'---'}}</div>
+  
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </td>
+  
+                  <td scope="col" id="success" *ngIf="!(selectedColumn.indexOf(12)>0)" class="border-start border-end">
+  
+                    <div *ngIf="data.type=='HT';else noHT">
+  
+                      <div *ngIf="data.riro_data[0]!=null;else elsep">
+                        <div *ngIf="data.riro_data[0].tag!=null;else elsep"
+                          (click)="data.riro_data[0].riro_key_id?selectEditField(EditField,data.riro_data[0],'tag'):''">
+                          <div class="" *ngIf="data.riro_data[0].tag!=null;else elsep"
+                            [ngClass]="{'warning-badge':(data.riro_data[0].tag=='tag'&&(!data.riro_data[0].within_15_min&& data.riro_data[0].within_15_min!=null)) ,'danger-badge':data.riro_data[0].tag=='untag','success-badge':data.riro_data[0].tag=='tag' && (data.riro_data[0].within_15_min&&data.riro_data[0].within_15_min!=null) }"
+                            style="width:6rem;cursor: pointer;">
+                            <fa-icon class="me-2" icon="images"></fa-icon> {{data.riro_data[0].tag}}
+                          </div>
+                        </div>
+                      </div>
+                      <ng-template #elsep>---</ng-template>
+                    </div>
+                  </td>
+  
+                  <td scope="col" id="success" *ngIf="!(selectedColumn.indexOf(9)>0)" style="width:5rem;"
+                    class="border-start border-end">
+                    <div *ngIf="data.type=='HT';else elsePart">
+                      <div *ngIf="data.riro_data[0]!=null;else elsep">
+                <tr (click)="data.riro_data[0].riro_key_id?selectEditField(EditField,data.riro_data[0],'lock'):''">
+                  <div class="" *ngIf="data.riro_data[0].lock!=null;else elsep">
+                    <div style="width:6rem;cursor: pointer;"
+                      [ngClass]="{'warning-badge':(data.riro_data[0].lock=='lock'&&(!data.riro_data[0].within_15_min && data.riro_data[0].within_15_min!=null )) ,'danger-badge':data.riro_data[0].lock=='unlock','success-badge':(data.riro_data[0].lock=='lock' && (data.riro_data[0].within_15_min &&data.riro_data[0].within_15_min!=null) ) }">
+                      <fa-icon class="me-2" icon="images"></fa-icon>{{data.riro_data[0].lock}}
+                    </div>
+  
+                  </div>
+                  <ng-template #elsep>---</ng-template>
+                </tr>
+          </div>
+      </div>
+      <ng-template #elsePart>
+        <div *ngIf="data.type.toLowerCase()=='hydraulic'||data.type.toLowerCase()=='pneumatic'">
+          <button *ngIf="data.riro_data[0].hydra_data.length>0;else noData" class="btn default-outline"
+            (click)="ConveyorImage(conveyorImg,data,'Lock')">Image</button>
+  
+        </div>
+        <div *ngIf="data.type.toLowerCase()=='conveyor'">NA</div>
+      </ng-template>
+      <ng-template #noData>---</ng-template>
+      </td>
+      <td style="width:5rem;" *ngIf="!(selectedColumn.indexOf(20)>0)" class="border-start border-end">
+        <div *ngIf="data.riro_data[0];else elsep"
+          (dblclick)="data.riro_data[0].riro_key_id?selectEditField(EditField,data.riro_data[0],'five_meter'):''">
+          <div *ngIf="data.riro_data[0].five_meter!=null?!data.riro_data[0].five_meter.violation:false"
+            [ngClass]="{'success-badge':data.riro_data[0].five_meter!=null?!data.riro_data[0].five_meter.violation:false,'danger-badge':data.riro_data[0].five_meter!=null?data.riro_data[0].five_meter.violation:false}">
+            {{data.riro_data[0].five_meter!=null?
+            data.riro_data[0].five_meter.violation?'Yes':'No':'--'}}</div>
+          <button style="width:5rem;"
+            *ngIf="data.riro_data[0].five_meter!=null?data.riro_data[0].five_meter.violation:false"
+            (click)="ViolImages5meter(data.riro_data[0])" class="danger-badge">
+            <fa-icon class="me-2" icon="images"></fa-icon>Yes
+          </button>
+        </div>
+      </td>
+      <td *ngIf="!(selectedColumn.indexOf(15)>0)" class="border-end">
+        <div *ngIf="data.riro_data[0]!=null">
+          <div *ngIf="data.riro_data[0].riro_key_id"><button style="width: 7rem;" class="btn btn-sm default-outline"
+              (click)="data.riro_data[0].remarks==null?RemarkModal(addRemark,data.riro_data[0],'remark'):EditRemark(addRemark,data.riro_data[0],'ro_remark')">
+              <fa-icon *ngIf="!data.riro_data[0].remarks" icon="plus" class="me-2"
+                (dblclick)="selectEditField(EditField,data.riro_data[0],'remarks')"></fa-icon> Remark
+            </button>
+  
+          </div>
+        </div>
+      </td>
+  
+      <td *ngIf="!(selectedColumn.indexOf(19)>0)" class="border-start border-end">
+        <div *ngIf="data.type=='HT';else noHT">
+  
+          <div *ngIf="data.riro_data[1]!=null;else elsep">
+            <div class="mt-2" style="width:8rem" *ngIf="data.riro_data[1].rack_process!=null;else elsep">
+              <span>{{data.riro_data[1].irrd_in_time|dateFormater}}</span> <br>-
+              <br><span>{{data.riro_data[1].irrd_out_time|dateFormater}}</span>
+            </div>
+          </div>
+        </div>
+      </td>
+      <td *ngIf="!(selectedColumn.indexOf(21)>0)" class="border-start border-end">
+        <div *ngIf="data.type=='HT';else noHT">
+          <div *ngIf="data.riro_data[1]!=null;else elsep">
+            <div class="" *ngIf="data.riro_data[1].rack_method!=null;else elsep"
+              (dblclick)="data.riro_data[1].riro_key_id?selectEditField(EditField,data.riro_data[1],'rack_method'):''">
+              <!-- {{data.rack_method?data.rack_method:'---'}} -->
+              <div [ngClass]="data.riro_data[1].rack_method==='automatic'?'success-badge':'danger-badge'">
+                {{data.riro_data[1].rack_method?data.riro_data[1].rack_method:'---'}}</div>
+  
+            </div>
+          </div>
+        </div>
+      </td>
+  
+      <td scope="col" id="success" *ngIf="!(selectedColumn.indexOf(22)>0)" class="border-start border-end">
+  
+        <div *ngIf="data.type=='HT';else noHT">
+          <div *ngIf="data.riro_data[1]!=null;else elsep">
+            <tr *ngIf="data.riro_data[1].tag!=null;else elsep"
+              (click)="data.riro_data[1].riro_key_id?selectEditField(EditField,data.riro_data[1],'tag'):''">
+              <div class="" *ngIf="data.riro_data[1].tag!=null;else elsep">
+  
+                <div class="" *ngIf="data.riro_data[1].tag!=null;else elsep"
+                  [ngClass]="data.riro_data[1].rack_process=='rack_in' && data.riro_data[1].tag=='tag'? 'warning-badge':'success-badge'"
+                  style="width:6rem;cursor: pointer;">
+                  <fa-icon class="me-2" icon="images"></fa-icon> {{data.riro_data[1].tag}}
+                </div>
+  
+              </div>
+  
+            </tr>
+          </div>
+          <ng-template #elsep>---</ng-template>
+        </div>
+      </td>
+  
+      <td scope="col" id="success" *ngIf="!(selectedColumn.indexOf(23)>0)" style="width:7rem;"
+        class="border-start border-end">
+  
+        <div *ngIf="data.type=='HT';else elsePart">
+          <div *ngIf="data.riro_data[1]!=null;else elsep">
+            <tr (click)="data.riro_data[1].riro_key_id?selectEditField(EditField,data.riro_data[1],'lock'):''">
+              <div class="" *ngIf="data.riro_data[1].lock!=null;else elsep">
+                <div
+                  [ngClass]="data.riro_data[1].rack_process=='rack_in' && data.riro_data[1].lock=='lock'? 'warning-badge':'success-badge'"
+                  style="width:6rem;cursor: pointer;">
+                  <fa-icon class="me-2" icon="images"></fa-icon>{{data.riro_data[1].lock}}
+                </div>
+  
+              </div>
+              <ng-template #elsep>---</ng-template>
+  
+            </tr>
+          </div>
+        </div>
+        <ng-template #elsePart>
+          <div *ngIf="data.type.toLowerCase()=='hydraulic'||data.type.toLowerCase()=='pneumatic'">
+            <button *ngIf="data.riro_data[0].hydra_data.length>0;else noData" class="btn default-outline"
+              (click)="ConveyorImage(conveyorImg,data,'Unlock')">Image</button>
+  
+          </div>
+          <div *ngIf="data.type=='conveyor'">NA</div>
+        </ng-template>
+        <ng-template #noData>---</ng-template>
+  
+      </td>
+      <td *ngIf="!(selectedColumn.indexOf(20)>0)" class="border-start border-end">
+        <div *ngIf="data.riro_data[1];else elsep" style="width:5rem;"
+          (dblclick)="data.riro_data[1].riro_key_id?selectEditField(EditField,data.riro_data[1],'five_meter'):''">
+          <div *ngIf="data.riro_data[1].five_meter!=null?!data.riro_data[1].five_meter.violation:false"
+            [ngClass]="{'success-badge':data.riro_data[1].five_meter!=null?!data.riro_data[1].five_meter.violation:false,'danger-badge':data.riro_data[1].five_meter!=null?data.riro_data[1].five_meter.violation:false}">
+            {{data.riro_data[1].five_meter!=null?
+            data.riro_data[1].five_meter.violation?'Yes':'No':'--'}}</div>
+          <button style="width:5rem;"
+            *ngIf="data.riro_data[1].five_meter!=null?data.riro_data[1].five_meter.violation:false"
+            (click)="ViolImages5meter(data.riro_data[1])" class="danger-badge">
+            <fa-icon class="me-2" icon="images"></fa-icon>Yes
+          </button>
+        </div>
+      </td>
+      <td *ngIf="!(selectedColumn.indexOf(15)>0)" class="border-end">
+        <div *ngIf="data.riro_data[1]!=null">
+          <div *ngIf="data.riro_data[1].riro_key_id"><button style="width: 7rem;" class="btn btn-sm default-outline"
+              (click)="data.riro_data[1].remarks==null?RemarkModal(addRemark,data.riro_data[1],'remark'):EditRemark(addRemark,data.riro_data[1],'ri_remark')">
+              <fa-icon *ngIf="!data.riro_data[1].remarks" icon="plus" class="me-2"
+                (dblclick)="selectEditField(EditField,data.riro_data[1],'remarks')"></fa-icon> Remark
+            </button>
+          </div>
+        </div>
+      </td>
+  
+      <td *ngIf="!(selectedColumn.indexOf(24)>0)">
+        <div *ngIf="data.type=='HT';">
+  
+          <div *ngIf="data.riro_data[2]!=null;else elsep">
+            <div *ngIf="data.riro_data[2].rack_method!=null;else elsep">
+              <div *ngIf="data.riro_data[2].rack_process=='not_recognised'">
+                <div class="mt-2" style="width: 8rem;" *ngIf="data.riro_data[2].rack_process!=null;else elsep">
+                  <span class="text-danger">{{data.riro_data[2].rack_process=='not_recognised'?'NotRecognized':''}}</span> <br />
+  
+                  <br>
+  
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </td>
+  
+  
+      <td *ngIf="!(selectedColumn.indexOf(9)>0)">
+        <div class="" *ngIf="data.violation" id="danger">
+          <button
+            (click)="ToPPE(data._id.$oid,data.data.panel_data.panel_id,data.data.image_name,data.sub_area,data.plant,data.department)"
+            style="width:6rem" class="btn btn-sm  danger">Show Data</button>
+  
+        </div>
+      </td>
+      <td>
+        <div *ngIf="data.type=='HT'&& !Array.isArray( data.data.panel_data)">
+          <button style="width: 7rem;" (click)="ToRackEdit(data)" class="btn btn-sm default-outline">
+            <!-- <fa-icon icon="list" class="me-1"></fa-icon>  -->
+            Rack History
+          </button>
+        </div>
+        <div *ngIf="data.type.toLowerCase() =='hydraulic'||data.type.toLowerCase() =='pneumatic'">
+          <button *ngIf="data.riro_data[0].hydra_data.length>0" style="width: 7rem;" class="btn btn-sm default-outline"
+            (click)="ToLockHistory(data)">
+  
+            <!-- <fa-icon icon="list" class="me-1"></fa-icon>  -->
+            Lock History
+          </button>
+        </div>
+  
+  
+      </td>
+  
+  
+  
+  
+      <td scope="col" *ngIf="!(selectedColumn.indexOf(16)>0)">
+        <div>
+  
+          <button *ngIf="data.type!='conveyor'||data.type==null" (click)="ToEditPage(data)"
+            class="btn btn-sm default-outline">
+            <span class="">Edit </span>
+          </button>
+  
+  
+        </div>
+      </td>
+  
+      <!-- <td>
+        <button style="width: 7rem;" class="btn btn-sm default-outline" (click)="RemarkModal(addRemark,data,'remark')">
+          <fa-icon icon="plus" class="me-2"></fa-icon> Remark
+        </button>
+      </td> -->
+      <td>
+        <button class="btn" [disabled]="isActive" (click)="isDeleteJob(deleteField,data)">
+          <fa-icon class="text-danger" icon="trash"></fa-icon>
+        </button>
+      </td>
+  
+  
+  
+      </tr>
+      </tbody>
+      <tfoot></tfoot>
+      </table>
+  
+    </div>
+    </ng-scrollbar>
+  
+  </div>
+
+  <ng-template #noHT>NA</ng-template>
+  <ng-template #elsep>---</ng-template>
+  <ng-template let-modal #addRemark>
+    <div class="modal-body">
+      <div class="modal-confirm">
+        <div class="modal-content">
+          <div class="modal-header flex-column">
+  
+            <h4 class="modal-title w-100">Add the remark</h4>
+          </div>
+          <div class="modal-body">
+            <form action="">
+              <textarea rows="8" [formControl]="remarkControl" class="form-control">
+  
+                  </textarea>
+            </form>
+          </div>
+          <div class="modal-footer justify-content-center">
+            <button type="button" class="btn btn-secondary" (click)="modal.close('Cross click')"
+              data-dismiss="modal">Cancel</button>
+            <button type="button" class="btn default" (click)="SaveRemark()">Save</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </ng-template>
+
+  <ng-template let-modal #EditField>
+    <div style="font-size: 25px;" class="modal-header d-flex align-items-center justify-content-between">
+      <h4 class="modal-title w-50">Edit the {{editField}}</h4>
+      <button #closeBtn class="btn btn-sm m-2 p-2" style="background-color: none !important;" (click)="modal.dismiss('Cross click')">&times;</button>
+    </div>
+    <div class="modal-body">
+      <div class="modal-confirm">
+        <div class="modal-content">
+  
+          <div class="modal-body" id="editField">
+            <form action="" *ngIf="editField=='rack_method'" id="custome">
+              <div class="form-check form-check-inline">
+                <input value="automatic" id="1" type="radio" [autofocus]="true" [formControl]="tempField"
+                  class="form-check-input">
+  
+                <label for="1" class="form-check-label">Automatic</label>
+              </div>
+              <div class="form-check form-check-inline">
+                <input value="manual" id="2" type="radio" [autofocus]="true" [formControl]="tempField"
+                  class="form-check-input">
+  
+                <label for="2">Manual</label>
+  
+              </div>
+            </form>
+  
+            <form action="" *ngIf="editField=='tag'" id="custome">
+              <div class="card mb-3">
+                <div class="card-img-top">
+                  <lib-ngx-image-zoom class="card-img-top" [enableScrollZoom]=true
+                    [thumbImage]="IP+'/taglock_image/'+ selectedRiro.lock_tag_image"
+                    [fullImage]="IP+'/taglock_image/'+ selectedRiro.lock_tag_image">
+                  </lib-ngx-image-zoom>
+  
+                  <p class="text-dark mt-3">Time: {{selectedRiro.tag_time|dateFormater}} </p>
+                </div>
+              </div>
+              <div class="form-check form-check-inline mt-3">
+                <input rows="5" value="tag" id="1" [autofocus]="true" type="radio" [formControl]="tempField"
+                  class="form-check-input">
+  
+                <label for="1" class="form-check-label">tag</label>
+              </div>
+              <div class="form-check form-check-inline">
+                <input rows="5" value="untag" id="2" type="radio" [formControl]="tempField" class="form-check-input">
+  
+                <label for="2">untag</label>
+  
+              </div>
+            </form>
+  
+            <form action="" *ngIf="editField=='lock'" id="custome">
+              <div class="card">
+                <div class="card-img-top">
+                  <lib-ngx-image-zoom class="card-img-top" [enableScrollZoom]=true
+                    [thumbImage]="IP+'/taglock_image/'+ selectedRiro.lock_tag_image"
+                    [fullImage]="IP+'/taglock_image/'+ selectedRiro.lock_tag_image">
+                  </lib-ngx-image-zoom>
+                  <p class="mt-3 text-dark">Time: {{selectedRiro.lock_time|dateFormater}} </p>
+  
+                </div>
+              </div>
+              <div class="form-check form-check-inline mt-3">
+                <input rows="5" value="lock" id="1" type="radio" [autofocus]="true" [formControl]="tempField"
+                  class="form-check-input">
+  
+                <label for="1" class="form-check-label">lock</label>
+              </div>
+              <div class="form-check form-check-inline">
+                <input rows="5" value="unlock" id="2" type="radio" [formControl]="tempField" class="form-check-input">
+  
+                <label for="2">unlock</label>
+  
+              </div>
+            </form>
+            <form action="" *ngIf="editField=='five_meter'" id="custome">
+              <div class="form-check form-check-inline">
+                <input rows="5" value=Yes id="1" type="radio" [autofocus]="true" [formControl]="tempField"
+                  class="form-check-input">
+  
+                <label for="1" class="form-check-label">Yes</label>
+              </div>
+              <div class="form-check form-check-inline">
+                <input rows="5" value=No id="2" type="radio" [formControl]="tempField" class="form-check-input">
+  
+                <label for="2">No</label>
+  
+              </div>
+            </form>
+            <form action="" *ngIf="editField=='tagname'" id="custome">
+             
+                <input rows="5" value=Yes id="1" type="text" [autofocus]="true" [formControl]="tempField"
+                  class="form-control">
+  
+  
+            </form>
+          </div>
+          <div class="modal-footer justify-content-center">
+            <button type="button" class="btn btn-secondary" (click)="modal.close('Cross click')"
+              data-dismiss="modal">Cancel</button>
+            <button type="button" class="btn default" (click)="SaveFieldChanges()">Save</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </ng-template>
+  <ng-template let-modal #Flasher>
+    <div style="width: auto; height:auto !important">
+      <div class="modal-body">
+        <div class="">
+          <div class="">
+            <div class="modal-header">
+  
+              <h4 class="modal-title w-100">{{selectedField}} Image</h4>
+              <button class="btn" (click)="modal.dismiss('Cross Click')">&times;</button>
+            </div>
+            <div class="modal-body">
+              <div class="column-flex align-items-center justify-centent-center">
+                <div id="flasher" style="width:auto;height:auto;z-index:inherit;position:relative !important;"
+                  class="d-flex align-items-center justify-centent-center mb-3 mt-3">
+                  <lib-ngx-image-zoom [enableScrollZoom]=true style="position: relative !important;"
+                    [thumbImage]="IP+'/magneticflasher_image/'+ (selectedViolation.magnetic_flasher.flasher_image)"
+                    [fullImage]="IP+'/magneticflasher_image/'+ (selectedViolation.magnetic_flasher.flasher_image)">
+                  </lib-ngx-image-zoom>
+                </div>
+                <button class="btn default-tertiary" (click)="ShowLog(flasherLog,selectedJob)">See Log</button>
+              </div>
+  
+  
+            </div>
+          </div>
+  
+        </div>
+      </div>
+    </div>
+  </ng-template>
+  <ng-template #conveyorImg let-modal>
+    <div style="width: auto; height:auto !important">
+      <div class="modal-header">
+        <h4 class="modal-title">
+          <h4 class="modal-title w-100">{{selectedField}} Image</h4>
+        </h4>
+        <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click')"></button>
+      </div>
+      <div class="modal-body">
+        <div id="jobImg" class="p-2">
+          <div class="d-flex justify-content-center" id="conveyor" *ngIf="selectedField=='Conveyor'">
+            <lib-ngx-image-zoom [enableScrollZoom]=true [zoomMode]="'click'"
+              [thumbImage]="IP+'/mech_jobimage/'+ (conveyorImage|async)"
+              [fullImage]="IP+'/mech_jobimage/'+ (conveyorImage|async)">
+            </lib-ngx-image-zoom>
+  
+          </div>
+          <div class="d-flex justify-content-center" *ngIf="selectedField=='Lock'||selectedField=='Unlock'">
+            <lib-ngx-image-zoom [enableScrollZoom]=true [zoomMode]="'click'"
+              [thumbImage]="IP+'/hydralockimage/'+ (conveyorImage|async)"
+              [fullImage]="IP+'/hydralockimage/'+ (conveyorImage|async)">
+            </lib-ngx-image-zoom>
+  
+          </div>
+        </div>
+      </div>
+  
+      <div *ngIf="selectedField=='conveyor'" class="modal-footer justify-content-center">
+        <button type="button" class="btn btn-secondary" (click)="modal.close('Cross click')"
+          data-dismiss="modal">Close</button>
+        <button type="button" class="btn default" (click)="getConveyorImg()">Refresh</button>
+      </div>
+    </div>
+  </ng-template>
+
+  <ng-template let-modal #deleteField>
+    <div class="modal-body">
+      <div class="modal-confirm" id="deletemodal">
+        <div class="modal-content">
+          <div class="modal-header flex-column">
+  
+            <h4 class="modal-title w-100">Are you sure?</h4>
+            <!-- <button type="button" class="btn"  aria-hidden="true">&times;</button> -->
+          </div>
+          <div class="modal-body">
+            <p>Do you really want to delete this job? This process cannot be undone.</p>
+          </div>
+          <div class="modal-footer justify-content-center">
+            <button type="button" class="btn btn-secondary" (click)="modal.close('Cross click')"
+              data-dismiss="modal">Cancel</button>
+            <button type="button" (click)="DeleteJob()" class="btn danger">Delete</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </ng-template>
+  <ng-template #flasherLog let-offcanvas>
+    <div class="offcanvas-header">
+      <h4>Magnetic Sticker Log</h4>
+      <button class="btn default-tertiary" (click)="offcanvas.dismiss('Cross Click')">&times;</button>
+    </div>
+    <div class="offcanvas-body" class="h-100" style="height:80vh !important;" id="logContainer">
+      <ng-scrollbar style="height:98vh !important;" #scrollable track="vertical" pointerEventsMethod="scrollbar"
+        [autoHeightDisabled]="true" [disabled]="false">
+        <div class="column-flex justify-content-between align-items-center m-3">
+          <span class="m-2"><span class="text-muted">Job No :</span><span><b>{{selectedJob.job_no}}</b></span> </span>
+          <span class="m-2"> <span class="text-muted">camera Name :</span></span>
+          <span class="m-2"><span><b>{{selectedJob.camera_name}}</b></span> </span>
+          <span class="m-2"> <span class="text-muted">Camera IP :</span><span><b>{{selectedJob.ip_address}}</b></span>
+          </span>
+          <span class="m-2"> <span class="text-muted">Panel Number
+              :</span><span><b>{{selectedJob.data.panel_data.panel_id}}</b></span> </span>
+  
+        </div>
+        <div class="">
+          <ul class="w-100 list-group">
+            <li class="list-group-item" *ngFor="let data of flasherLogDetails">
+              <div class="column-flex justify-content-center align-items-center">
+                <div id="flasher" style="width:168px;height:auto;z-index:inherit;position:relative !important;"
+                  class="d-flex align-items-center justify-centent-center mb-2">
+                  <lib-ngx-image-zoom [enableScrollZoom]=true
+                    [thumbImage]="IP+'/magneticflasher_image/'+ (data.flasher_status.flasher_image)"
+                    [fullImage]="IP+'/magneticflasher_image/'+ (data.flasher_status.flasher_image)">
+                  </lib-ngx-image-zoom><br />
+                </div>
+                <div class=""><span class="m-2"><span class="text-muted">Time :
+                    </span>{{data.flasher_status.flasher_time|dateFormater}}</span><br/>
+                  <span class="m-2"><span class="text-muted">Sticker Status:</span><span
+                      style="width: 3rem;cursor: pointer;text-align: center;"
+                      *ngIf="data.flasher_status.status!=null;else elsep"
+                      [ngClass]="{'success-badge':data.flasher_status.status=='yes','danger-badge':data.flasher_status.status=='no'}">
+  
+                      {{data.flasher_status.status=='yes'?'Yes':'No'}}
+                    </span><br/>
+                  </span>
+                </div>
+              </div>
+              <!-- </div>  -->
+            </li>
+          </ul>
+        </div>
+      </ng-scrollbar>
+    </div>
+  </ng-template>
+
+  

@@ -1,0 +1,144 @@
+<div id="sidebarWrapper" class="">
+
+    <!-- Sidebar -->
+    <div class="custom-menu">
+        <!-- <button id="toggle" class="btn primary" (click)="toggleSidebar()" >
+        <fa-icon icon="sliders"></fa-icon>
+       </button> -->
+    </div>
+    <nav id="sidebar">
+        <div class="sidebar-header">
+            <strong class="p-1">
+                <img id="img" src="assets/images/tata-steel-logo.svg" class="logo" alt="">
+            </strong>
+
+            <div id="CollapseImg" class="p-1">
+                <img src="assets/images/tata_steel_logo1.svg" class="logo" alt="">
+
+            </div>
+        </div>     
+           <div class="m-2 d-block" [ngClass]="isCollapse?'d-flex justify-centent-center align-items-center':'float-end'" (click)="toggleSidebar()">
+           <button class="btn"> <fa-icon icon="bars" class="text-white" size="2x"></fa-icon></button>
+           </div>
+        
+        <ul class="list-unstyled components">
+
+            <!-- <li class="active">
+                <a href="#homeSubmenu" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">Home</a>
+                <ul class="collapse list-unstyled" id="homeSubmenu">
+                    <li>
+                        <a href="#">Home 1</a>
+                    </li>
+                    <li>
+                        <a href="#">Home 2</a>
+                    </li>
+                    <li>
+                        <a href="#">Home 3</a>
+                    </li>
+                </ul>
+            </li> -->
+            <li class="mt-4">
+                <a routerLink="/app/dashboard" placement="end" [ngbPopover]="isCollapse?'Dashboard':''" popoverTitle=""
+                    popoverClass="custom-popover" triggers="mouseenter:mouseleave" routerLinkActive="active">
+                    <!-- <fa-icon icon="exclamation-triangle" class="me-2"></fa-icon> -->
+                    <fa-icon icon="home" class="me-2"></fa-icon>
+
+                    <span>Dashboard</span> </a>
+            </li>
+
+            <li class="mt-4" placement="end" [ngbPopover]="isCollapse?'ESI Monitor':''" popoverTitle=""
+                popoverClass="custom-popover" triggers="mouseenter:mouseleave">
+                <a routerLink="/app/jobsheetMoniter" routerLinkActive="active">
+                    <fa-icon icon="file" class="me-2"></fa-icon>
+                    <span> ESI Monitor</span></a>
+            </li>
+            <li class="mt-4" placement="end" [ngbPopover]="isCollapse?'ESI Unaallocated':''" popoverTitle=""
+                popoverClass="custom-popover" triggers="mouseenter:mouseleave">
+                <a routerLink="/app/unallocated" routerLinkActive="active">
+                    <fa-icon icon="file" class="me-2"></fa-icon>
+                    <span> ESI Unallocated</span></a>
+            </li>
+
+
+            <li class="mt-4">
+                <a [ngbPopover]="isCollapse?'Violations':''" popoverTitle="" popoverClass="custom-popover"
+                    triggers="mouseenter:mouseleave" routerLink="/app/violations" routerLinkActive="active">
+                    <!-- <fa-icon icon="exclamation-triangle" class="me-2"></fa-icon> -->
+                    <fa-icon icon="triangle-exclamation" class="me-2"></fa-icon>
+
+                    <span> Violations</span></a>
+            </li>
+            <li class="mt-4">
+                <a [ngbPopover]="isCollapse?'Traffic Count':''" popoverTitle="" popoverClass="custom-popover"
+                    triggers="mouseenter:mouseleave" routerLink="/app/trafficCount" routerLinkActive="active">
+                    <!-- <fa-icon icon="exclamation-triangle" class="me-2"></fa-icon> -->
+                    <fa-icon icon="person-walking-dashed-line-arrow-right" class="me-2"></fa-icon>
+
+                    <span> Traffic Count</span></a>
+            </li>
+            <li class="mt-4">
+                <a [ngbPopover]="isCollapse?'Camera Settings':''" popoverTitle="" popoverClass="custom-popover"
+                    triggers="mouseenter:mouseleave" routerLink="/app/CameraSettings" routerLinkActive="active">
+                    <fa-icon icon="camera" class="me-2"></fa-icon>
+
+                    <span> Camera Settings</span> </a>
+            </li>
+            <li class="mt-4">
+                <a [ngbPopover]="isCollapse?'Steam Suit Detection':''" popoverTitle="" popoverClass="custom-popover"
+                    triggers="mouseenter:mouseleave" routerLink="/app/SteamSuitDetection" routerLinkActive="active">
+                    <fa-icon icon="user-astronaut" class="me-2"></fa-icon>
+
+                    <span> Steam Suit Detection </span> </a>
+            </li>
+            <li class="mt-4">
+                <a [ngbPopover]="isCollapse?'Steam Suit Detection':''" popoverTitle="" popoverClass="custom-popover"
+                    triggers="mouseenter:mouseleave" routerLink="/app/ESIHistory" routerLinkActive="active">
+                    <fa-icon icon="file-lines" class="me-2"></fa-icon>
+
+                    <span> ESI History </span> </a>
+            </li>
+            <!-- <li class="mt-4">
+                <a [ngbPopover]="isCollapse?'Camera Settings':''" popoverTitle="" popoverClass="custom-popover" triggers="mouseenter:mouseleave" routerLink="/app/Settings" routerLinkActive="active">
+                    <fa-icon icon="cog" class="me-2"></fa-icon>
+
+                <span>  Settings</span>  </a>
+            </li> -->
+
+            <li class="mt-4" style="bottom:0;" >
+                <a  routerLinkActive="active" class="m-3" (click)="LogoutModal(logout)" class="logout">
+                    <fa-icon icon="arrow-right-from-bracket" class="me-2"></fa-icon>
+                 <span> &nbsp;&nbsp; Log Out  &nbsp;&nbsp;</span> </a>
+            </li>
+            
+
+
+        </ul>
+    </nav>
+
+</div>
+
+<ng-template let-modal #logout>
+    <div class="modal-body">
+      <div class="modal-confirm">
+        <div class="modal-content">
+          <div class="modal-header flex-column">
+            <!-- <div class="icon-box"> -->
+              <i class="material-icons">
+                <fa-icon icon="arrow-right-from-bracket"  size="2x" class="me-2 text-custome"></fa-icon>
+              </i>
+            <!-- </div> -->
+            <h4 class="modal-title w-100">Are you sure?</h4>
+            <!-- <button type="button" class="btn"  aria-hidden="true">&times;</button> -->
+          </div>
+          <div class="modal-body">
+            <p>Do you really want to Logout?</p>
+          </div>
+          <div class="modal-footer justify-content-center">
+            <button type="button" class="btn btn-secondary" (click)="modal.close('Cross click')"
+              data-dismiss="modal">Cancel</button>
+            <button type="button" class="btn default" (click)="Logout()">Logout</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </ng-template>
