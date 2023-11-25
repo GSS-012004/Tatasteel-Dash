@@ -76,6 +76,10 @@ export class EsiUnallocatedService {
 
     return this.http.get(this.IP+'/delete_unplannedRiro/'+key_id)
   }
+  DeleteUnallocated(key_id:any){
+
+    return this.http.get(this.IP+'/delete_unplannedRiro/'+key_id)
+  }
 
 
   notification(message: string, action?: string) {
@@ -86,4 +90,34 @@ export class EsiUnallocatedService {
     })
     )
   }
+
+  GetJobSheet(){
+    return this.http.get(this.IP_ESI+'/unplanned_data')
+   }
+
+   GetJobsheetStatus(){
+    return this.http.get(this.IP_ESI+'/unplanned_data')
+   }
+
+   DeleteEntireJob(id:any){
+    return this.http.get(this.IP+'/delete_unplannedRiro/'+id)
+  }
+  DeleteMechJobs(id:any){
+    return this.http.get(this.IP+'/delete_unplannedRiro/'+id)
+  
+  }
+  EditRiroJob(data1:any){
+    return this.http.post(this.IP+'/edit_UnplannedRIROData',{data:data1})
+    }
+
+    VerifyViolation(id:string,flag:any){
+      return this.http.get(this.IP+'/RiroUnplannedviolation_verification/'+id+'/'+flag)
+    }
+
+    
+    GetRiroHistoryByPanel(data:any){
+      return this.http.post(this.IP+'/edit_UnplannedRIROData',{data:data})
+  
+    }
 }
+

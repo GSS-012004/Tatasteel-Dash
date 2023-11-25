@@ -4,6 +4,10 @@ import { Observable, of } from 'rxjs';
 import { ServerService } from 'src/app/Services/server.service';
 import { EsiUnallocatedService } from './esi-unallocated.service';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { Router } from '@angular/router';
+import { FormControl, Validators } from '@angular/forms';
+import { Lightbox, LightboxConfig } from 'ngx-lightbox';
+import { saveAs } from 'file-saver';
 
 @Component({
   selector: 'app-esi-unallocated',
@@ -11,7 +15,7 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
   styleUrls: ['./esi-unallocated.component.css']
 })
 export class EsiUnallocatedComponent {
-  data:any[] = [];
+  data:any[] =[]
   IP: any;
   IP_ESI: any;
   datas: any;
@@ -24,11 +28,27 @@ export class EsiUnallocatedComponent {
   selectedEditIndex: any
   deleteJob: any
 deleteField: any;
-
-
+selectedPanel: any
+selectedPanels: any[] = []
+jobsStatus: any = { not_processed: 0, processed_count: 0, total_jobs: 0 }
+editField: string
+remarkControl: FormControl = new FormControl('', Validators.required)
+Images: any[] = []
+selectedRiro: any
+tempField: FormControl = new FormControl('', Validators.required)
+isEditTable: boolean = true
+editViol: any
+isdatewise: boolean = false
+rackProcess:FormControl= new FormControl('',Validators.required)
+editedRackProc:any
+panelData:Observable< any[]>=of([])
+  
 constructor( private http :HttpClient,
   public server:EsiUnallocatedService,
-  public modalService: NgbModal) {
+  public modalService: NgbModal,
+  public router: Router,
+  private _lightbox: Lightbox,
+  private _lightBoxConfig: LightboxConfig,) {
   var res=this.loadConfigFile('assets/config.json')
   res=JSON.parse(res)
   this.IP=res.IP
@@ -62,29 +82,34 @@ readConfigFile(filepath:any,mimeType:any){
  }
 
 ngOnInit(): void{
-   this.http.get(this.IP+'/unplanned_data').subscribe((response:any) =>{
+   this.server.GetunallocatedJobs().subscribe((response:any) =>{
     this.data = response.message;
     console.log(this.data)
     this.data = this.data
+    
 
    });
    
-    this.server.GetunallocatedImg(this.imgName).subscribe((response:any) =>{
+    // this.server.GetunallocatedImg()
+    // .subscribe((response:any) =>{
       // console.log(this.image = response );
       
-    })
+    // })
+    this.getRiroHistory();
     
   }
 
-  imgName(imgName: any) {
-    throw new Error('Method not implemented.');
-  }
+  // imgName(imgName: any) {
+  //   throw new Error('Method not implemented.');
+  // }
   
 
 
-  sliceData() {
+  sliceData(){
+    console.log(this.page, this.pageSize)
+    this.total = of((this.tempData.slice((this.page - 1) * this.pageSize, (this.page - 1) * this.pageSize + this.pageSize)).length)
     this.total = of(this.tempData.length)
-    this.jobsheetData = of((this.tempData.map((div: any, SINo: number) => ({ SNo: SINo + 1, ...div })).slice((this.page - 1) * this.pageSize, (this.page - 1) * this.pageSize + this.pageSize)))
+    this.panelData = of((this.tempData.map((div: any, SINo: number) => ({ SNo: SINo + 1, ...div })).slice((this.page - 1) * this.pageSize, (this.page - 1) * this.pageSize + this.pageSize)))
   }
 
   isDeleteJob(modal: any, d: any) {
@@ -102,25 +127,24 @@ ngOnInit(): void{
     deleteModal.classList.add('loading')
 
     if (this.deleteJob.type == 'HT') {
-      if(! Array.isArray(this.deleteJob.data.panel_data)){
+      if(! Array.isArray(this.deleteJob.data)){
       var index = this.tempData.findIndex((data: any) => {
         return data._id.$oid === this.selectedEditIndex
       })
       var tempData = this.tempData[index]
       var data = {
-        panel_no: this.deleteJob.data.panel_data.panel_id,
-        imagename: this.deleteJob.data.image_name,
+        //  panel_no: this.deleteJob.data.panel_data.panel_id,
+        //  imagename: this.deleteJob.data.riro_image,
         id: this.deleteJob._id.$oid,
-        panel_key_id: this.deleteJob.data.panel_data.roi_data.panel_key_id,
+        panel_key_id: this.deleteJob.data.riro_key_id,
       }
       //need to integrate delete job api if the response true need to splice that from the data
       this.server.DeleteJobPanel(data).subscribe((response: any) => {
-        
-      this.server.notification(response.message)
+        this.server.notification(response.message)
         if (response.success) {
           this.tempData.splice(index, 1)
-          this.server. GetunallocatedJobs()
-          // this.GetJobsheetStatus()
+          this.getJobsheetData()
+          this.GetJobsheetStatus()
           this.sliceData()
           deleteModal.classList.remove('loading')
         }
@@ -136,45 +160,767 @@ ngOnInit(): void{
         })
 
       }
-      // else if(Array.isArray( this.deleteJob.data.panel_data)){
-      //   if(this.deleteJob.data.panel_data.length==0){
-      //     this.server.DeleteEntireJob(this.deleteJob._id.$oid).subscribe((response:any)=>{
-      //       if(response.success){
-      //           this.server.notification(response.message)
-      //           this.RefreshData()
-      //       }
-      //       else{
-      //         this.server.notification(response.message,'Retry')
-      //       }
-      //     })
-      //   }
+      else if(Array.isArray( this.deleteJob.data)){
+        if(this.deleteJob.data.panel_data.length==0){
+          this.server.DeleteEntireJob(this.deleteJob._id.$oid).subscribe((response:any)=>{
+            if(response.success){
+                this.server.notification(response.message)
+                this.RefreshData()
+            }
+            else{
+              this.server.notification(response.message,'Retry')
+            }
+          })
+        }
 
-      // }
+      }
     }
-    // else {
+    else {
 
 
-    //   this.server.DeleteMechJobs(this.deleteJob._id.$oid).subscribe((response: any) => {
-    //     deleteModal.classList.remove('loading')
+      this.server.DeleteMechJobs(this.deleteJob._id.$oid).subscribe((response: any) => {
+        deleteModal.classList.remove('loading')
 
-    //     if (response.success) {
-    //       this.server.notification(response.message)
-    //       this.modalService.dismissAll()
-    //       this.getJobsheetData()
-    //       this.GetJobsheetStatus()
-    //       this.sliceData()
-    //     }
-    //     else {
-    //       this.server.notification(response.message)
-    //     }
-    //   },
-    //     Err => {
-    //       deleteModal.classList.remove('loading')
+        if (response.success) {
+          this.server.notification(response.message)
+          this.modalService.dismissAll()
+          this.getJobsheetData()
+          this.GetJobsheetStatus()
+          this.sliceData()
+        }
+        else {
+          this.server.notification(response.message)
+        }
+      },
+        Err => {
+          deleteModal.classList.remove('loading')
 
-    //       this.server.notification('Error while deleting Job', 'Retry')
-    //    })
-    //  }
+          this.server.notification('Error while deleting Job', 'Retry')
+        })
+    }
 
   }
-}
 
+
+  getJobsheetData() {
+    var table = document.getElementById('dataTable')
+    table.classList.add('loading')
+    this.server.GetJobSheet().subscribe((response: any) => {
+      table.classList.remove('loading')
+      if (response.job_sheet_status) {
+        if (response.success) {
+
+          this.total = of(response.message.length)
+          this.jobsheetData = of(response.message)
+          this.tempData = response.message
+          this.tempData = this.ModifyData(this.tempData)
+          this.tempData = this.SortLivewise(this.tempData)
+          this.sliceData()
+        }
+        else {
+          this.server.notification('Data not found')
+        }
+      }
+      else {
+        this.router.navigate(['app/jobsheetUpload'])
+      }
+    },
+      err => {
+        this.server.notification('Error while fetching the data', 'Retry')
+        table.classList.remove('loading')
+      })
+  }
+
+  GetJobsheetStatus() {
+    this.server.GetJobsheetStatus().subscribe((response: any) => {
+      if (response.success) {
+        this.jobsStatus = response.message
+      }
+    })
+  }
+
+
+
+  RefreshData()  {
+    this.selectedPanel = ''
+    this.selectedPanels = []
+    this.total = of(0)
+    this.jobsheetData = of([])
+
+    // this.ShowData()
+     this.GetunallocatedJobs();
+
+  }
+
+  SortLivewise(data: any) {
+    for (let index1 = 0; index1 < data.length; index1++) {
+      data[index1].isbreak = false
+      for (let index2 = index1 + 1; index2 < data.length; index2++) {
+       
+        if ((data[index1].riro_data[0] != null ? (data[index1].riro_data[0].rack_process == null) : false) && (data[index1].riro_data[0] != null ? (data[index1].riro_data[0].rack_process == 'rack_out') : false)) {
+          var temp = data[index1]
+          data[index1] = data[index2]
+          data[index2] = temp
+        }
+        if ((!data[index1].data.panel_data.panel_status ) && (data[index2].data.panel_data.panel_status)) {
+          var temp = data[index1]
+          data[index1] = data[index2]
+          data[index2] = temp
+        }
+        
+        for (let index2 = index1 + 1; index2 < data.length; index2++) {
+          if (((!(data[index1].exception_status)) && data[index2].exception_status)) {
+
+            var temp = data[index1]
+            data[index1] = data[index2]
+            data[index2] = temp
+          }
+
+        }
+        for (let index2 = index1 + 1; index2 < data.length; index2++) {
+          if ((!data[index1].live_status && data[index2].live_status)) {
+
+            var temp = data[index1]
+            data[index1] = data[index2]
+            data[index2] = temp
+          }
+        }
+      }
+    }
+    var index1 = 0;
+    var subcount = 0
+    while (index1 < data.length) {
+      const currentActiveJob = data[index1].job_no
+      var tempi = index1
+      subcount = 1
+      data[index1].subCount = 1
+      for (let j = index1 + 1; j < data.length; j++) {
+        const subjob = data[j];
+        if (subjob.job_no === currentActiveJob) {
+
+          tempi++
+          subcount++
+          var tempsub = data[tempi]
+          data[tempi] = subjob
+          data[j] = tempsub
+          data[tempi].subCount = subcount.toString()
+        }
+
+      }
+      data[tempi].isbreak = true
+
+
+      index1 = tempi + 1
+      for (let index1 = tempi + 1; index1 < data.length; index1++) {
+        for (let index2 = index1 + 1; index2 < data.length; index2++) {
+
+          if ((data[index1].riro_data[0] != null ? (data[index1].riro_data[0].rack_process == null) : false) && (data[index1].riro_data[0] != null ? (data[index1].riro_data[0].rack_process == 'rack_out') : false)) {
+            var temp = data[index1]
+            data[index1] = data[index2]
+            data[index2] = temp
+          }
+          
+            if (((!(data[index1].exception_status)) && data[index2].exception_status)) {
+  
+              var temp = data[index1]
+              data[index1] = data[index2]
+              data[index2] = temp
+            }
+  
+            if ((!data[index1].live_status && data[index2].live_status)) {
+  
+              var temp = data[index1]
+              data[index1] = data[index2]
+              data[index2] = temp
+            // }
+          }
+  
+        }
+      }
+      index1 = tempi + 1
+       }
+console.log(data)
+
+    return data
+  }
+
+
+  // ShowData() {
+  //   var request: any
+  //   request = this.server.GetJobSheetDataByfilter(this.ipSelected ? this.ipSelected : '', this.selectedDep ? this.selectedDep : '', this.panelSelected ? this.panelSelected : '', this.jobTypeSelected ? this.jobTypeSelected : '').subscribe((response: any) => {
+  //     //table.classList.remove('loader')
+  //     if (!this.isFilter) {
+  //       if (response.success) {
+
+  //         if (!this.isFilter) {
+  //           this.total = of(response.message.length)
+  //           this.CheckViolation(response.message)
+  //           //  this.table!=null? this.table.classList.remove('loading'):''
+  //           this.tempData = response.message
+  //           this.tempData = this.ModifyData(this.tempData)
+  //           this.tempData = this.SortLivewise(this.tempData)
+  //           this.sliceData()
+  //         }
+  //       }
+  //       else {
+  //         this.table != null ? this.table.classList.remove('loading') : ''
+
+  //         this.total = of(0)
+  //         //this.jobsheetData = of(response.message)
+  //         this.tempData = []
+  //         this.sliceData()
+  //       }
+
+  //     }
+  //   },
+  //     (Err: any) => {
+
+  //     }
+  //   )
+
+  //   this.httprequests.length > 4 ? (this.httprequests.push(request)) : ''
+
+
+  // }
+
+  ModifyData(data: any) {
+
+    data.forEach((panel: any) => {
+
+      let temp: any = {}
+      let temp2: any = {}
+      if(panel.riro_data.length>0){
+      if (panel.riro_data.length == 1) {
+        if (panel.riro_data[0].rack_process == 'rack_in') {
+          temp = panel.riro_data[0]
+          panel.riro_data[0] = null
+          panel.riro_data[1] = temp;
+        }
+        else if (panel.riro_data[0].rack_process == 'not_recognised') {
+          temp = panel.riro_data[0]
+          panel.riro_data[0] = null
+          panel.riro_data[1] = null
+          panel.riro_data[2] = temp;
+        }
+        else {
+          panel.riro_data[1] = null
+          panel.riro_data[2] = null
+        }
+      }
+
+      else {
+        if (panel.riro_data[0].rack_process == 'rack_in' && panel.riro_data[1].rack_process == 'rack_out') {
+          temp = panel.riro_data[0]
+          panel.riro_data[0] = panel.riro_data[1]
+          panel.riro_data[1] = temp;
+          panel.riro_data[2] = null
+        }
+        else if (panel.riro_data[0].rack_process == 'rack_in' && panel.riro_data[1].rack_process == 'not_recognised') {
+          temp = panel.riro_data[0]
+          temp2 = panel.riro_data[1]
+          panel.riro_data[0] = {}
+          panel.riro_data[1] = temp
+          panel.riro_data[2] = temp2
+        }
+        else if (panel.riro_data[1].rack_process == 'rack_in' && panel.riro_data[0].rack_process == 'not_recognised') {
+          temp = panel.riro_data[0]
+          temp2 = panel.riro_data[1]
+          panel.riro_data[0] = null
+          panel.riro_data[1] = temp2
+          panel.riro_data[2] = temp
+          
+        }
+        else if (panel.riro_data[0].rack_process == 'not_recognised' && panel.riro_data[1].rack_process == 'rack_out') {
+          temp = panel.riro_data[0]
+          temp2 = panel.riro_data[1]
+          panel.riro_data[0] = temp2
+          panel.riro_data[1] = null
+          panel.riro_data[2] = temp
+         
+        }
+        else if (panel.riro_data[1].rack_process == 'not_recognised' && panel.riro_data[0].rack_process == 'rack_out') {
+
+          temp2 = panel.riro_data[1]
+
+          panel.riro_data[1] = null
+          panel.riro_data[2] = temp2
+        }
+        else {
+          panel.riro_data[2] = null
+        }
+      }
+      }
+  });
+
+    return data;
+     }
+
+     RemarkModal(modal: any, data: any, field: any) {
+     
+      
+      this.editField = field
+      this.selectedEditIndex = data.riro_key_id
+      console.log(this.selectedEditIndex,'selected edit ')
+       this.modalService.open(modal, { backdrop: 'static' ,centered:true})
+    }
+    
+
+    SaveRemark() {
+      var index = this.tempData.findIndex((data: any) => {
+        return data.riro_key_id == this.selectedEditIndex
+      })
+      var data1: any = {
+        riro_key_id: this.selectedEditIndex,
+  
+      }
+      data1[this.editField] = this.remarkControl.value
+      this.server.EditRiroJob(data1).subscribe((response: any) => {
+  
+        if (response.success) {
+          this.server.notification(response.message)
+          this.getJobsheetData()
+          this.GetJobsheetStatus()
+          this.modalService.dismissAll()
+        }
+        else {
+          this.server.notification(response.message, 'Retry')
+        }
+      },
+        Err => {
+          this.server.notification('Error while updating', 'Retry')
+        })
+  
+    }
+
+    imageCarousal(viol: any) {
+      this.Images = [];
+    
+      if (Array.isArray(viol.riro_image.After)) {
+        viol.riro_image.After.forEach((imgname: string, index: number) => {
+          this.Images[index] = {
+            src: this.API + '/Unplannedriroimage/' + imgname,
+            thumb: this.API + '/Unplannedriroimage/' + imgname,
+            caption: imgname,
+          };
+        });
+      } else if (typeof viol.riro_image.After === 'string') {
+        // If viol.riro_image.After is a string, assume it's a single image
+        this.Images[0] = {
+          src: this.API + '/Unplannedriroimage/' + viol.riro_image.After,
+          thumb: this.API + '/Unplannedriroimage/' + viol.riro_image.After,
+          caption: viol.riro_image.After,
+        };
+      } else {
+        console.error('Invalid format for viol.riro_image.After');
+        // Handle other cases or throw an error if needed
+        return;
+      }
+    
+      this.open(0);
+    }
+    
+
+    imageCarousal2(viol: any) {
+      this.Images = [];
+    
+      if (Array.isArray(viol.Before)) {
+        viol.Before.forEach((Before: string, index: number) => {
+          this.Images[index] = {
+            src: this.API + '/Unplannedriroimage/' + Before,
+            thumb: this.API + '/Unplannedriroimage/' + Before,
+            caption: Before,
+          };
+        });
+      } else if (typeof viol.Before === 'string') {
+        // If viol.Before is a string, assume it's a single image
+        this.Images[0] = {
+          src: this.API + '/Unplannedriroimage/' + viol.Before,
+          thumb: this.API + '/Unplannedriroimage/' + viol.Before,
+          caption: viol.Before,
+        };
+      } else {
+        console.error('Invalid format for viol.Before');
+        // Handle other cases or throw an error if needed
+        return;
+      }
+    
+      this.open(0);
+    }
+    
+    open(index: number): void {
+      this._lightbox.open(this.Images, index);
+    }
+    close(): void {
+      this._lightbox.close();
+    }
+
+
+    // selectEditField(modal: any, data: any, field: string) {
+    //   this.editField = field
+    //   this.selectedRiro = data
+    //   this.selectedEditIndex = data.riro_key_id
+      
+    //   if (this.editField == 'five_meter') {
+    //     data[this.editField]
+  
+    //     this.tempField.setValue(data[this.editField].violation ? data.this.editField.violation ? 'Yes' : 'No' : 'No')
+    //   } else {
+    //     this.tempField.setValue(data[this.editField])
+    //   }
+  
+    //   this.modalService.open(modal, { backdrop: 'static',centered:true })
+  
+    // }
+
+    selectEditField(modal: any, data: any, field: string) {
+      console.log(field)
+      this.editField = field
+      this.selectedRiro=data
+      this.selectedEditIndex = data.riro_key_id
+      var index = this.tempData.findIndex((data: any) => {
+        return data.riro_key_id== this.selectedEditIndex
+      })
+  
+     
+          if (this.editField == 'ip_address' || this.editField == 'panel_id') {
+  
+            this.tempField.setValue(this.tempData[index].data[this.editField])
+          }
+          else if (this.editField == 'panel_id') {
+            this.tempField.setValue(this.tempData[index].data.panel_data[this.editField])
+          }
+          else if (this.editField == 'five_meter') {
+  
+            this.tempField.setValue(this.tempData[index][this.editField].violation?this.tempData[index].this.editField.violation?'Yes':'No':'No')
+          }
+          else {
+            this.tempField.setValue(this.tempData[index][this.editField])
+      
+          }
+          this.modalService.open(modal, { backdrop: 'static' })
+        
+  
+     
+  
+    }
+    SaveFieldChanges() {
+      var editContainer = document.getElementById('editField')
+      editContainer.classList.add('loading')
+      if(this.editField!='tagname'){
+      var index = this.tempData.findIndex((data: any) => {
+        return data.riro_key_id == this.selectedEditIndex
+      })
+    }
+  
+      var temp = this.tempData[index]
+      if (this.editField === 'five_meter') {
+        this.tempField.setValue(this.tempField.value === 'Yes' ? true : false)
+      }
+      var field = this.editField
+      var data2: any = {
+        riro_key_id: this.selectedEditIndex,
+  
+      }
+  
+      data2[this.editField] = this.tempField.value
+      this.server.EditRiroJob(data2).subscribe((response: any) => {
+        editContainer.classList.remove('loading')
+  
+        if (response.success) {
+          this.server.notification(response.message)
+          this.getJobsheetData()
+          this.GetJobsheetStatus()
+          this.modalService.dismissAll()
+        }
+        else {
+          this.server.notification(response.message, 'Retry')
+        }
+      }, Err => {
+        editContainer.classList.remove('loading')
+  
+        this.server.notification('Error while updating', 'Retry')
+      })
+  
+    }
+
+    VerifyTrueViol(event: any, viol: any) {
+      this.editViol = viol
+      this.server.VerifyViolation(this.editViol._id.$oid, true).subscribe((response: any) => {
+        this.server.notification(response.message)
+        if (response.success) {
+          this.modalService.dismissAll()
+          // if (this.isdatewise)
+          //   this.Submit()
+        }
+        if (!this.isdatewise) {
+          this.server.GetunallocatedJobs()
+        }
+      }, (Err: any) => {
+        this.server.notification("Error while the  Process", 'Retry')
+      })
+    }
+
+    VerifyFalseViol(event: any, viol: any) {
+      this.editViol = viol
+      this.server.VerifyViolation(this.editViol._id.$oid, false).subscribe((response: any) => {
+        this.server.notification(response.message)
+        if (response.success) {
+          this.modalService.dismissAll()
+          // if (this.isdatewise)
+          //   this.Submit()
+        }
+        if (!this.isdatewise) {
+          this.server.GetunallocatedJobs()
+        }
+      }, (Err: any) => {
+        this.server.notification("Error while the  Process", 'Retry')
+      })
+    }
+
+
+    // createExcel() {
+    //   const url = 'http://localhost:5000/UnplannedJobscreate_excel';
+  
+    //   this.http.get(url, { responseType: 'arraybuffer' })
+    //     .subscribe((data: ArrayBuffer) => {
+    //       this.saveAsExcel(data);
+    //     });
+    // }
+  
+    // saveAsExcel(buffer: ArrayBuffer) {
+    //   const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+    //   const url = window.URL.createObjectURL(blob);
+  
+    //   // Create a link element and click it to trigger the download
+    //   const link = document.createElement('a');
+    //   link.href = url;
+    //   link.download = 'unplanned_jobs.xlsx';
+    //   link.click();
+  
+    //   // Cleanup
+    //   window.URL.revokeObjectURL(url);
+    // }
+
+
+    // createExcel() {
+    //   const createExcelUrl = this.IP+'/UnplannedJobscreate_excel';
+    //  console.log('create excel')
+    //   this.http.get(createExcelUrl)
+    //     .subscribe((data: any) => {
+    //       console.log('Excel created successfully:', data);
+    //       this.downloadExcel();
+    //     });
+    // }
+  
+    // downloadExcel() {
+    //   const downloadExcelUrl = this.IP+'/Unplannedexcel_download';
+  
+    //   this.http.get(downloadExcelUrl, { responseType: 'blob' })
+    //     .subscribe((blob: Blob) => {
+    //       saveAs(blob, 'unplanned_jobs.xlsx');
+    //     });
+    // }
+
+
+
+    // deleteRow(riroKeyId: number) {
+    //   const deleteApiUrl = `http://localhost:5000/delete_unplannedRiro/${riroKeyId}`;
+  
+    //   this.http.delete(deleteApiUrl)
+    //     .subscribe(() => {
+    //       console.log(`Row with riro_key_id ${riroKeyId} deleted successfully.`);
+    //       this.server.GetunallocatedJobs(); // Refresh the table after deletion
+    //     });
+    // }
+
+  //   deleteRow(riroKeyId: any) {
+  //     const deleteApiUrl = this.IP+'/delete_unplannedRiro/'+riroKeyId;
+  
+  //     // Include riroKeyId as a parameter in the URL
+  //     this.http.get(deleteApiUrl, { params: { riro_key_id: riroKeyId.toString() } })
+  //       .subscribe((response: any) => {
+  //         console.log(`Row with riro_key_id ${riroKeyId} deleted successfully.`);
+  //         this.server.GetunallocatedJobs(); // Refresh the table after deletion
+  //       });
+
+  //   //     if (this.server.notification && Array.isArray(this.server.notification)) {
+  //   //       this.notifications = response.notifications;
+  //   //     }
+  //   // }
+
+  //   // Display notifications from the API
+  //   if (response.notifications && response.notifications.length > 0) {
+  //     response.notifications.forEach((notification: string) => {
+  //       this.notificationService.notification(notification, 'success');
+  //     });
+  //   }
+  // }
+
+
+  deleteRow(riroKeyId: number) {
+    const deleteApiUrl = this.IP+'/delete_unplannedRiro/'+riroKeyId;
+
+    // Include riroKeyId as a parameter in the URL
+    this.http.get(deleteApiUrl, { params: { riro_key_id: riroKeyId.toString() } })
+      .subscribe((response: any) => {
+        console.log(`Row with riro_key_id ${riroKeyId} deleted successfully.`);
+
+        // Display notifications from the API
+        if (response.message && response.message.length > 0) {
+          
+            this.server.notification(response.message);
+          
+        }
+
+        this.server.GetunallocatedJobs(); // Refresh the table after deletion
+      });
+  }
+    
+  RirDeleteModal(modal:any,id:any){
+    console.log(id)
+    this.selectedEditIndex=id
+
+    this.modalService.open(modal)
+
+  }
+  RiroDelete(){
+    var index = this.tempData.findIndex((data: any) => {
+      return data.riro_key_id === this.selectedEditIndex
+    })
+    console.log(index)
+    var tempData = this.tempData[index]
+    // var data = {
+    //   panel_no: tempData.data.panel_data.panel_id,
+    //   imagename: tempData.data.image_name,
+    //   id: tempData._id.$oid
+    // }
+    //need to integrate delete job api if the response true need to splice that from the data
+    this.server.DeleteUnallocated(this.selectedEditIndex).subscribe((response: any) => {
+      this.server.notification(response.message)
+      if (response.success) {
+       this.RefreshData();
+
+      }
+      this.modalService.dismissAll()
+    },
+      Err => {
+        this.server.notification('Error while deleting job', 'Retry')
+      })
+
+  }
+  GetunallocatedJobs(){
+    this.server.GetunallocatedJobs();
+  }
+
+
+  createExcel() {
+    const createExcelUrl = this.IP+'/UnplannedJobscreate_excel';
+
+    // Make a GET request to create the Excel file
+    this.http.get(createExcelUrl, { responseType: 'blob' })
+      .subscribe((blob: Blob) => {
+        // Create a Blob object and initiate the download
+        const link = document.createElement('a');
+        link.href = window.URL.createObjectURL(blob);
+        link.download = 'unplanned_jobs.xlsx';
+        link.click();
+        this.downloadExcel()
+      });
+  }
+
+  downloadExcel() {
+    const downloadExcelUrl = this.IP+'/Unplannedexcel_download';
+
+    // Make a GET request to download the Excel file
+    this.http.get(downloadExcelUrl, { responseType: 'blob' })
+      .subscribe((blob: Blob) => {
+        // Create a Blob object and initiate the download
+        const link = document.createElement('a');
+        link.href = window.URL.createObjectURL(blob);
+        link.download = 'unplanned_jobs.xlsx';
+        link.click();
+      });
+  }
+
+  EditRack(event: any) {
+    console.log(event)
+    this.editedRackProc = event.target.value
+  }
+
+
+  SaveRackChanges() {
+    var index = this.tempData.findIndex((data: any) => {
+      return data.riro_key_id == this.selectedEditIndex
+    })
+    var field=this.editField
+    console.log(index)
+var data1:any={
+  riro_key_id:this.selectedEditIndex,
+
+}
+data1[this.editField]= this.editedRackProc
+console.log(data1)
+this.server.EditRiroJob(data1).subscribe((response:any)=>{
+  if(response.success){
+    console.log(response)
+    this.tempData[index].rack_process = this.editedRackProc
+   
+this.getRiroHistory()   
+ this.modalService.dismissAll()
+  }
+  else{
+    this.server.notification(response.message,'Retry')
+  }
+  },
+  Err=>{
+    this.server.notification('Error while updating','Retry')
+  })
+  }
+  // getRiroHistory(){
+  //   var container=document.getElementById('dataTable')
+  //   container.classList.add('loading')
+  //   this.server.GetRiroHistoryByPanel(this.data).subscribe((response:any)=>{
+  //     console.log(response)
+  //     container.classList.remove('loading')
+
+  //     if(response.success){
+  //       this.tempData=response.message.riro_data
+  //       this.panelData=of(response.message.riro_data)
+  //       this.sliceData()
+  //     }
+  //     else{
+  //       this.server.notification(response.message,'Retry')
+  //     }
+  //   },Err=>{
+  //     container.classList.remove('loading')
+
+  //     this.server.notification('Error while fetching the data')
+  //   })
+  // }
+
+
+  getRiroHistory(){
+    var container=document.getElementById('dataTable')
+    container.classList.add('loading')
+    this.server.GetRiroHistoryByPanel(this.data).subscribe((response:any)=>{
+      console.log(response)
+      container.classList.remove('loading')
+
+      if(response.success){
+        this.tempData=response.message.riro_data
+        this.panelData=of(response.message.riro_data)
+        this.sliceData()
+      }
+      else{
+        this.server.notification(response.message,'Retry')
+      }
+    },Err=>{
+      container.classList.remove('loading')
+
+      this.server.notification('Error while fetching the data')
+    })
+  }
+ ngOnDestroy(): void {
+   this.modalService.dismissAll()
+ }
+}
