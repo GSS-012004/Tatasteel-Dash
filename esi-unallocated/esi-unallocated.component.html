@@ -41,12 +41,12 @@
                   <!-- <th scope="col" rowspan="2" >Data upload status</th> -->
   
                   <!-- <th  rowspan="2" scope="col">ID No.</th> -->
-                  <th  rowspan="2" >IP Address
+                  <th scope="col"  rowspan="2" >IP Address
                   </th>
-                  <th scope="col"  rowspan="2" >
-                    IRRD In Time
+                  <th  class="mt-1" scope="col"  rowspan="2" >
+                    IRRD:InTime
                   </th>
-                  <th scope="col" rowspan="2" >IRRD Out Time
+                  <th  class="mt-1" scope="col"  rowspan="2" >IRRD:OutTime
                   </th>
                   <!-- <th scope="col"rowspan="2" >Jobsheet Name</th>
                   <th rowspan="2" scope="col">Jobsheet Time</th> -->
@@ -89,9 +89,11 @@
       
                       <!-- <td >{{data.id_no}}</td> -->
                       <td >{{data.ip_address}}</td>
-                      <td >
-                        {{data.irrd_in_time|dateFormater}}</td>
-    <td  >{{data.irrd_out_time |dateFormater}} </td>
+                      <td   >
+                        {{data.irrd_in_time  |dateFormater}}</td>
+    <td   >{{data.irrd_out_time   |dateFormater}} </td>
+
+    
     <!-- <td>{{data.job_sheet_name}} </td>
     
     <td>{{data.job_sheet_time}} </td> -->
@@ -100,7 +102,7 @@
     
     <!-- <td>{{data.plant}} </td> -->
     
-    <td   class="success-badge">
+    <td   class='success-badge'>
       {{data.rack_method}} </td>
       
 
@@ -135,13 +137,13 @@
         <div *ngIf="!data.violation_verificaton_status;else verified" class="mt-1">
             <div class="form-check form-check-inline" id="right">
                 <input type="radio" [value]=0 (change)="VerifyTrueViol($event,data)"
-                    [defaultValue]=true [id]="'yes'+data.SNo" class="form-check-input">
-                <label [for]="'yes'+data.SNo" class="form-check-label text-success">Yes </label>
+                    [defaultValue]=true [id]="'yes'+data.id_no" class="form-check-input">
+                <label [for]="'yes'+data.id_no" class="form-check-label text-success">Yes</label><br>
             </div>
             <div class="form-check form-check-inline" id="wrong">
                 <input type="radio" [value]=false (change)="VerifyFalseViol($event,data)"
-                    [defaultValue]=false [id]="'no'+data.SNo" class="form-check-input">
-                <label [for]="'no'+data.SNo" class="form-check-label text-danger">No </label>
+                    [defaultValue]=false [id]="'no'+data.id_no" class="form-check-input">
+                <label [for]="'no'+data.id_no" class="form-check-label text-danger">No </label>
             </div>
         </div>
         <ng-template #verified>
@@ -150,17 +152,10 @@
     </td>
 
     <!-- <td>{{data.rack_process}} </td> -->
-    <!-- <td>
-      <form>
-        <input type="radio" id=""name="process" value="">
-        <label for=""></label>
-        <input type="radio" id="" name="" value="">
-        <label for=""></label>
-        <input type="radio" id="" name="" value="">
-        <label for=""></label>
-      </form>
 
-    </td> -->
+
+
+
     <td scope="col" id="success">
       <!-- <button *ngIf="panel" class="btn default btn default-tertiary">
                               <a [routerLink]="['/app/jobsheetViolation']"
@@ -204,6 +199,74 @@
           </div>
   
       </td>
+      <td style="pointer-events:none" id="success">
+          <div class="" *ngIf="data.rack_process==='not_recognised'">
+             &nbsp; <div
+                  class=""><b> Not Recognized</b>
+          </div>
+
+
+          </div>
+  
+      </td>
+  </div>
+  <ng-template #elsep>---</ng-template>
+</tr>
+</td>
+    <!-- <td>
+      <form>
+        <input type="radio" id=""name="process" value="">
+        <label for=""></label>
+        <input type="radio" id="" name="" value="">
+        <label for=""></label>
+        <input type="radio" id="" name="" value="">
+        <label for=""></label>
+      </form>
+
+    </td> -->
+    <!-- <td scope="col" id="success"> -->
+      <!-- <button *ngIf="panel" class="btn default btn default-tertiary">
+                              <a [routerLink]="['/app/jobsheetViolation']"
+                                  [queryParams]="{ id:data['_id'].$oid,type:data['plant'],image_name:data.image_name}"
+                                  target="_blank">
+                                  Rack in</a>
+                          </button> -->
+<!-- <tr>
+  <div class="" (click)="RemarkModal(editRack,data,'rack_process')"
+      *ngIf="data.rack_process!=null;else elsep">
+      <td style="pointer-events:none">
+
+          <div class="" *ngIf="data.rack_process==='rack_in'">
+              <input type="checkbox" [checked]="data.rack_process==='rack_in'"
+                  class="form-check-input" name="RackIn" [id]="'rackIn'+i">&nbsp;<label
+                  class="form-check-label" [for]="'rackIn'+i">Rack
+                  In</label>
+              <div class="mt-2">
+
+              </div>
+          </div>
+      </td>
+      <td style="pointer-events:none" id="success">
+          <div class="" *ngIf="data.rack_process==='rack_out'">
+              <input type="checkbox" [checked]="data.rack_process==='rack_out'"
+                  class="form-check-input" name="RackIn" [id]="'rackOut'+i">&nbsp; <label
+                  class="form-check-label" [for]="'rackOut'+i">Rack
+                  Out</label>
+
+
+          </div>
+      </td>
+      <td style="pointer-events:none" id="success">
+          <div class="" *ngIf="data.rack_process==='maintenance'">
+              <input type="checkbox" [checked]="data.rack_process==='maintenance'"
+                  class="form-check-input" name="RackIn" [id]="'maintenance'+i">&nbsp; <label
+                  class="form-check-label" [for]="'maintenance'+i">Maintenance
+              </label>
+
+
+          </div>
+  
+      </td> -->
       <!-- <td style="pointer-events:none" id="success">
           <div class="" *ngIf="data.rack_process==='not_recognised'">
              &nbsp; <div
@@ -214,17 +277,29 @@
           </div>
   
       </td> -->
-  </div>
+  <!-- </div>
   <ng-template #elsep>---</ng-template>
 </tr>
-</td>
+</td> -->
 
     
     
     
-    <td><button style="width: 7rem;" class="btn btn-sm default-outline" (click)="RemarkModal(addRemark,data,'remarks')">
+    <!-- <td><button style="width: 7rem;" class="btn btn-sm default-outline" (click)="RemarkModal(addRemark,data,'remarks')">
         <fa-icon icon="plus" class="me-2"></fa-icon> Remark
-      </button>{{data.remarks}} </td>
+      </button>{{data.remarks}} </td> -->
+
+      <td scope="col" >
+        <div *ngIf="data.riro_key_id">
+          <button style="width: 6rem;" class="btn btn-sm default"
+                (click)="data.remarks==null?RemarkModal(addRemark,data,'remarks'):EditRemark(addRemark,data,'remarks')">
+                <fa-icon *ngIf="!data.remarks" icon="plus" class="me-2"></fa-icon> Remark
+            </button>
+            </div>
+          </td>
+
+
+
 
     <td>
         <button class="btn"(click)="RirDeleteModal(deleteField,data.riro_key_id)">
@@ -289,7 +364,7 @@
     </div>
   </ng-template> --> 
 
-  <ng-template let-modal #addRemark>
+  <!-- <ng-template let-modal #addRemark>
     <div class="modal-body">
       <div class="modal-confirm">
         <div class="modal-content">
@@ -312,8 +387,8 @@
         </div>
       </div>
     </div>
-  </ng-template>
-  <ng-template let-modal #EditField>
+  </ng-template> -->
+  <!-- <ng-template let-modal #EditField>
     <div style="font-size: 25px;" class="modal-header d-flex align-items-center justify-content-between">
       <h4 class="modal-title w-50">Edit the {{editField}}</h4>
       <button #closeBtn class="btn btn-sm m-2 p-2" style="background-color: none !important;" (click)="modal.dismiss('Cross click')">&times;</button>
@@ -418,8 +493,8 @@
         </div>
       </div>
     </div>
-  </ng-template>
-  <ng-template #elsep>---</ng-template>
+  </ng-template> -->
+  <ng-template style="text-align:center;" #elsep>---</ng-template>
   <ng-template #noHT>NA</ng-template>
   <ng-template let-modal #deleteField>
     <div class="modal-body">
@@ -444,7 +519,7 @@
         </div>
     </div>
 </ng-template>
-<ng-template let-modal #editRack>
+<!-- <ng-template let-modal #editRack>
   <div class="modal-header">
                  
        <h4 class="modal-title w-60">Rack Process</h4>
@@ -454,7 +529,7 @@
       <div class="modal-confirm">
           <div class="modal-content">
 
-              <div class="modal-body">
+              <div class="modal-body"> -->
                   <!-- <div class="row mb-5"> -->
                       <!-- if two images of rack will come il iwll enable this -->
                       <!-- <div class="col-6">
@@ -486,6 +561,145 @@
                           </div>
                       </div>
                   </div> -->
+                  <!-- <form action="">
+                      <div class="form-check form-check-inline" id="custome">
+                          <input type="radio" [formControl]="rackProcess" value="rack_in" (change)="EditRack($event)"
+                              defaultValue="rack_in" id="rackin" class="form-check-input">
+                          <label for="rackin" class="form-check-label text-muted">Rack in</label>
+                      </div>
+                      <div class="form-check form-check-inline" id="custome">
+                          <input type="radio" [formControl]="rackProcess" value="rack_out" (change)="EditRack($event)"
+                              defaultValue="rack_out" id="rackout" class="form-check-input">
+                          <label for="rackout" class="form-check-label text-muted">Rack Out </label>
+                      </div>
+                      <div class="form-check form-check-inline" id="custome">
+                          <input type="radio" [formControl]="rackProcess" value="maintenance"
+                              (change)="EditRack($event)" defaultValue="maintenance" id="maintenance"
+                              class="form-check-input">
+                          <label for="maintenance" class="form-check-label text-muted">Maintenance</label>
+                      </div> -->
+                      <!-- <div class="form-check form-check-inline" id="custome">
+                          <input type="radio" [formControl]="rackProcess" value="not_recognised" (change)="EditRack($event)"
+                            defaultValue="not_recognised" id="notRecognised" class="form-check-input">
+                          <label for="notRecognised" class="form-check-label text-muted">Not Recognised</label>
+                        </div> -->
+                     
+                  <!-- </form> -->
+                  <!-- <p>Do you really want to delete these Camera? This process cannot be undone.</p> -->
+              <!-- </div>
+              <div class="modal-footer justify-content-center">
+                  <button type="button" class="btn btn-secondary" (click)="modal.close('Cross click')"
+                      data-dismiss="modal">Cancel</button>
+                  <button type="button" class="btn default" (click)="SaveRackChanges()">Save</button>
+              </div>
+          </div>
+      </div>
+  </div>
+</ng-template> -->
+
+
+
+
+
+<ng-template let-modal #addRemark>
+  <div class="modal-body">
+      <div class="modal-confirm">
+          <div class="modal-content">
+              <div class="modal-header flex-column">
+                  <!-- <div class="icon-box">
+              <i class="material-icons">&#xE5CD;</i>
+            </div> -->
+                  <h4 class="modal-title w-100">Add the remark</h4>
+                  <!-- <button type="button" class="btn"  aria-hidden="true">&times;</button> -->
+              </div>
+              <div class="modal-body">
+                  <form action="">
+                      <textarea rows="5" [formControl]="remarkControl" class="form-control">
+
+                </textarea>
+                  </form>
+                  <!-- <p>Do you really want to delete these Camera? This process cannot be undone.</p> -->
+              </div>
+              <div class="modal-footer justify-content-center">
+                  <button type="button" class="btn btn-secondary" (click)="modal.close('Cross click')"
+                      data-dismiss="modal">Cancel</button>
+                  <button type="button" [disabled]="!remarkControl.valid" class="btn default"
+                      (click)="SaveRemark()">Save</button>
+              </div>
+          </div>
+      </div>
+  </div>
+</ng-template><ng-template let-modal #addRemark>
+  <div class="modal-body">
+      <div class="modal-confirm">
+          <div class="modal-content">
+              <div class="modal-header flex-column">
+                  <!-- <div class="icon-box">
+              <i class="material-icons">&#xE5CD;</i>
+            </div> -->
+                  <h4 class="modal-title w-100">Add the remark</h4>
+                  <!-- <button type="button" class="btn"  aria-hidden="true">&times;</button> -->
+              </div>
+              <div class="modal-body">
+                  <form action="">
+                      <textarea rows="5" [formControl]="remarkControl" class="form-control">
+
+                </textarea>
+                  </form>
+                  <!-- <p>Do you really want to delete these Camera? This process cannot be undone.</p> -->
+              </div>
+              <div class="modal-footer justify-content-center">
+                  <button type="button" class="btn btn-secondary" (click)="modal.close('Cross click')"
+                      data-dismiss="modal">Cancel</button>
+                  <button type="button" [disabled]="!remarkControl.valid" class="btn default"
+                      (click)="SaveRemark()">Save</button>
+              </div>
+          </div>
+      </div>
+  </div>
+</ng-template>
+<ng-template let-modal #editRack>
+  <div class="modal-header">
+                 
+       <h4 class="modal-title w-60">Rack Process</h4>
+       <button type="button" class="btn w-30" (click)="modal.dismiss('Cross click')"  aria-hidden="true">&times;</button>
+   </div>
+  <div class="modal-body">
+      <div class="modal-confirm">
+          <div class="modal-content">
+
+              <div class="modal-body">
+                  <div class="row mb-5">
+                      <!-- if two images of rack will come il iwll enable this -->
+                      <!-- <div class="col-6">
+                          <div class="card">
+                              <lib-ngx-image-zoom class="card-img-top" [enableScrollZoom]=true
+                                  thumbImage="http://192.168.1.72:5000/image/PPE_type1_TSK_2_4045_20221202_122829.jpg"
+                                  fullImage="http://192.168.1.72:5000/image/PPE_type1_TSK_2_4045_20221202_122829.jpg">
+                              </lib-ngx-image-zoom>
+                              <div class="card-body">
+                                  <p><span class="text-muted me-2">Rack Process:</span>Rack In</p>
+                              </div>
+                          </div>
+                      </div> -->
+                      <div class="col-12">
+                          <div class="card">
+                              <div class="card-img-top">
+                                  <lib-ngx-image-zoom class="card-img-top" [enableScrollZoom]=true
+                                      [thumbImage]="IP+'/riro_image/'+ selectedRiro.riro_merged_image"
+                                      [fullImage]="IP+'/riro_image/'+ selectedRiro.riro_merged_image">
+                                  </lib-ngx-image-zoom>
+                              </div>
+                              <div class="card-body">
+                                  <p class="text-dark"><span class="text-muted me-2">Rack
+                                          Process:</span>{{selectedRiro.rack_process=='rack_in'?'RackIn':selectedRiro.rack_process=='rack_out'?'Rack Out':'No Process'}} </p>
+                                  <p class="text-dark"><span class="text-muted me-2">Time
+                                          :</span><b>{{selectedRiro.irrd_in_time|dateFormater}} -
+                                          {{selectedRiro.irrd_out_time|dateFormater}}</b></p>
+                              </div>
+                          </div>
+                      </div>
+                  </div>
                   <form action="">
                       <div class="form-check form-check-inline" id="custome">
                           <input type="radio" [formControl]="rackProcess" value="rack_in" (change)="EditRack($event)"
@@ -503,11 +717,11 @@
                               class="form-check-input">
                           <label for="maintenance" class="form-check-label text-muted">Maintenance</label>
                       </div>
-                      <!-- <div class="form-check form-check-inline" id="custome">
+                      <div class="form-check form-check-inline" id="custome">
                           <input type="radio" [formControl]="rackProcess" value="not_recognised" (change)="EditRack($event)"
                             defaultValue="not_recognised" id="notRecognised" class="form-check-input">
                           <label for="notRecognised" class="form-check-label text-muted">Not Recognised</label>
-                        </div> -->
+                        </div>
                      
                   </form>
                   <!-- <p>Do you really want to delete these Camera? This process cannot be undone.</p> -->
