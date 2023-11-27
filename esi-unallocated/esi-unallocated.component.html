@@ -9,11 +9,11 @@
 
       <div class="row">
         <div class="col-12 mb-2">
-      <button class="float-end me-2 btn primary" >
+      <button class="float-end me-2 btn primary"(click)="createExcel()" >
         <!-- <span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"
          ></span> -->
 
-        <fa-icon icon="download" (click)="createExcel()"></fa-icon>
+        <fa-icon icon="download" ></fa-icon>
         ESI unallocated
       </button>
 </div>
@@ -210,7 +210,13 @@
   
       </td>
   </div>
-  <ng-template #elsep>---</ng-template>
+  <ng-template #elsep>
+    <button class="" (click)="RemarkModal(editRack,data,'rack_process')"
+      *ngIf="data.rack_process == null;">Edit Rack
+    </button>
+    
+    
+  </ng-template>
 </tr>
 </td>
     <!-- <td>
@@ -683,13 +689,13 @@
                           </div>
                       </div> -->
                       <div class="col-12">
-                          <div class="card">
-                              <div class="card-img-top">
+                          <!-- <div class="card"> -->
+                              <!-- <div class="card-img-top">
                                   <lib-ngx-image-zoom class="card-img-top" [enableScrollZoom]=true
                                       [thumbImage]="IP+'/riro_image/'+ selectedRiro.riro_merged_image"
                                       [fullImage]="IP+'/riro_image/'+ selectedRiro.riro_merged_image">
                                   </lib-ngx-image-zoom>
-                              </div>
+                              </div> -->
                               <div class="card-body">
                                   <p class="text-dark"><span class="text-muted me-2">Rack
                                           Process:</span>{{selectedRiro.rack_process=='rack_in'?'RackIn':selectedRiro.rack_process=='rack_out'?'Rack Out':'No Process'}} </p>
@@ -698,7 +704,7 @@
                                           {{selectedRiro.irrd_out_time|dateFormater}}</b></p>
                               </div>
                           </div>
-                      </div>
+                      <!-- </div> -->
                   </div>
                   <form action="">
                       <div class="form-check form-check-inline" id="custome">
@@ -717,11 +723,11 @@
                               class="form-check-input">
                           <label for="maintenance" class="form-check-label text-muted">Maintenance</label>
                       </div>
-                      <div class="form-check form-check-inline" id="custome">
+                      <!-- <div class="form-check form-check-inline" id="custome">
                           <input type="radio" [formControl]="rackProcess" value="not_recognised" (change)="EditRack($event)"
                             defaultValue="not_recognised" id="notRecognised" class="form-check-input">
                           <label for="notRecognised" class="form-check-label text-muted">Not Recognised</label>
-                        </div>
+                        </div> -->
                      
                   </form>
                   <!-- <p>Do you really want to delete these Camera? This process cannot be undone.</p> -->

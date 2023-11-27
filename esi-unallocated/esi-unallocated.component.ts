@@ -43,6 +43,8 @@ isdatewise: boolean = false
 rackProcess:FormControl= new FormControl('',Validators.required)
 editedRackProc:any
 panelData:Observable< any[]>=of([])
+alertmessage: string = ''
+ExcelRange: number
   
 constructor( private http :HttpClient,
   public server:EsiUnallocatedService,
@@ -51,12 +53,13 @@ constructor( private http :HttpClient,
   private _lightbox: Lightbox,
   private _lightBoxConfig: LightboxConfig,
   private ngZone: NgZone,
-  private snackBar: MatSnackBar) {
+  private snackbar: MatSnackBar) {
   var res=this.loadConfigFile('assets/config.json')
   res=JSON.parse(res)
   this.IP=res.IP
   this.IP_ESI=res.IP_ESI
-  this.API =  server.IP
+  this.API=server.IP
+  this.ExcelRange = 0
 
 }
 
@@ -737,6 +740,156 @@ console.log(data)
 
 
 
+
+
+
+    // createExcel() {
+    //   const createExcelUrl = this.IP + '/UnplannedJobscreate_excel';
+    
+    //   console.log('Create Excel');
+    //   // Make a GET request to create the Excel file
+    //   this.http.get(createExcelUrl)
+    //     .subscribe(
+    //       (data: any) => {
+    //         console.log('Excel created successfully:', data);
+    
+    //         // Extract relevant information from the server response
+    //         const serverResponse = data; // Adjust this based on the actual structure of the response
+    
+    //         // Call the downloadExcel function with the server response
+    //         this.downloadExcel(serverResponse);
+    //       },
+    //       (error) => {
+    //         // Display error message to the user
+    //         this.handleServerError(error);
+    //       }
+    //     );
+    // }
+    
+    // downloadExcel(serverResponse: any) {
+    //   const downloadExcelUrl = this.IP + '/Unplannedexcel_download';
+    
+    //   // Make a GET request to download the Excel file
+    //   this.http.get(downloadExcelUrl, { responseType: 'blob' })
+    //     .subscribe((blob: Blob) => {
+    //       // Use the server response or perform additional actions as needed
+    //       console.log('Download Excel successful');
+    
+    //       // Save the Blob as a file
+    //       saveAs(blob, 'unplanned_jobs.xlsx');
+    
+    //       // Display success message to the user using the server response
+    //       this.handleServerResponse(serverResponse);
+    //     },
+    //     (error) => {
+    //       // Display error message to the user
+    //       this.handleServerError(error);
+    //     });
+    // }
+    
+    // handleServerResponse(response: any) {
+    //   // Display server response to the user
+    //   console.log('Server Response:', response);
+    
+    //   // You can use the response to perform additional actions or display information to the user
+    //   this.notification(response.message, 'Success');
+    // }
+    
+    // handleServerError(error: any) {
+    //   // Assuming server response contains an 'error' property
+    //   const errorMessage = error.error && error.error.error ? error.error.error : 'An error occurred';
+    
+    //   // Display error message to the user
+    //   this.notification(errorMessage, 'Error');
+    //   console.error('Server error', error);
+    // }
+    
+    // notification(message: string, action?: string) {
+    //   // Your notification logic here
+    //   console.log('Notification:', message);
+    // }
+    
+
+
+
+
+    createExcel() {
+      const createExcelUrl = this.IP + '/UnplannedJobscreate_excel';
+  
+      console.log('Create Excel');
+      // Make a GET request to create the Excel file
+      this.http.get(createExcelUrl)
+        .subscribe(
+          (data: any) => {
+            console.log('Excel created successfully:', data);
+  
+            // Display success message for Excel creation
+            // this.notification('Excel file created successfully', 'Success');
+  
+            // Extract relevant information from the server response
+            const serverResponse = data; // Adjust this based on the actual structure of the response
+  
+            // Call the downloadExcel function with the server response
+            this.downloadExcel(serverResponse);
+          },
+          (error) => {
+            // Display error message to the user
+            this.handleServerError(error);
+          }
+        );
+    }
+  
+    downloadExcel(serverResponse: any) {
+      const downloadExcelUrl = this.IP + '/Unplannedexcel_download';
+  
+      // Make a GET request to download the Excel file
+      this.http.get(downloadExcelUrl, { responseType: 'blob' })
+        .subscribe((blob: Blob) => {
+          // Use the server response or perform additional actions as needed
+          console.log('Download Excel successful');
+  
+          // Save the Blob as a file
+          saveAs(blob, 'unplanned_jobs.xlsx');
+  
+          // Display success message for Excel download
+          // this.notification('Excel file downloaded successfully', 'Success');
+  
+          // Display success message to the user using the server response
+          this.handleServerResponse(serverResponse);
+        },
+        (error) => {
+          // Display error message to the user
+          this.handleServerError(error);
+        });
+    }
+  
+    handleServerResponse(response: any) {
+      // Display server response to the user
+      console.log('Server Response:', response);
+  
+      // You can use the response to perform additional actions or display information to the user
+      this.notification(response.message, 'Success');
+    }
+  
+    handleServerError(error: any) {
+      // Assuming server response contains an 'error' property
+      const errorMessage = error.error && error.error.error ? error.error.error : 'An error occurred';
+  
+      // Display error message to the user
+      this.notification(errorMessage, 'Error');
+      console.error('Server error', error);
+    }
+  
+    notification(message: string, action?: string) {
+      this.snackbar.open(message, action ? action : '', {
+        duration: 4000,
+        horizontalPosition: 'center',
+        verticalPosition: 'bottom',
+      });
+    }
+
+
+
     // deleteRow(riroKeyId: number) {
     //   const deleteApiUrl = `http://localhost:5000/delete_unplannedRiro/${riroKeyId}`;
   
@@ -777,34 +930,119 @@ console.log(data)
   }
 
 
-  createExcel() {
-    const createExcelUrl = this.IP+'/UnplannedJobscreate_excel';
+  // createExcel() {
+  //   const createExcelUrl = this.IP+'/UnplannedJobscreate_excel';
 
-    // Make a GET request to create the Excel file
-    this.http.get(createExcelUrl, { responseType: 'blob' })
-      .subscribe((blob: Blob) => {
-        // Create a Blob object and initiate the download
-        const link = document.createElement('a');
-        link.href = window.URL.createObjectURL(blob);
-        link.download = 'unplanned_jobs.xlsx';
-        link.click();
-        this.downloadExcel()
-      });
-  }
+  //   // Make a GET request to create the Excel file
+  //   this.http.get(createExcelUrl, { responseType: 'blob' })
+  //     .subscribe((blob: Blob) => {
+  //       // Create a Blob object and initiate the download
+  //       const link = document.createElement('a');
+  //       link.href = window.URL.createObjectURL(blob);
+  //       link.download = 'unplanned_jobs.xlsx';
+  //       link.click();
+  //       this.downloadExcel()
+  //     });
+  // }
 
-  downloadExcel() {
-    const downloadExcelUrl = this.IP+'/Unplannedexcel_download';
+  // downloadExcel() {
+  //   const downloadExcelUrl = this.IP+'/Unplannedexcel_download';
 
-    // Make a GET request to download the Excel file
-    this.http.get(downloadExcelUrl, { responseType: 'blob' })
-      .subscribe((blob: Blob) => {
-        // Create a Blob object and initiate the download
-        const link = document.createElement('a');
-        link.href = window.URL.createObjectURL(blob);
-        link.download = 'unplanned_jobs.xlsx';
-        link.click();
-      });
-  }
+  //   // Make a GET request to download the Excel file
+  //   this.http.get(downloadExcelUrl, { responseType: 'blob' })
+  //     .subscribe((blob: Blob) => {
+  //       // Create a Blob object and initiate the download
+  //       const link = document.createElement('a');
+  //       link.href = window.URL.createObjectURL(blob);
+  //       link.download = 'unplanned_jobs.xlsx';
+  //       link.click();
+  //     });
+  // }
+
+
+
+  // createExcel() {
+    
+    
+  //   const createExcelUrl = this.API+'/UnplannedJobscreate_excel';
+   
+  //   http://localhost:5000/UnplannedJobscreate_excel
+  
+  //   // Make a GET request to create the Excel file
+  //   this.http.get(createExcelUrl, { responseType: 'blob' })
+  //     .subscribe(
+  //       (blob: Blob) => {
+  //         // Create a Blob object and initiate the download
+  //         const link = document.createElement('a');
+  //         link.href = window.URL.createObjectURL(blob);
+  //         link.download = 'unplanned_jobs.xlsx';
+  //         link.click();
+  
+  //         // Display server response to the user
+  //         this.handleServerResponse(blob);
+  //       },
+  //       (error) => {
+  //         // Display error message to the user
+  //         this.handleServerError(error);
+  //       }
+  //     );
+  //     this.downloadExcel()
+  // }
+  
+  // downloadExcel() {
+  //   const downloadExcelUrl = this.API+'/Unplannedexcel_download';
+  
+  //   // Make a GET request to download the Excel file
+  //   this.http.get(downloadExcelUrl, { responseType: 'blob' })
+  //     .subscribe(
+  //       (blob: Blob) => {
+  //         // Create a Blob object and initiate the download
+  //         const link = document.createElement('a');
+  //         link.href = window.URL.createObjectURL(blob);
+  //         // link.download = 'unplanned_jobs.xlsx';
+  //         link.click();
+  
+  //         // Display server response to the user
+  //         this.handleServerResponse(blob);
+  //       },
+  //       (error) => {
+  //         // Display error message to the user
+  //         this.handleServerError(error);
+  //       }
+  //     );
+  // }
+  
+  // handleServerResponse(blob: Blob) {
+  //   const reader = new FileReader();
+  //   reader.onload = (event: any) => {
+  //     const response = JSON.parse(event.target.result);
+  
+  //     // Display server response to the user
+  //     this.server.notification(response.message, 'Success');
+  //   };
+  //   reader.readAsText(blob);
+  // }
+  
+  // handleServerError(error: any) {
+  //   // Assuming server response contains an 'error' property
+  //   const errorMessage = error.error && error.error.error ? error.error.error : 'An error occurred';
+  
+  //   // Display error message to the user
+  //   this.server.notification(errorMessage, 'Error');
+  //   this.alertmessage = "Data range should be " + this.ExcelRange + " days"
+  //   this.server.notification(this.alertmessage)
+  //   console.error('Server error', error);
+  // }
+  
+  // notification(message: string, action?: string) {
+  //   this.snackBar.open(message, action ? action : '', {
+  //     duration: 4000,
+  //     panelClass: ['error'],
+  //     horizontalPosition: 'center',
+  //     verticalPosition: 'bottom',
+  //   });
+  // }
+  
 
   // EditRack(event: any) {
   //   console.log(event)
@@ -951,7 +1189,7 @@ getRiroHistory(){
   },Err=>{
     container.classList.remove('loading')
 
-    this.server.notification('Error while fetching the data')
+    this.server.notification('Error while fetching the data','Retry')
   })
 }
 
@@ -1081,6 +1319,6 @@ refreshPage(): void {
   // Reload the page after a delay
   setTimeout(() => {
     location.reload();
-  }, 5000); // Adjust the delay as needed
+  }, 50000); // Adjust the delay as needed
 }
 }
