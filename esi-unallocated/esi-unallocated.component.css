@@ -64,33 +64,10 @@ ngb-pagination ::ng-deep ul > li:not(.active) > a {
   }
 
 
-
-  /* .edited{
-    color: var(--base-orange);
-     color:black  !important;
-    border: 2px dashed #7093e7;
-    border-left: none;
-    border-right: none;
-    background:#ecf3faaf ;
-  } */
- 
-
-/* .headers{
-  background-color: ;
-} */
-  /* table{
-    background: var(--bg-white) !important;
-  } */
-
-
-
   table.table>tbody>tr td {
-   /* display: flex; */
   position: relative;
     text-align: center;
     justify-content:space-between;
-    /* align-items: center; */
-    /* align-content: center; */
     justify-content: center !important;
   }
 
@@ -99,24 +76,19 @@ ngb-pagination ::ng-deep ul > li:not(.active) > a {
     text-align: center;
   }
   .form-control{
-    /* background-color: hsl(210, 27%, 96%); */
-    /* border: 2px solid hsl(213, 59%, 88%); */
-    /* border:hsl(212, 49%, 49%); */
     color: #0d0d0d;
-  
   }
   .container{
     position: relative;
-  background-color:white !important;
-  opacity: 1;
-  padding: 5px;
-  border-radius: 10px;
-  border:1px solid #ccc;
+    background-color:white !important;
+    opacity: 1;
+    padding: 5px;
+    border-radius: 10px;
+    border:1px solid #ccc;
     display: flex;
     height: 2.9em;
     justify-content: space-between;
     align-items: center;
-    /* display: inline; */
     box-shadow:  5px 5px 8px rgba(94,104,121,0.3) !important;
 
 }
@@ -147,13 +119,10 @@ ngb-pagination ::ng-deep ul > li:not(.active) > a {
     -webkit-border-radius: 0 0 10px 10px;
     border-radius: 0 0 10px 10px;
   }
-  /* table.table>tbody>tr:last-child{
-    border: 1px  solid rgba(0, 0, 0, 0) !important;
-  } */
+  
   ngb-pagination ::ng-deep ul > li:not(.active) > a {
     background-color:  #f8f8f8 !important;
     border-radius: 5px !important;
-    /* border: 1px solid var(--label-color) !important; */
     color: var(--label-color) !important;
     box-shadow: none;
   }
@@ -267,12 +236,7 @@ input[type=text],
 input[type=email],
 input[type=password],
 input[type=tel].ng-valid {
-  /* background-color: #f6f6f6; */
-  /* background-color: hsl(210, 27%, 96%);
-  border: 2px solid hsl(213, 59%, 88%); */
-  /* border:hsl(212, 49%, 49%); */
   color: #0d0d0d;
-
 }
 
 
@@ -294,7 +258,6 @@ label input::placeholder {
 }
 
 .or {
-  /* background-color: var(--background-color); */
   color: var(--label-color);
   height: 3em;
   width: 3em;
@@ -304,12 +267,7 @@ label input::placeholder {
   align-items: center;
   border-radius: 50%;
 }
-/* tr{
-  text-align: center !important;
-  display: inline-block;
-  justify-content: center;
-  align-items: center !important;
-} */
+
 
 .custom-popover{
   z-index: 2000 !important;
@@ -395,7 +353,6 @@ ng-scrollbar {
 }
 
 .tableFixHead thead{
-  /* z-index: 1000 !important; */
   height: 10%;
   opacity: 1 !important;
 }
@@ -406,12 +363,12 @@ ng-scrollbar {
   background: #F8F9FA !important;
   border-collapse: separate;
   opacity: 1;
-  /* border:1px #dee2e6 solid !important; */
+ 
 }
 .tableFixHead tbody {
   z-index:700 !important;
   flex-grow: 1;
-  /* max-height: 100% !important; */
+  
   overflow-y: scroll !important;
 }
 .tableFixHead tbody th {
@@ -427,7 +384,6 @@ table {
 th,
 td {
   padding: 8px 16px;
-  /* border: 1px solid #ccc; */
 }
 
 
@@ -441,11 +397,9 @@ td {
 
 .data-card {
   flex-grow: 1;
-  /* flex-wrap:nowrap; */
+ 
   overflow: scroll; /* Hide overflow content for the data-card */
   display: block;
-  /* flex-direction: column; */
-  /* height: auto !important; */
 }
 
 .data-card table {
@@ -470,9 +424,7 @@ td {
 }
 
 
-/* .header .page-header{
 
-} */
 .header .edit{
   visibility: hidden;
 }
@@ -482,3 +434,27 @@ td {
   transition:visibility ease-in 3ms;
   cursor: pointer;
 }
+
+
+
+.card-body {
+  display: flex;
+}
+
+.col-6 {
+  padding: 10px; /* Adjust the padding as needed */
+  box-sizing: border-box; /* Include padding in width calculation */
+}
+
+.img-fluid {
+  max-width: 100%; /* Ensure the images are responsive */
+  height: auto; /* Maintain the aspect ratio */
+}
+
+
+
+
+  
+ 
+  
+ 

@@ -1,5 +1,4 @@
 import { NgModule } from "@angular/core";
-
 import { RouterModule, Routes } from "@angular/router";
 import {  NgbCarouselConfig, NgbCarouselModule, NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { CommonModules } from "src/app/common/common.module";
@@ -16,10 +15,26 @@ import { MessageService } from "primeng/api";
 
 const routes:Routes=[{path:'',component:EsiUnallocatedComponent}];
 @NgModule({
-    declarations:[ EsiUnallocatedComponent],
-    imports:[CommonModules,RouterModule.forChild(routes),NgbModule,ToastModule,BadgeModule,NgbCarouselModule,TreeSelectModule,TabViewModule,TooltipModule],
+    declarations:[EsiUnallocatedComponent],
+    imports:
+    [CommonModules,
+    RouterModule.forChild(routes),
+    NgbModule,
+    ToastModule,
+    BadgeModule,
+    NgbCarouselModule,
+    TreeSelectModule,
+    TabViewModule,
+    TooltipModule],
+
     exports:[RouterModule],
-    providers: [ServerService, DatePipe, AuthGuard,MessageService,NgbCarouselConfig],
+    
+    providers:
+     [ServerService, 
+        DatePipe, 
+        AuthGuard,
+        MessageService,
+        NgbCarouselConfig],
 })
 
 export class esiUnallocatedModule{
