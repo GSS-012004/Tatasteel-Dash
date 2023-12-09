@@ -36,6 +36,7 @@ export class EsiUnallocatedComponent implements OnInit,OnDestroy {
   unplannedInterval:any
   unallocatedJob:any
   @ViewChild('unAllocatedJobAlert') Violation: ElementRef<any>;
+  nodata:any
   
   
 constructor
@@ -99,10 +100,11 @@ ngOnInit(): void{
      this.tempData=[]
      this.total=of(0)
      this.sliceData()
+     this.nodata=response.message
    }
   
   })
-   
+  this.GetUnplannedData()
 }
 
 

@@ -13,38 +13,44 @@
               <fa-icon icon="chevron-left" class="me-1"></fa-icon>Back
             </button>
            <button class="btn default me-2 float-end" (click)="createExcel()">
-             <fa-icon icon="download" ></fa-icon> Excel 
+             <fa-icon icon="download"></fa-icon> Excel 
            </button>
          </div>
       </div>
     </div>
 
     <div class="data-card" id="data-card">
+
       <ng-scrollbar #scrollable style="width:100% !important;" track="all" pointerEventsMethod="scrollbar"
           [autoHeightDisabled]="false" [disabled]="false">
         <div class="" id="dataTable">
-          <table class="table" style="width:100%;overflow: auto;border-spacing: 0px 20px;">
+          <table class="table" style="width:100%;overflow: auto;border-spacing: 0px 20px;"   >
               <thead class="headers" style="background:#F8F9FA !important;">
                 <tr>
-                    <th scope="col" rowspan="2"> SNO</th>
+                    <th scope="col" rowspan="2"> SNo.</th>
                     <th scope="col" rowspan="2"> Job Type</th>
                     <th scope="col" rowspan="2"> Feeder No.</th>
-                    <th scope="col" rowspan="2" > Department </th>
-                    <th scope="col" rowspan="2" > Sub Area  </th>
-                    <th scope="col" rowspan="2" >IP Address</th>
-                    <th  scope="col" rowspan="2">IRRD &nbsp;<br>   InTime</th>
-                    <th scope="col" rowspan="2" >IRRD &nbsp; <br>  OutTime</th>
+                    <th scope="col" rowspan="2"> Department </th>
+                    <th scope="col" rowspan="2"> Sub Area </th>
+                    <th scope="col" rowspan="2">IP Address</th>
+                    <th scope="col" rowspan="2">IRRD &nbsp;<br>InTime</th>
+                    <th scope="col" rowspan="2" >IRRD &nbsp; <br>OutTime</th>
                     <th scope="col" rowspan="2">Rack Method</th>
                     <th scope="col" rowspan="2">Before Image</th>
                     <th scope="col" rowspan="2">After Image</th>
                     <th scope="col" rowspan="2">Rack  Process</th>
-                    <th scope="col"  rowspan="2"> Is Valid?</th>
+                    <th scope="col" rowspan="2">Is Valid?</th>
                     <th scope="col" rowspan="2">Remarks</th>
                     <th scope="col" rowspan="2"></th> 
                 </tr>
               </thead>
-              <tbody style="z-index: 700;">
+              <div *ngIf="!nodata else nodata">
+                
+              <tbody *ngIf="!nodata else nodata" style="z-index:700;" >
+                
                 <tr scope="row"*ngFor = "let data of data; let i=index"  [ngClass]="">
+                  
+                  
                   <td>{{data.SNo}}.</td>
                   <td>{{data.type}}</td>  
                   <td scope="col" >
@@ -167,8 +173,8 @@
                   <td>{{data.department}}</td>     
                   <td>{{data.area}}</td>     
                   <td>{{data.ip_address}}</td>      
-                  <td  style="white-space: nowrap;" >{{data.irrd_in_time|dateFormater}}</td>  
-                  <td  style="white-space: nowrap;" >{{data.irrd_out_time|dateFormater}}</td>  
+                  <td  style="white-space: nowrap;">{{data.irrd_in_time|dateFormater}}</td>  
+                  <td  style="white-space: nowrap;">{{data.irrd_out_time|dateFormater}}</td>  
                   <td>
                     <div class = "info-badge">{{data.rack_method}}</div>
                   </td>   
@@ -237,7 +243,7 @@
                                           </div>
                                         </div>
                                       </div>
-                                        <p class="text-dark"><span class="text-muted me-2">Rack Process:</span>{{selectedRiro.rack_process=='rack_in'?      'RackIn':selectedRiro.rack_process=='rack_out'?'Rack Out':'No Process'}} </p><br>
+                                        <p class="text-dark"><span class="text-muted me-2">Rack Process:</span>{{selectedRiro.rack_process=='rack_in'?    'RackIn':selectedRiro.rack_process=='rack_out'?'Rack Out':'No Process'}} </p><br>
                                         <p class="text-dark"><span class="text-muted me-2">Time :</span><b>{{selectedRiro.irrd_in_time|dateFormater}} -
                                         {{selectedRiro.irrd_out_time|dateFormater}}</b></p>
                                     </div>
@@ -291,10 +297,10 @@
                 </div>
               </div>
              <ng-template #verified>
-               <div  *ngIf="data.violation_verificaton_status != null" class="success-badge">Verified</div>
+               <div  *ngIf="data.violation_verificaton_status!= null" class="success-badge">Verified</div>
              </ng-template>
            </td>
-           <td scope="col" >
+           <td scope="col">
             <div *ngIf="data.riro_key_id">
               <button *ngIf="!data.remarks;else remarks " style="width: 7rem;" class="btn btn-sm default-outline"
                 (click)="data.remarks==null?RemarkModal(addRemark,data,'remarks'):EditRemark(addRemark,data,'remarks')">
@@ -316,8 +322,11 @@
               <fa-icon class="text-danger" icon="trash"></fa-icon>
             </button>
           </td>
+       
         </tr>
+    
       </tbody>
+    </div>
       <tfoot></tfoot>
    </table>
   </div>
@@ -394,4 +403,10 @@
   </div>
 </ng-template>
 
- 
+<ng-template #nodata>
+
+  <h3 class="d-flex justify-content-center align-items-center" *ngIf="nodata"> Data Not found</h3>
+
+</ng-template>
+
+
