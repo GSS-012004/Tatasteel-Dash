@@ -57,8 +57,9 @@ readConfigFile(filepath:any,mimeType:any){
   }
 
 
-  GetunallocatedJobs(){
-    return this.http.get(this.IP+'/unplanned_data')
+  GetunallocatedJobs(isHistory?:boolean,id?:any){
+
+    return  isHistory?this.http.get(this.IP+'/unplanned_data/'+id):this.http.get(this.IP+'/unplanned_data')
   }
 
   GetunallocatedImg(imageName:any){
@@ -84,5 +85,13 @@ return this.http.get(this.IP+'/GetUnplannedLivecount')
 }
 
     
+
+// getPrevJobsheetData(id:string){
+//   return this.http.get(this.IP+'/unplanned_data/'+id)
+// }
+
+// GetJobSheet(){
+//   return this.http.get(this.IP+'/unplanned_data')
+//  }
 }
 

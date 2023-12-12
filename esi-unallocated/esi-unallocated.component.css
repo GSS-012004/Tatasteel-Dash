@@ -171,7 +171,7 @@ button[type=reset] {
   background-color: #56baed;
   border: none;
   color: white;
-  padding: 15px 80px;
+  padding: 10px 60px;
   text-align: center;
   text-decoration: none;
   display: inline-block;
@@ -193,7 +193,7 @@ button[type=reset] :disabled{
   background-color: #56baed;
   border: none;
   color: white;
-  padding: 15px 80px;
+  padding: 10px 60px;
   cursor:not-allowed;
   opacity: 0.7;
   text-align: center;

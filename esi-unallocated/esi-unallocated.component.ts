@@ -3,8 +3,8 @@ import { Component, ElementRef, NgZone, OnDestroy, OnInit, ViewChild } from '@an
 import { Observable, of } from 'rxjs';
 import { EsiUnallocatedService } from './esi-unallocated.service';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { Router } from '@angular/router';
-import { FormControl, Validators } from '@angular/forms';
+import { ActivatedRoute, Router } from '@angular/router';
+import { Form, FormControl, Validators } from '@angular/forms';
 import { Lightbox, LightboxConfig } from 'ngx-lightbox';
 import { saveAs } from 'file-saver';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -26,6 +26,7 @@ export class EsiUnallocatedComponent implements OnInit,OnDestroy {
   editField: string
   remarkControl:FormControl=new FormControl()
   editfeedControl:FormControl=new FormControl()
+  verification:FormControl=new FormControl
   Images: any[] = []
   selectedRiro: any
   editViol: any
@@ -37,6 +38,12 @@ export class EsiUnallocatedComponent implements OnInit,OnDestroy {
   unallocatedJob:any
   @ViewChild('unAllocatedJobAlert') Violation: ElementRef<any>;
   nodata:any
+  isHistory:boolean=false
+  queryParams:any
+  table: HTMLElement
+  id:any
+  shutdownName: any;
+  time: any;
   
   
 constructor
@@ -45,8 +52,19 @@ constructor
   public modalService: NgbModal,
   public router: Router,
   private _lightbox: Lightbox,
-  public  toasterService:ToastrService,)
+  public  toasterService:ToastrService,
+  public currentRoute:ActivatedRoute,)
   {
+    this.currentRoute.queryParams.subscribe((data:any)=>{
+      this.isHistory=data.isHistory
+      this.id=data.shutdownId
+      console.log(this.isHistory)
+      console.log(this.id)
+      console.log(this.shutdownName=data.shutdownName)
+      console.log(this.time=data.time)
+      this.queryParams=data
+
+    })
   var res=this.loadConfigFile('assets/config.json')
   res=JSON.parse(res)
   this.API=res.IP
@@ -90,21 +108,65 @@ readConfigFile(filepath:any,mimeType:any){
 
 
 ngOnInit(): void{
-  this.server.GetunallocatedJobs().subscribe((response:any) =>{
-   if(response.success){
-   this.tempData =  response.message;
-   this.sliceData();
-   this.getRiroHistory();
-   }
-   else{
-     this.tempData=[]
-     this.total=of(0)
-     this.sliceData()
-     this.nodata=response.message
-   }
+  // this.server.GetunallocatedJobs().subscribe((response:any) =>{
+  //  if(response.success){
+  //  this.tempData =  response.message;
+  //  this.sliceData();
+  //  this.getRiroHistory();
+  //  }
+  //  else{
+  //    this.tempData=[]
+  //    this.total=of(0)
+  //    this.sliceData()
+  //    this.nodata=response.message
+  //    this.server.notification(response.message)
+  //  }
   
-  })
-  this.GetUnplannedData()
+  // })
+
+
+  this.GetunallocatedJobs()
+  if(!this.isHistory){
+    this.GetUnplannedData()
+  }
+ 
+ 
+ 
+  // var table = document.getElementById('dataTable')
+  // table.classList.add('loading')
+  // this.isHistory?this.OnJobsheetSelect(this.queryParams.jobsheetId) :this.server.GetJobSheet().subscribe((response: any) => {
+  //   table.classList.remove('loading')
+
+  //   if (response.job_sheet_status) {
+  //     if (response.success) {
+
+  //       // if (!this.isFilter) {
+  //       //   this.total = of(response.message.length)
+  //       //   // this.CheckViolation(response.message)
+  //       //   //  this.table!=null? this.table.classList.remove('loading'):''
+  //       //   this.tempData = response.message
+  //       //   // this.tempData = this.ModifyData(this.tempData)
+  //       //   // this.tempData = this.SortLivewise(this.tempData)
+  //       //   this.sliceData()
+  //       // }
+  //     }
+  //     else {
+  //       this.table != null ? this.table.classList.remove('loading') : ''
+  //       this.server.notification(response.message, 'Retry')
+  //       this.total = of(0)
+  //       //this.jobsheetData = of(response.message)
+  //       this.tempData = []
+  //       this.sliceData()
+  //     }
+  //   }
+  //   else {
+  //     this.router.navigate(['app/jobsheetUpload'])
+  //   }
+  // },err => {
+  //   this.server.notification('Error while fetching the data', 'Retry')
+  //   table.classList.remove('loading')
+  // })
+
 }
 
 
@@ -124,7 +186,7 @@ ngOnInit(): void{
 // }
 
 GetunallocatedJobs(){
-  this.server.GetunallocatedJobs().subscribe((response:any) =>{
+  this.server.GetunallocatedJobs(this.isHistory,this.id).subscribe((response:any) =>{
     if(response.success){
     this.tempData =  response.message;
     this.sliceData();
@@ -133,6 +195,7 @@ GetunallocatedJobs(){
   else{
     this.total=of(0)
     this.tempData=[]
+    this.server.notification(response.message,'Retry')
   }}
    
    )
@@ -167,7 +230,7 @@ GetunallocatedJobs(){
 getRiroHistory(){
   var container=document.getElementById('dataTable')
   container.classList.add('loading')
-  this.server.GetunallocatedJobs().subscribe((response:any)=>{
+  this.server.GetunallocatedJobs(this.isHistory,this.id).subscribe((response:any)=>{
     container.classList.remove('loading')
 
     if(response.success){
@@ -355,6 +418,8 @@ getRiroHistory(){
         this.server.notification(response.message)
          this.getRiroHistory()
         this.modalService.dismissAll()
+        // this.editfeedControl.setValue('');
+        // this.editfeedControl.setValue(response.savedValue);
       }
       else{
         this.server.notification(response.message,'Retry')
@@ -413,6 +478,7 @@ getRiroHistory(){
       this.modalService.open(modal, {  size:'xl'})
     
      this.rackProcess.setValue(data.rack_process)
+     this.editfeedControl.setValue(data.panel_no)
     }
     
 
@@ -479,7 +545,28 @@ getRiroHistory(){
 
 
 
-    createExcel() {
+    createExcel(id?:any) {
+      if(this.isHistory){
+        const createExcelUrl = this.API + '/UnplannedJobscreate_excel/' +id;
+      // Make a GET request to create the Excel file
+      this.http.get(createExcelUrl)
+        .subscribe(
+          (Response: any) => {
+            console.log('Excel created successfully:', Response);
+
+            // Extract relevant information from the server response
+            const serverResponse = Response.message; // Adjust this based on the actual structure of the response
+  
+            // Call the downloadExcel function with the server response
+            this.downloadExcel(serverResponse,Response.filename);
+          },
+          (error) => {
+            // Display error message to the user
+            this.handleServerError(error);
+          }
+        );
+      }
+      else{
       const createExcelUrl = this.API + '/UnplannedJobscreate_excel';
       // Make a GET request to create the Excel file
       this.http.get(createExcelUrl)
@@ -491,16 +578,16 @@ getRiroHistory(){
             const serverResponse = Response.message; // Adjust this based on the actual structure of the response
   
             // Call the downloadExcel function with the server response
-            this.downloadExcel(serverResponse);
+            this.downloadExcel(serverResponse,Response.filename);
           },
           (error) => {
             // Display error message to the user
             this.handleServerError(error);
           }
-        );
+        );}
     }
   
-    downloadExcel(serverResponse: any) {
+    downloadExcel(serverResponse: any,filename?:any) {
       const downloadExcelUrl = this.API + '/Unplannedexcel_download';
   
       // Make a GET request to download the Excel file
@@ -510,7 +597,7 @@ getRiroHistory(){
           console.log('Download Excel successful');
   
           // Save the Blob as a file
-          saveAs(blob, 'unplanned_jobs.xlsx');
+          saveAs(blob,filename);
   
           // Display success message for Excel download
   
@@ -522,6 +609,97 @@ getRiroHistory(){
           this.handleServerError(error);
         });
     }
+
+
+
+   
+
+// ... other imports ...
+
+// downloadExcel(serverResponse: any,filename?:any) {
+//   const downloadExcelUrl = this.API + '/Unplannedexcel_download';
+//   saveAs(filename)
+
+//   // Make a GET request to download the Excel file
+//   this.http.get(downloadExcelUrl, { responseType: 'blob', observe: 'response' })
+//     .subscribe(
+//       (response) => {
+//         // Extract the filename from the response headers
+//         const contentDisposition = response.headers.get('Content-Disposition');
+//         const filenameMatch = contentDisposition ;
+//         const filename = filenameMatch 
+//         console.log(filename)
+
+//         // Use the server response or perform additional actions as needed
+//         console.log('Download Excel successful');
+
+//         // Save the Blob as a file with the extracted filename
+//         saveAs(response.body, filename);
+
+//         // Display success message for Excel download
+
+//         // Display success message to the user using the server response
+//         this.handleServerResponse(serverResponse);
+//       },
+//       (error) => {
+//         // Display error message to the user
+//         this.handleServerError(error);
+//       }
+//     );
+// }
+
+
+
+
+
+// ... other imports ...
+
+// downloadExcel(serverResponse: any) {
+//   const downloadExcelUrl = this.API + '/Unplannedexcel_download';
+
+//   // Make a GET request to download the Excel file
+//   this.http.get(downloadExcelUrl, { responseType: 'blob', observe: 'response' })
+//     .subscribe(
+//       (response) => {
+//         // Try to get the filename from the 'Content-Disposition' header
+//         const filename = this.getFilenameFromExcel_filename(response);
+//         console.log(filename)
+
+//         // If filename is not found, use a default name
+//         // const defaultFilename = 'download.xlsx';
+
+//         // Use the server response or perform additional actions as needed
+//         console.log('Download Excel successful');
+
+//         // Save the Blob as a file with the extracted filename or default filename
+//         saveAs(response.body, filename );
+
+//         // Display success message for Excel download
+
+//         // Display success message to the user using the server response
+//         this.handleServerResponse(serverResponse);
+//       },
+//       (error) => {
+//         // Display error message to the user
+//         this.handleServerError(error);
+//       }
+//     );
+
+    
+// }
+
+// private getFilenameFromContentDisposition(response: any): string | null {
+//   const contentDispositionHeader = response.headers.get('Content-Disposition');
+//   if (contentDispositionHeader) {
+//     const matches = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/.exec(contentDispositionHeader);
+//     if (matches != null && matches[1]) {
+//       return matches[1].replace(/['"]/g, '');
+//     }
+//   }
+//   return null;
+// }
+
+
   
     handleServerResponse(response: any) {
       // Display server response to the user
@@ -593,6 +771,47 @@ GetUnplannedData(){
     },this.server.unplannedInterval)
 }
 
+
+
+// OnJobsheetSelect(jobsheetId:any) {
+//   // this.isLive = false
+//   // console.log(event)
+//   var table = document.getElementById('dataTable')
+//   table.classList.add('loading')
+//   this.server.getPrevJobsheetData(jobsheetId).subscribe((response: any) => {
+//     // console.log(response)
+
+//     if (response.success) {
+//       this.total = of(response.message.length)
+//       // this.tempData = this.ModifyData(response.message)
+//       // this.tempData = this.SortLivewise(response.message)
+//       table.classList.remove('loading')
+//       this.sliceData()
+
+
+//     }
+//     else {
+//       table.classList.remove('loading')
+
+//       this.total = of(0)
+//       this.server.notification(response.message)
+//       this.tempData = []
+//       this.sliceData()
+
+//     }
+//   },
+//     Err => {
+//       table.classList.remove('loading')
+
+//       this.server.notification('Error while fetching the data', 'Retry')
+//     })
+//   // this.server.GetPrevJobsheetStatus(jobsheetId).subscribe((response: any) => {
+//   //   //  console.log({ response })
+//   //   if (response.success) {
+//   //     this.jobsStatus = response.message
+//   //   }
+//   // })
+// }
 
 
 }
