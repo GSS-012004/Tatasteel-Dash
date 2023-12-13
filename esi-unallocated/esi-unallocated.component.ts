@@ -37,14 +37,17 @@ export class EsiUnallocatedComponent implements OnInit,OnDestroy {
   unplannedInterval:any
   unallocatedJob:any
   @ViewChild('unAllocatedJobAlert') Violation: ElementRef<any>;
-  nodata:any
+  
   isHistory:boolean=false
   queryParams:any
   table: HTMLElement
   id:any
   shutdownName: any;
   time: any;
-  
+  showTemplate = false;
+  nodata: string;
+  loading: boolean = false
+  dataFetchStatus:string='init'
   
 constructor
 ( private http :HttpClient,
@@ -53,7 +56,7 @@ constructor
   public router: Router,
   private _lightbox: Lightbox,
   public  toasterService:ToastrService,
-  public currentRoute:ActivatedRoute,)
+  public currentRoute:ActivatedRoute)
   {
     this.currentRoute.queryParams.subscribe((data:any)=>{
       this.isHistory=data.isHistory
@@ -124,7 +127,7 @@ ngOnInit(): void{
   
   // })
 
-
+  this.dataFetchStatus='init'
   this.GetunallocatedJobs()
   if(!this.isHistory){
     this.GetUnplannedData()
@@ -185,20 +188,46 @@ ngOnInit(): void{
   
 // }
 
+
+
+resetVerification(data: any): void {
+  // Reset the verification status to null or any initial value as needed
+  data.violation_verificaton_status = null;
+}
+
+
 GetunallocatedJobs(){
+  this.dataFetchStatus='init'
+ 
   this.server.GetunallocatedJobs(this.isHistory,this.id).subscribe((response:any) =>{
     if(response.success){
+     
+      this.dataFetchStatus = 'success'
+     
     this.tempData =  response.message;
+    
     this.sliceData();
     this.getRiroHistory();
+    this.nodata=response.success
     }
   else{
+    
+    
     this.total=of(0)
     this.tempData=[]
     this.server.notification(response.message,'Retry')
-  }}
    
-   )
+    
+   
+  }},
+  err => {
+    this.dataFetchStatus='Error'
+   
+     
+    this.server.notification("Error While fetching the data")
+  }) 
+   
+  this.dataFetchStatus='success'
   
 }
   
@@ -228,24 +257,28 @@ GetunallocatedJobs(){
 
 
 getRiroHistory(){
-  var container=document.getElementById('dataTable')
-  container.classList.add('loading')
+ 
   this.server.GetunallocatedJobs(this.isHistory,this.id).subscribe((response:any)=>{
-    container.classList.remove('loading')
+    
 
     if(response.success){
+      this.dataFetchStatus='init'
       this.tempData=response.message
       this.panelData=of(response.message)
       this.sliceData()
+     
+
     }
     else{
+      this.dataFetchStatus = 'success'
       this.tempData=[]
       this.total=of(0)
       this.sliceData()
+      
       this.server.notification(response.message,'Retry')
     }
   },Err=>{
-    container.classList.remove('loading')
+ 
 
     this.server.notification('Error while fetching the data','Retry')
   })
@@ -440,10 +473,10 @@ getRiroHistory(){
         if (response.success) {
           this.GetunallocatedJobs();
           this.modalService.dismissAll()
-          
-          
+         
+          this.getRiroHistory()
         }
-       
+        this.getRiroHistory()
       }, (_Err: any) => {
         this.server.notification("Error while the  Process", 'Retry')
       })
@@ -457,10 +490,10 @@ getRiroHistory(){
         if (response.success) {
           this.GetunallocatedJobs();
           this.modalService.dismissAll()
-         
+          this.getRiroHistory()
           
         }
-       
+        this.getRiroHistory()
       }, (_Err: any) => {
         this.server.notification("Error while the  Process", 'Retry')
       })
@@ -688,16 +721,6 @@ getRiroHistory(){
     
 // }
 
-// private getFilenameFromContentDisposition(response: any): string | null {
-//   const contentDispositionHeader = response.headers.get('Content-Disposition');
-//   if (contentDispositionHeader) {
-//     const matches = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/.exec(contentDispositionHeader);
-//     if (matches != null && matches[1]) {
-//       return matches[1].replace(/['"]/g, '');
-//     }
-//   }
-//   return null;
-// }
 
 
   
