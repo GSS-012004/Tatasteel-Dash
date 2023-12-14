@@ -1,243 +1,158 @@
 
-        <div class="container-fluid dashboard-content mb-3 pb-3" id="page" style="max-height: 100%;">
-          <div class="data-container">
-            <div class="">
-            <div class="header" *ngIf="!isHistory">
-              <h3 class="page-header">ESI Unplanned Jobs</h3>
-            </div>
-            <div *ngIf="isHistory">
-              
-              <!-- <h4 class="page-header">{{queryParams?.shutdownName}}</h4> -->
-              <!-- <h3 class="float-start"> Unplanned Jobs</h3> -->
-              <!-- <h3 class="float-start">{{queryParams?.time}}</h3> -->
-              
-              
-              <!-- <div class="float-end"> -->
-               
-                <button class="btn default me-2 float-end" (click)="createExcel(queryParams.shutdownId)">
-                  <fa-icon icon="download"></fa-icon>
-                  Unplanned Jobsheet
-                </button>
-                <!-- <div class="float-end">
-                 <h5><span class = "info-badge" style="padding: 10px 30px;
-                  text-align: center;">{{queryParams?.time|dateFormater}}</span></h5> 
-                
-              </div> -->
-              
-<!-- </div> -->
-             
-            </div>
+<div class="container-fluid dashboard-content mb-3 pb-3" id="page" style="max-height: 100%;">
+  <div class="data-container">
+    <div class="">
+      <div class="header">
+        <h3 class="page-header">ESI Unplanned Jobs</h3>
+      </div>
+      <div *ngIf="isHistory">
+        <button class="btn default me-2 float-end" (click)="createExcel(queryParams.shutdownId)">
+        <fa-icon icon="download"></fa-icon>
+          Unplanned Jobsheet
+        </button>
+      </div>
 
-            <div class="sub-header mb-2" *ngIf="isHistory">
-              <div class="row"><span class="float-start"><b>ShutdownName:</b> {{queryParams.shutdownName}}</span>
-                <span
-                  class="float-end"><b>Uploaded Time:</b> {{queryParams.time|dateFormater}}</span></div>
-            </div>
-          </div>
-        <!-- <div class="header">
-          <h3 class="page-header">ESI Unplanned Jobs</h3>
+      <div class="sub-header mb-2" *ngIf="isHistory">
+        <div class="row">
+          <span class="float-start"><b>ShutdownName:</b> {{queryParams.shutdownName}}</span>
+          <span class="float-end"><b>Uploaded Time:</b> {{queryParams.time|dateFormater}}</span>
         </div>
-        </div> -->
+      </div>
+    </div>
 
-      <div class="row" *ngIf="!isHistory">
-        <div class="col-12 mb-2">
-          <div class="float-end">
-            <button  *ngIf="!isHistory" class="btn primary me-2 float-end" (click)="Back()"> 
-              <fa-icon icon="chevron-left" class="me-1"></fa-icon>Back
-            </button>
-           <button class="btn default me-2 float-end" (click)="createExcel()">
-             <fa-icon icon="download"></fa-icon>
-             Unplanned Jobsheet
-           </button>
-         </div>
+    <div class="row" *ngIf="!isHistory">
+      <div class="col-12 mb-2">
+        <div class="float-end">
+          <button  *ngIf="!isHistory" class="btn primary me-2 float-end" (click)="Back()"> 
+          <fa-icon icon="chevron-left" class="me-1"></fa-icon>Back
+          </button>
+          <button class="btn default me-2 float-end" (click)="createExcel()">
+          <fa-icon icon="download"></fa-icon>
+          Unplanned Jobsheet
+          </button>
+        </div>
       </div>
     </div>
 
     <div class="data-card" id="data-card">
 
       <ng-scrollbar #scrollable style="width:100% !important;" track="all" pointerEventsMethod="scrollbar"
-          [autoHeightDisabled]="false" [disabled]="false">
-        <div class="" id="dataTable">
-          <table class="table" style="width:100%;overflow: auto;border-spacing: 0px 20px;"  *ngIf="data.length>0;else nodata">
-              <thead class="headers" style="background:#F8F9FA !important;">
-                <tr>
-                    <th scope="col" rowspan="2"> SNo.</th>
-                    <th scope="col" rowspan="2"> Job Type</th>
-                    <th scope="col" rowspan="2"> Feeder No.</th>
-                    <th scope="col" rowspan="2"> Department </th>
-                    <th scope="col" rowspan="2"> Sub Area </th>
-                    <th scope="col" rowspan="2">IP Address</th>
-                    <th scope="col" rowspan="2">IRRD &nbsp;<br>InTime</th>
-                    <th scope="col" rowspan="2" >IRRD &nbsp; <br>OutTime</th>
-                    <th scope="col" rowspan="2">Rack Method</th>
-                    <th scope="col" rowspan="2">Before Image</th>
-                    <th scope="col" rowspan="2">After Image</th>
-                    <th scope="col" rowspan="2">Rack  Process</th>
-                    <th scope="col" rowspan="2">Is Valid?</th>
-                    <th scope="col" rowspan="2">Remarks</th>
-                    <th scope="col" rowspan="2"></th> 
-                </tr>
-              </thead>
-              <!-- <div *ngIf="nodata else nodata"> -->
-               
-                
-              <tbody  style="z-index:700;" >
-                
-                <tr scope="row" *ngFor = "let data of data; let i=index" [ngClass]="">
-                  
-                  
-                  <td>{{data.SNo}}.</td>
-                  <td>{{data.type}}</td>  
-                  <td scope="col" >
-                    <div *ngIf="data.riro_key_id">
-                      <div *ngIf="data.panel_no===null">
-                        <!-- <div >-----
-                        </div> -->
-                      </div>
-                      <div *ngIf="!data.panel_no;else remarks1" style="width: 4rem;" class="btn btn-sm default-outline"
+          [autoHeightDisabled]="false" [disabled]="false"  >
+        <div class="" id="dataTable" >
+          <table class="table" style="width:100%;overflow: auto;border-spacing: 0px 20px;" >
+
+            <thead class="headers" style="background:#F8F9FA !important;" >
+              <tr *ngIf="data.length>0;else nodata">
+                <th scope="col" rowspan="2"> SNo.</th>
+                <th scope="col" rowspan="2"> Job Type</th>
+                <th scope="col" rowspan="2"> Feeder No.</th>
+                <th scope="col" rowspan="2"> Department </th>
+                <th scope="col" rowspan="2"> Sub Area </th>
+                <th scope="col" rowspan="2">IP Address</th>
+                <th scope="col" rowspan="2">IRRD &nbsp;<br>InTime</th>
+                <th scope="col" rowspan="2" >IRRD &nbsp; <br>OutTime</th>
+                <th scope="col" rowspan="2">Rack Method</th>
+                <th scope="col" rowspan="2">Before Image</th>
+                <th scope="col" rowspan="2">After Image</th>
+                <th scope="col" rowspan="2">Rack  Process</th>
+                <th scope="col" rowspan="2">Is Valid?</th>
+                <th scope="col" rowspan="2">Remarks</th>
+                <th scope="col" rowspan="2"></th> 
+              </tr>
+            </thead>
+             
+            <tbody style="z-index:700;">
+              <tr scope="row" *ngFor = "let data of data; let i=index" [ngClass]="">
+                <td>{{data.SNo}}.</td>
+                <td>{{data.type}}</td>  
+                <td scope="col" >
+                  <div *ngIf="data.riro_key_id">
+                    <div *ngIf="!data.panel_no;else remarks1" style="width: 4rem;" class="btn btn-sm default-outline"
                         (click)="RemarkModal(editfeeder,data,'panel_no')">
-                          <fa-icon *ngIf="!data.panel_no" icon="plus"class="me-2"></fa-icon>Edit
-                    </div>
-                    </div>
-        
-                    <ng-template #remarks1>
-                      <div *ngIf="data.riro_key_id">
-                        <div   style=" color:#231164" (click)="RemarkModal(editfeeder,data,'panel_no')" >{{data.panel_no}} <fa-icon (click)="RemarkModal(editfeeder,data,'panel_no')" icon="pen-to-square"></fa-icon>
-                        </div>
-                      </div>
-                      <!-- <div *ngIf="data.panel_no;"  style="width: 4rem;" class="btn default me-2" 
-                        (click)="RemarkModal(editfeeder,data,'panel_no')">
-                          Edit
-                          
-                    </div> -->
-                    </ng-template>
-
-                    <ng-template let-modal #editfeeder>
-                      <div class="modal-header">
-                        <h4 class="modal-title w-100">Edit Feeder Number</h4>
-                          <button type="button" class="btn w-30" (click)="modal.dismiss('Cross click')" aria-hidden="true">&times;</button>
-                      </div>
-                     <div class="modal-body">
-                        <div class="modal-confirm">
-                           <div class="modal-content">
-                             <div class="modal-body">
-
-                               <div class="row mb-5">
-                                  <div class="col-12">
-                                    <div class="card">
-
-                                      <div class="card-body">
-                                         <div class="row">
-                                           <!-- <div class="col-6"> -->
-                                              <h3>Image</h3>
-                                              <img class="img-fluid" src="{{API + '/Unplannedriroimage/' + data.riro_image.Before}}" alt="Before Image" (click)="imageCarousal2(data.riro_image)">
-                                          <!-- </div> -->
-                                          <!-- <div class="col-6">
-                                            <h3> After</h3>
-                                              <img class="img-fluid" src="{{API + '/Unplannedriroimage/' + data.riro_image.After}}" alt="After Image" (click)="imageCarousal(data)">
-                                          </div> -->
-                                        </div>
-                                      </div>
-                      
-                                    </div>
-                                  </div>
-                               </div>
-                    
-                               <div class="modal-body">
-                                <h3>Feed Number:</h3>
-                                <form action="">
-                                    <!-- <textarea rows="5" [formControl]="editfeedControl" class="form-control"></textarea> -->
-                                    <input  [formControl]="editfeedControl" class="form-control" placeholder="Please Enter the Feed Number:">
-                                </form>
-                            </div>
-                            </div>
-                            <div class="modal-footer justify-content-center">
-                              <button type="button" class="btn btn-secondary" (click)="modal.close('Cross click')"
-                                  data-dismiss="modal">Cancel</button>
-                              <button type="button" class="btn default" (click)=" SaveFeedNoChanges()">Save</button>
-                           </div>
-                        </div>
-                      </div>
-                    </div>
-                  </ng-template>
-                  </td> 
-
-                    <!-- <ng-template let-modal #editfeeder>
-                      <div class="modal-header">
-                        <h4 class="modal-title w-100">Edit Feeder Number</h4>
-                          <button type="button" class="btn w-30" (click)="modal.dismiss('Cross click')" aria-hidden="true">&times;</button>
-                          <div class="modal-body">
-                            <div class="modal-confirm">
-                       
-                           <div class="modal-content">
-                             <div class="modal-body">
-
-                               <div class="row mb-5">
-                                  <div class="col-12">
-                                    <div class="card">
-
-                                      <div class="card-body">
-                                         <div class="row">
-                                           <div class="col-6">
-                                              <h3>Image</h3>
-                                              <img class="img-fluid" src="{{API + '/Unplannedriroimage/' + data.riro_image.Before}}" alt="Before Image" (click)="imageCarousal2(data.riro_image)">
-                                          </div>
-                                          <div class="col-6">
-                                            <h3> After</h3>
-                                              <img class="img-fluid" src="{{API + '/Unplannedriroimage/' + data.riro_image.After}}" alt="After Image" (click)="imageCarousal(data)">
-                                          </div>
-                                        </div>
-                                      </div>
-
-
-                                      <h3>Feed Number:</h3>
-                                      <form action="">
-                                           <textarea rows="5" [formControl]="editfeedControl" class="form-control"></textarea> -->
-                                          <!-- <input type="number"  [formControl]="editfeedControl" class="form-control" placeholder="Please Enter the Feed Number:">
-                                      </form>
-                      
-                                    </div>
-                                  </div>
-                               </div>
-                    
-                               
-                               
-                            </div>
-                           
-                            <div class="modal-footer justify-content-center">
-                              <button type="button" class="btn btn-secondary" (click)="modal.close('Cross click')"
-                                  data-dismiss="modal">Cancel</button>
-                              <button type="button" class="btn default" (click)=" SaveFeedNoChanges()">Save</button>
-                           </div>
-                        </div>
-                      </div>
+                    <fa-icon *ngIf="!data.panel_no" icon="plus"class="me-2"></fa-icon>Edit
                     </div>
                   </div>
+        
+                  <ng-template #remarks1>
+                    <div *ngIf="data.riro_key_id">
+                      <div (click)="RemarkModal(editfeeder,data,'panel_no')" >{{data.panel_no}} <fa-icon (click)="RemarkModal(editfeeder,data,'panel_no')" icon="pen-to-square"></fa-icon>
+                      </div>
+                    </div>
                   </ng-template>
-                  </td>  --> 
-                  <td>{{data.department}}</td>     
-                  <td><div *ngIf="data.sub_area else area">{{data.sub_area}}</div>
-                    </td>
-                    <ng-template #area>
-                      <td><div *ngIf="!data.sub_area">{{data.area}}</div>
-                      </td>
-                    </ng-template>
 
-                  <td>{{data.ip_address}}</td>      
-                  <td  style="white-space: nowrap;">{{data.irrd_in_time|dateFormater}}</td>  
-                  <td  style="white-space: nowrap;">{{data.irrd_out_time|dateFormater}}</td>  
-                  <td>
-                    <div class = "info-badge">{{data.rack_method}}</div>
-                  </td>   
-                  <td>
-                    <img [src]="API+'/Unplannedriroimage/'+data.riro_image.Before" class="image"
-                       loading="lazy"  (click)="imageCarousal2(data.riro_image)"> 
+                  <ng-template let-modal #editfeeder>
+                    <div class="modal-header">
+                      <h4 class="modal-title w-100">Edit Feeder Number</h4>
+                      <button type="button" class="btn w-30" (click)="modal.dismiss('Cross click')" aria-hidden="true">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                      <div class="modal-confirm">
+                        <div class="modal-content">
+                          <div class="modal-body">
+                            <div class="row mb-5">
+                              <div class="col-12">
+                                <div class="card">
+
+                                  <div class="card-body">
+                                    <div class="row">
+                                      <h3>Image</h3>
+                                      <img class="img-fluid" src="{{API + '/Unplannedriroimage/' + data.riro_image.Before}}" alt="Before Image" (click)="imageCarousal2(data.riro_image)">
+                                    </div>
+                                  </div>
+                      
+                                </div>
+                              </div>
+                            </div>
+                    
+                            <div class="modal-body">
+                              <h3>Feed Number:</h3>
+                                <form action="">
+                                  <input [formControl]="editfeedControl" class="form-control" placeholder="Please Enter the Feed Number:">
+                                </form>
+                            </div>
+                          </div>
+
+                          <div class="modal-footer justify-content-center">
+                            <button type="button" class="btn btn-secondary" (click)="modal.close('Cross click')"
+                            data-dismiss="modal">Cancel</button>
+                            <button type="button" class="btn default" (click)=" SaveFeedNoChanges()">Save</button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </ng-template>
+                </td> 
+
+                   
+                <td>{{data.department}}</td> 
+
+                <td><div *ngIf="data.sub_area else area">{{data.sub_area}}</div></td>
+                <ng-template #area>
+                  <td><div *ngIf="!data.sub_area">{{data.area}}</div>
                  </td>
-                 <td>
-                    <img [src]="API+'/Unplannedriroimage/'+data.riro_image.After" class="image"
-                       loading="lazy" (click)="imageCarousal(data)">
-                 </td>    
-                 <td scope="col" id="success">
+                </ng-template>
+
+                <td>{{data.ip_address}}</td> 
+
+                <td  style="white-space: nowrap;">{{data.irrd_in_time|dateFormater}}</td> 
+
+                <td  style="white-space: nowrap;">{{data.irrd_out_time|dateFormater}}</td> 
+
+                <td>
+                  <div class = "info-badge">{{data.rack_method}}</div>
+                </td>  
+
+                <td>
+                  <img [src]="API+'/Unplannedriroimage/'+data.riro_image.Before" class="image"
+                       loading="lazy"  (click)="imageCarousal2(data.riro_image)"> 
+                </td>
+
+                <td>
+                  <img [src]="API+'/Unplannedriroimage/'+data.riro_image.After" class="image"
+                    loading="lazy" (click)="imageCarousal(data)">
+                </td> 
+
+                <td scope="col" id="success">
                   <!-- <tr> -->
                     <!-- <div class="" (click)="RemarkModal(editRack,data,'rack_process')"
                         *ngIf="data.rack_process!=null;else elsep">
@@ -265,261 +180,204 @@
                       
                       
                     </div>  -->
-                    <div class="" style="color:hsl(212, 76%, 52%)" (click)="RemarkModal(editRack,data,'rack_process')"
-                        *ngIf="data.rack_process!=null;else elsep">
-                        {{data.rack_process}} <fa-icon icon="pen-to-square"></fa-icon> </div>
+                  <div class="" (click)="RemarkModal(editRack,data,'rack_process')"
+                    *ngIf="data.rack_process!=null;else elsep">
+                     {{data.rack_process}} <fa-icon icon="pen-to-square"></fa-icon>
+                  </div>
 
+                  <ng-template #elsep>
+                    <button style="width: 7rem;" class="btn btn-sm default-outline" (click)="RemarkModal(editRack,data,'rack_process')"
+                      *ngIf="data.rack_process == null"><fa-icon icon="plus" class="me-2"></fa-icon>Edit Rack
+                    </button>
+                  </ng-template> 
 
-                    <!-- <div *ngIf="data.rack_process">
-                    <button style="width: 6rem;" class="btn default me-2"  (click)="RemarkModal(editRack,data,'rack_process')"
-                         *ngIf="data.rack_process">Edit Rack
-                      </button></div> -->
-                    
-                    
+                  <ng-template let-modal #editRack>
+                    <div class="modal-header">
+                      <h4 class="modal-title w-100">Rack Process</h4>
+                      <button type="button" class="btn w-30" (click)="modal.dismiss('Cross click')" aria-hidden="true">&times;</button>
+                    </div>
 
-                    <ng-template #elsep>
-                      <!-- <div>------</div> -->
-                      <button style="width: 7rem;" class="btn btn-sm default-outline" (click)="RemarkModal(editRack,data,'rack_process')"
-                         *ngIf="data.rack_process == null"><fa-icon icon="plus" class="me-2"></fa-icon>Edit Rack
-                      </button>
-                    </ng-template>      
-                   <ng-template let-modal #editRack>
-                      <div class="modal-header">
-                        <h4 class="modal-title w-100">Rack Process</h4>
-                          <button type="button" class="btn w-30" (click)="modal.dismiss('Cross click')" aria-hidden="true">&times;</button>
-                      </div>
-                     <div class="modal-body">
-                        <div class="modal-confirm">
-                           <div class="modal-content">
-                             <div class="modal-body">
-
-                               <div class="row mb-5">
-                                  <div class="col-12">
-                                    <div class="card">
-
-                                      <div class="card-body">
-                                         <div class="row">
-                                           <div class="col-6">
-                                              <h3> Before</h3>
-                                              <img class="img-fluid" src="{{API + '/Unplannedriroimage/' + data.riro_image.Before}}" alt="Before Image" (click)="imageCarousal2(data.riro_image)">
-                                          </div>
-                                          <div class="col-6">
-                                            <h3> After</h3>
-                                              <img class="img-fluid" src="{{API + '/Unplannedriroimage/' + data.riro_image.After}}" alt="After Image" (click)="imageCarousal(data)">
-                                          </div>
-                                        </div>
+                    <div class="modal-body">
+                      <div class="modal-confirm">
+                        <div class="modal-content">
+                          <div class="modal-body">
+                            <div class="row mb-5">
+                              <div class="col-12">
+                                <div class="card">
+                                  <div class="card-body">
+                                    <div class="row">
+                                      <div class="col-6">
+                                        <h3> Before</h3>
+                                        <img class="img-fluid" src="{{API + '/Unplannedriroimage/' + data.riro_image.Before}}" alt="Before Image" (click)="imageCarousal2(data.riro_image)">
                                       </div>
-                                        <p class="text-dark"><span class="text-muted me-2">Rack Process:</span>{{selectedRiro.rack_process=='rack_in'?    'RackIn':selectedRiro.rack_process=='rack_out'?'Rack Out':'No Process'}} </p><br>
-                                        <p class="text-dark"><span class="text-muted me-2">Time :</span><b>{{selectedRiro.irrd_in_time|dateFormater}} -
-                                        {{selectedRiro.irrd_out_time|dateFormater}}</b></p>
+                                      <div class="col-6">
+                                        <h3> After</h3>
+                                        <img class="img-fluid" src="{{API + '/Unplannedriroimage/' + data.riro_image.After}}" alt="After Image" (click)="imageCarousal(data)">
+                                      </div>
                                     </div>
                                   </div>
-                               </div>
-                    
-                               <form action="">
-                                 <div class="card-body" style="justify-content: center;">
-                                    <div class="form-check form-check-inline" id="custome">
-                                      <input type="radio" [formControl]="rackProcess" value="rack_in" (change)="EditRack($event)"
-                                        defaultValue="rack_in" id="rackin" class="form-check-input">
-                                      <label for="rackin" class="form-check-label text-muted">Rack in</label>
-                                   </div>
-                                    <div class="form-check form-check-inline" id="custome">
-                                      <input type="radio" [formControl]="rackProcess" value="rack_out" (change)="EditRack($event)"
-                                        defaultValue="rack_out" id="rackout" class="form-check-input">
-                                      <label for="rackout" class="form-check-label text-muted">Rack Out </label>
-                                    </div>
-                                    <div class="form-check form-check-inline" id="custome">
-                                      <input type="radio" [formControl]="rackProcess" value="maintenance"
-                                        (change)="EditRack($event)" defaultValue="maintenance" id="maintenance"
-                                        class="form-check-input">
-                                      <label for="maintenance" class="form-check-label text-muted">Maintenance</label>
-                                    </div>
-                                  </div>
-                                </form>
+
+                                  <p class="text-dark"><span class="text-muted me-2">Rack Process:</span>{{selectedRiro.rack_process=='rack_in'?    'RackIn':selectedRiro.rack_process=='rack_out'?'Rack Out':'No Process'}} </p><br>
+                                  <p class="text-dark"><span class="text-muted me-2">Time :</span><b>{{selectedRiro.irrd_in_time|dateFormater}} -
+                                  {{selectedRiro.irrd_out_time|dateFormater}}</b></p>
+
+                                </div>
+                              </div>
                             </div>
-                            <div class="modal-footer justify-content-center">
-                              <button type="button" class="btn btn-secondary" (click)="modal.close('Cross click')"
-                                  data-dismiss="modal">Cancel</button>
-                              <button type="button" class="btn default" (click)="SaveRackChanges()">Save</button>
-                           </div>
+                    
+                            <form action="">
+                              <div class="card-body" style="justify-content: center;">
+                                <div class="form-check form-check-inline" id="custome">
+                                  <input type="radio" [formControl]="rackProcess" value="rack_in" (change)="EditRack($event)"
+                                    defaultValue="rack_in" id="rackin" class="form-check-input">
+                                  <label for="rackin" class="form-check-label text-muted">Rack in</label>
+                                </div>
+                                <div class="form-check form-check-inline" id="custome">
+                                  <input type="radio" [formControl]="rackProcess" value="rack_out" (change)="EditRack($event)"
+                                    defaultValue="rack_out" id="rackout" class="form-check-input">
+                                  <label for="rackout" class="form-check-label text-muted">Rack Out </label>
+                                </div>
+                                <div class="form-check form-check-inline" id="custome">
+                                  <input type="radio" [formControl]="rackProcess" value="maintenance"
+                                    (change)="EditRack($event)" defaultValue="maintenance" id="maintenance"
+                                    class="form-check-input">
+                                  <label for="maintenance" class="form-check-label text-muted">Maintenance</label>
+                                </div>
+                              </div>
+                            </form>
+                          </div>
+                          <div class="modal-footer justify-content-center">
+                            <button type="button" class="btn btn-secondary" (click)="modal.close('Cross click')"
+                              data-dismiss="modal">Cancel</button>
+                            <button type="button" class="btn default" (click)="SaveRackChanges()">Save</button>
+                          </div>
                         </div>
                       </div>
                     </div>
                   </ng-template>
-                <!-- </tr> -->
-              </td> 
-
-              <!-- <td  id="verify" style="width:3rem">
-                
-                <div *ngIf="!data.violation_verificaton_status;else verified" class="mt-1">
-                  <div class="form-check form-check-inline" id="right">
-                     <input type="radio" [value]=0 (change)="VerifyTrueViol($event,data)"
-                        [defaultValue]=true [id]="'yes'+data.SNo" class="form-check-input">
-                     <label [for]="'yes'+data.SNo" class="form-check-label text-success">Yes </label>
-                  </div>
-                 <div class="form-check form-check-inline" id="wrong">
-                    <input type="radio" [value]=false (change)="VerifyFalseViol($event,data)"
-                      [defaultValue]=false [id]="'no'+data.SNo" class="form-check-input">
-                    <label [for]="'no'+data.SNo" class="form-check-label text-danger">No </label>
-                </div>
-              </div>
-             <ng-template #verified>
-               <div *ngIf="data.violation_verificaton_status!= null" class="success-badge" (click)="showTemplate = !showTemplate">
-                <div>Verified</div></div>
-             </ng-template>
-
-             
-
-
-           </td> -->
-
-
-           <td id="verify" style="width: 3rem">
-            <div *ngIf="!data.violation_verificaton_status; else verified" class="mt-1">
-              <div class="form-check form-check-inline" id="right">
-                <input type="radio" [value]="true" (change)="VerifyTrueViol($event, data)"
+                </td> 
+                <td id="verify" style="width: 3rem">
+                  <div *ngIf="!data.violation_verificaton_status; else verified" class="mt-1">
+                    <div class="form-check form-check-inline" id="right">
+                      <input type="radio" [value]="true" (change)="VerifyTrueViol($event, data)"
                        [id]="'yes'+data.SNo" class="form-check-input"
                        [ngClass]="{'previously-selected': data.violation_verificaton_status === true}">
-                <label [for]="'yes'+data.SNo" class="form-check-label text-success">Yes </label>
-              </div>
-              <div class="form-check form-check-inline" id="wrong">
-                <input type="radio" [value]="false" (change)="VerifyFalseViol($event, data)"
+                      <label [for]="'yes'+data.SNo" class="form-check-label text-success">Yes </label>
+                    </div>
+                    <div class="form-check form-check-inline" id="wrong">
+                      <input type="radio" [value]="false" (change)="VerifyFalseViol($event, data)"
                        [id]="'no'+data.SNo" class="form-check-input"
                        [ngClass]="{'previously-selected': data.violation_verificaton_status === false}">
-                <label [for]="'no'+data.SNo" class="form-check-label text-danger">No </label>
-              </div>
-            </div>
-            <ng-template #verified>
-              <div *ngIf="data.violation_verificaton_status !== null" class="btn-success" (click)="resetVerification(data)">
-                <div  class="text-secondary"  style="white-space: nowrap;">Verified <fa-icon icon="pen-to-square"></fa-icon></div>
-              </div>
-            </ng-template>
-          </td>
+                     <label [for]="'no'+data.SNo" class="form-check-label text-danger">No </label>
+                    </div>
+                  </div>
+
+                  <ng-template #verified>
+                    <div *ngIf="data.violation_verificaton_status !== null" class="btn-success" (click)="resetVerification(data)">
+                      <div  style="white-space: nowrap;">Verified <fa-icon icon="pen-to-square"></fa-icon></div>
+                    </div>
+                  </ng-template>
+                </td>
           
-           <td scope="col">
-            <div *ngIf="data.riro_key_id">
-              <!-- <div *ngIf="!data.remarks">------</div> -->
-              <div *ngIf="data.remarks" class="text-info"  (click)="data.remarks==null?RemarkModal(addRemark,data,'remarks'):EditRemark(addRemark,data,'remarks')">{{data.remarks}}  <fa-icon icon="pen-to-square"  (click)="data.remarks==null?RemarkModal(addRemark,data,'remarks'):EditRemark(addRemark,data,'remarks')"></fa-icon></div>
-              <button *ngIf="!data.remarks " style="width: 6rem;" class="btn btn-sm default-outline"
-                (click)="data.remarks==null?RemarkModal(addRemark,data,'remarks'):EditRemark(addRemark,data,'remarks')">
-                  <fa-icon *ngIf="!data.remarks" icon="plus" class="me-2"></fa-icon>Remark
-              </button>
-            </div>
-
-            <!-- <ng-template #remarks>
-              <div *ngIf="data.riro_key_id">
-                <button  style="width: 5rem;" class="btn default me-2" 
-                  (click)="data.remarks==null?RemarkModal(addRemark,data,'remarks'):EditRemark(addRemark,data,'remarks')">
-                  Remark
-                </button> 
-              </div>
-            </ng-template> -->
-          </td>
-          <td>
-            <button class="btn"(click)="RirDeleteModal(deleteField,data.riro_key_id)">
-              <fa-icon class="text-danger" icon="trash"></fa-icon>
-            </button>
-          </td>
+                <td scope="col">
+                  <div *ngIf="data.riro_key_id">
+                    <div *ngIf="data.remarks"  (click)="data.remarks==null?RemarkModal(addRemark,data,'remarks'):EditRemark(addRemark,  data,'remarks')">{{data.remarks}}  <fa-icon icon="pen-to-square"  (click)="data.remarks==null?RemarkModal(addRemark,data,'remarks') :EditRemark(addRemark,data,'remarks')"></fa-icon></div>
+                      <button *ngIf="!data.remarks " style="width: 6rem;" class="btn btn-sm default-outline"
+                        (click)="data.remarks==null?RemarkModal(addRemark,data,'remarks'):EditRemark(addRemark,data,'remarks')">
+                        <fa-icon *ngIf="!data.remarks" icon="plus" class="me-2"></fa-icon>Remark
+                      </button>
+                  </div>
+                </td>
+                <td>
+                  <button class="btn"(click)="RirDeleteModal(deleteField,data.riro_key_id)">
+                  <fa-icon class="text-danger" icon="trash"></fa-icon>
+                  </button>
+                </td>
        
-        </tr>
-    
-      </tbody>
-    
-      <tfoot></tfoot>
-   </table>
-  </div>
-</ng-scrollbar>
-</div>
-
-<div class="w-100">
-
-  <div class="d-flex mx-auto justify-content-center">
-    <ngb-pagination [collectionSize]="total|async" [(page)]="page" [pageSize]="pageSize"
-      style="width: 95vw;overflow-x: auto;" (pageChange)="sliceData()">
-    </ngb-pagination>
-
-    <div class="d-flex mx-auto justify-content-start">
-      <select class="form-select" style="width:auto" [(ngModel)]="pageSize" (ngModelChange)="sliceData()">
-        <option [ngValue]="5">5</option> 
-        <option [ngValue]="10">10</option>
-        <option [ngValue]="15">15</option>
-        <option [ngValue]="20">20</option>
-        <option [ngValue]="50">50</option>
-
-      </select>
+              </tr>
+            </tbody>
+            <tfoot></tfoot>
+          </table>
+        </div>
+      </ng-scrollbar>
     </div>
+
+    <div class="w-100">
+      <div class="d-flex mx-auto justify-content-center">
+          <ngb-pagination [collectionSize]="total|async" [(page)]="page" [pageSize]="pageSize"
+            style="width: 95vw;overflow-x: auto;" (pageChange)="sliceData()">
+          </ngb-pagination>
+
+        <div class="d-flex mx-auto justify-content-start">
+          <select class="form-select" style="width:auto" [(ngModel)]="pageSize" (ngModelChange)="sliceData()">
+            <option [ngValue]="5">5</option> 
+            <option [ngValue]="10">10</option>
+            <option [ngValue]="15">15</option>
+            <option [ngValue]="20">20</option>
+            <option [ngValue]="50">50</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
   </div>
 </div>
-</div>
-</div>
-
-
-
 
 <ng-template style="text-align:center;" #elsep>---</ng-template>
 
 <ng-template #noHT>NA</ng-template>
 
 <ng-template let-modal #deleteField>
-    <div class="modal-body">
-        <div class="modal-confirm">
-            <div class="modal-content">
-                <div class="modal-header flex-column">
-                    <h4 class="modal-title w-100">Are you sure?</h4>
-                </div>
-                <div class="modal-body">
-                    <p>Do you really want to delete this details? This process cannot be undone.</p>
-                </div>
-                <div class="modal-footer justify-content-center">
-                    <button type="button" class="btn btn-secondary" (click)="modal.close('Cross click')"
-                        data-dismiss="modal">Cancel</button>
-                    <button type="button" (click)=" RiroDelete()" class="btn danger">Delete</button>
-                </div>
-            </div>
+  <div class="modal-body">
+    <div class="modal-confirm">
+      <div class="modal-content">
+         <div class="modal-header flex-column">
+            <h4 class="modal-title w-100">Are you sure?</h4>
+          </div>
+          <div class="modal-body">
+              <p>Do you really want to delete this details? This process cannot be undone.</p>
+          </div>
+          <div class="modal-footer justify-content-center">
+            <button type="button" class="btn btn-secondary" (click)="modal.close('Cross click')"
+                data-dismiss="modal">Cancel</button>
+            <button type="button" (click)=" RiroDelete()" class="btn danger">Delete</button>
+          </div>
         </div>
+      </div>
     </div>
 </ng-template>
 
-
-
 <ng-template let-modal #addRemark>
   <div class="modal-body">
-      <div class="modal-confirm">
-          <div class="modal-content">
-              <div class="modal-header flex-column">
-                  <h4 class="modal-title w-100">Add the remark</h4>
-              </div>
-              <div class="modal-body">
-                  <form action="">
-                      <textarea rows="5" [formControl]="remarkControl" class="form-control"></textarea>
-                  </form>
-              </div>
-              <div class="modal-footer justify-content-center">
-                  <button type="button" class="btn btn-secondary" (click)="modal.close('Cross click')"
-                      data-dismiss="modal">Cancel</button>
-                  <button type="button" [disabled]="!remarkControl.valid" class="btn default"
-                      (click)="SaveRemark()">Save</button>
-              </div>
-          </div>
+    <div class="modal-confirm">
+      <div class="modal-content">
+        <div class="modal-header flex-column">
+           <h4 class="modal-title w-100">Add the remark</h4>
+        </div>
+        <div class="modal-body">
+          <form action="">
+            <textarea rows="5" [formControl]="remarkControl" class="form-control"></textarea>
+          </form>
+        </div>
+        <div class="modal-footer justify-content-center">
+          <button type="button" class="btn btn-secondary" (click)="modal.close('Cross click')"
+            data-dismiss="modal">Cancel</button>
+          <button type="button" [disabled]="!remarkControl.valid" class="btn default"
+              (click)="SaveRemark()">Save</button>
+        </div>
       </div>
+    </div>
   </div>
 </ng-template>
 
 <ng-template #nodata>
-
-  <!-- <h3 class="d-flex justify-content-center align-items-center" *ngIf="nodata"> Data Not found</h3> -->
-   <div class="row card card-body" id="data-card">
-       
-            <!-- <h4> No violation details found</h4> -->
-            <!-- <h3 > Data Not Found</h3> -->
-            <div class="d-flex justify-content-center align-items-center"*ngIf="dataFetchStatus=='init'">Loading...</div>
-            <div class="d-flex justify-content-center align-items-center" *ngIf="dataFetchStatus=='success'">
-              <h4> Data Not Found</h4>
-          </div>
-          
-          <!-- <div class="d-flex justify-content-center align-items-center"*ngIf="dataFetchStatus=='Error'">Error while fetching data</div> -->
-       
+  <div class="row card card-body" id="data-card">
+    <div class="d-flex justify-content-center align-items-center"*ngIf="dataFetchStatus=='init'">Loading...</div>
+    <div class="d-flex justify-content-center align-items-center" *ngIf="dataFetchStatus=='success'">
+      <h4> Data Not Found</h4>
     </div>
+    <div class="d-flex justify-content-center align-items-center"*ngIf="dataFetchStatus=='Error'">Error while fetching data</div>
+  </div>
 </ng-template>
 
 
