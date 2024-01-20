@@ -1,0 +1,507 @@
+<div class="container-fluid dashboard-content">
+    <div class="page-header">
+        <h3>Dashboard</h3>
+    </div><br><br>
+
+    <div class="row mb-5" id=cameraStatus>
+        <h5 class="sub-header ms-2">Cameras</h5>
+        <div class="col-xl-3 col-xs-12 col-sm-12 col-md-12 col-lg-6 mb-3">
+            <div class="card card-body ">
+                <div class="statusGrid">
+                    <div>
+                        <div class="">
+                            <h1 (click)="ToCameras()">{{cameraStatus.total_cam_count}}</h1>
+                        </div>
+                        <div class="font-primary">Added Cameras</div>
+                    </div>
+
+                    <div class="">
+                        <img class="iconImage" src="assets/images/icons/Camera.svg" alt="">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-xs-12 col-sm-12 col-md-12 col-lg-6 mb-3">
+            <div class="card card-body">
+                <div class="statusGrid">
+                    <div (click)="cameraStatus.enable_data_count?openECDetailsModal(enabledCameraDetails):null">
+                        <div class="">
+                            <h1>{{cameraStatus.enable_data_count}}</h1>
+                        </div>
+                        <div class="font-primary">AI Enabled Cameras</div>
+                    </div>
+                    <div class="">
+                        <img class="iconImage" src="assets/images/icons/EnabledCamera.svg" alt="">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-xs-12 col-sm-12 col-md-12 col-lg-6 mb-3">
+            <div class="card card-body">
+                <div class="statusGrid">
+                    <div>
+                        <div class=""  (click)="cameraStatus.disable_data_count?openDCDetailsModal(disabledCameraDetails):null">
+                            <h1>{{cameraStatus.disable_data_count}}</h1>
+                        </div>
+                        <div class="font-primary">AI Disabled Cameras</div>
+                    </div>
+                    <div class="">
+                        <img class="iconImage" src="assets/images/icons/DisabledCamera.svg" alt="">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-xs-12 col-sm-12 col-md-12 col-lg-6 mb-3">
+            <div class="card card-body">
+                <div class="statusGrid">
+                    <div>
+                        <div class="" (click)="cameraStatus.not_working_cam_count ? openNWCDetailsModal(NWCameraDetails):null">
+                            <h1>{{cameraStatus.not_working_cam_count}}</h1>
+                        </div>
+                        <div class="font-primary">Not Working Cameras</div>
+                    </div>
+                    <div class="">
+                        <img class="iconImage" src="assets/images/icons/notworkingCamera.svg" alt="">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="row mb-5" id="violationCount">
+        <div class="w-100">
+            <div class="d-flex justify-content-between align-items-center">
+                <h5 class="float-start sub-header">Violations</h5>
+                <div class="col-xs-6 col-xl-3 col-md-6 col-sm-6 col-lg-4">
+                    <button  *ngIf="isDatewise" class="float-end btn default ms-2" >
+                        <fa-icon icon="rotate"  (click)="RefreshData()"></fa-icon>                        
+                    </button>
+                   
+                    <div class="datePickerContainer" >                        
+                        <div class="float-end mb-3 col-xl-10 col-xs-12 col-md-12 col-sm-12 col-lg-12" id="dateInput" >
+                            <div class="input-icons">
+                                <fa-icon *ngIf="!calendericon" icon="calendar" class="ngx-daterangepicker-action"></fa-icon>
+                                <input   ngxDaterangepickerMd #datepicker   (datesUpdated)="dateUpdated($event)"
+                                    [showCustomRangeLabel]="true" [ranges]="ranges" [timePicker]="true"
+                                    placeholder="     Click Here to Selcet Date..." class="form-control" [formControl]="dateinputControl" [(ngModel)]="selectedMoments" required   (click)="openDatePicker($event)"> 
+                            </div>                 
+                        </div>               
+                    </div>
+                
+                </div>
+            </div>
+        
+        </div>
+
+        <div class="col-xl-4 col-xs-12 col-sm-12 col-md-12 col-lg-6 mb-3"
+        [ngClass]="{'col-xl-3':violationList.length==3, 'col-xl-4':violationList.length==2,'col-xl-6':violationList.length==1||violationList.length==4||violationList.length==5}">
+            <div class="card card-body">
+                <div class="statusGrid">
+                    <div class="">
+                        <div class="" (click)="openAllViolationsModal(allViolations)">
+                            <h1> {{violationsCount.total_count}}</h1>
+                        </div>
+                        <div class="font-primary">Total Violations</div>
+                    </div>
+
+                    <div class="">
+                        <img src="assets/images/icons/violation.svg" alt="" class="iconImage">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div *ngIf="violationList.indexOf('RA')>=0"
+            [ngClass]="{'col-xl-3':violationList.length==3, 'col-xl-4':violationList.length==2,'col-xl-6':violationList.length==1||violationList.length==4||violationList.length==5}"
+            class="col-xl-4 col-xs-12 col-sm-12 col-md-12 col-lg-6 mb-3">
+            <div class="card card-body">
+                <div class="statusGrid">
+                    <div class="">
+                        <div class="" (click)="raViolationsModal(raViolation)">
+                            <h1> {{violationsCount.ra_count}}</h1>
+                        </div>
+                        <div class="font-primary">Danger Zone Violations</div>
+                    </div>
+
+                    <div class="">
+                        <img src="assets/images/icons/RA.svg" alt="" class="iconImage">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div *ngIf="violationList.indexOf('PPE')>=0"
+            [ngClass]="{'col-xl-3':violationList.length==3, 'col-xl-4':violationList.length==2,'col-xl-6':violationList.length==1||violationList.length==4||violationList.length==5}"
+            class="col-xl-4 col-xs-12 col-sm-12 col-md-12 col-lg-6 mb-3">
+            <div class="card card-body">
+                <div class="statusGrid">
+                    <div class="">
+                        <div class="">
+                            <h1 (click)="ppeViolationsModal(ppeViolation)">{{violationsCount.ppe_count}}</h1>
+                        </div>
+                        <div class="font-primary">Personal Protective Equipment Violations</div>
+                    </div>
+
+                    <div class="">
+                        <img src="assets/images/icons/ppe.svg" alt="" class="iconImage">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div *ngIf="violationList.indexOf('ONB')>=0"  
+            [ngClass]="{'col-xl-3':violationList.length==3, 'col-xl-4':violationList.length==2,'col-xl-6':violationList.length==1||violationList.length==4||violationList.length==5}"
+            class="col-4 col-xs-12 col-sm-12 col-md-4 mb-3">
+            <div class="card card-body">
+                <div class="statusGrid">
+                    <div class="">
+                        <div class="">
+                            <h1> 500</h1>
+                        </div>
+                        <div class="font-primary">Personal Protective Equipment Violations</div>
+                    </div>
+
+                    <div class="">
+                        <img src="assets/images/icons/ppe.svg" alt="" class="iconImage">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div  *ngIf="violationList.indexOf('CRDCNT')>=0"  
+            [ngClass]="{'col-xl-3':violationList.length==3, 'col-xl-4':violationList.length==2,'col-xl-6':violationList.length==1||violationList.length==4||violationList.length==5}"
+            class="col-4 col-xs-12 col-sm-12 col-md-4 mb-3">
+            <div class="card card-body">
+                <div class="statusGrid">
+                    <div class=""  (click)="CCViolationsModal(CCViolation)">
+                        <div class="">
+                            <h1>{{violationsCount.cr_count}}</h1>
+                        </div>
+                        <div class="font-primary"> Crowd Count Violations</div>
+                    </div>
+
+                    <div class="">
+                        <img src="assets/images/icons/crowd_count_icon.svg" alt="" class="iconImage">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<div class="row">
+    <h5 class="sub-header ms-2">Violations Data Analysis</h5>
+</div>
+
+<div class="row mb-5" *ngIf="violationsCount">
+    <div class="col-xl-6 col-sm-12 p-2">
+        <canvasjs-chart [options]="chartOptionsPie" [styles]="{ width: '100%', height: '360px' }"></canvasjs-chart>
+    </div>
+    <div class="col-xl-6 col-sm-12 p-2">
+        <canvasjs-chart [options]="chartOptionsBar" [styles]="{ width: '100%', height: '360px' }"></canvasjs-chart>
+    </div>
+</div>
+
+<ng-template let-modal id="ecCamera" #enabledCameraDetails>
+    <div class="modal-header">
+        <h4 class="modal-title" style="color: #178489;">AI Enabled Cameras Details</h4>
+        <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click')"></button>
+    </div>
+
+    <div class="modal-body" id="dataTable">
+        <div class="col-12 card">
+            <table class="table" style="width:100%;overflow: auto;border-spacing: 0px 20px;" *ngIf="!datanotfound else nodata">
+                <thead class="headers" style="color:#134276" >
+                    <tr>
+                        <th scope="col"> SNo.</th>
+                        <th scope="col">Camera Image</th>
+                        <th scope="col">Camera Name</th>
+                        <th scope="col">Camera IP</th>
+                        <th scope="col">Enabled AI Solutions</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    <tr *ngFor="let camera of ECDetails;let i=index">
+                        <td>{{i+1}}.</td>
+                        <td>
+                            <img (click)="OpenCameraImage(camera.imagename)" [src]="IP+'/get_roi_image/'+camera.imagename" class="image"
+                            alt="">
+                        </td>
+                        <td>{{camera.camera_name}}</td>
+                        <td>{{camera.camera_ip}}</td>
+                        <td>
+                            <div *ngFor="let ai_solution of Object.keys(camera.ai_solutions)">
+                                <span *ngIf="camera.ai_solutions[ai_solution]">{{aiSolutions[ai_solution]}}</span>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+
+            </table>
+
+        </div>
+    </div>
+
+</ng-template>
+
+<ng-template let-modal #disabledCameraDetails>
+    <div class="modal-header">
+        <h4 class="modal-title" style="color: #178489;">AI Disabled Cameras Details</h4>
+        <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click')"></button>
+    </div>
+    <div class="modal-body" id="dataTable3">
+        <div class="col-12 card">
+            <table class="table" id="dataTable"  style="width:100%;overflow: auto;border-spacing: 0px 20px;" *ngIf="!datanotfound else nodata">
+                <thead class="headers" style="color:#134276">
+                    <tr>
+                        <th>SNo.</th>
+                        <th>Camera Image</th>
+                        <th>Camera Name</th>
+                        <th>Camera IP</th>
+                        
+                    </tr>
+                </thead>
+
+                <tbody>
+                    <tr *ngFor="let camera of disabledCamDetails;let i=index">
+                        <td>{{i+1}}.</td>
+                        <td>
+                            <img (click)="OpenCameraImage(camera.imagename)" [src]="IP+'/get_roi_image/'+camera.imagename" class="image"
+                            alt=""> 
+                        </td>
+                        <td>{{camera.camera_name}}</td>
+                        <td>{{camera.camera_ip}}</td>
+                    </tr>
+                </tbody>
+
+            </table>
+        </div>
+    </div>
+
+</ng-template>
+
+
+
+<ng-template let-modal #NWCameraDetails>
+    <div class="modal-header">
+        <h4 class="modal-title" style="color: #178489;">Not Working Cameras Details</h4>
+        <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click')"></button>
+    </div>
+    <div class="modal-body">
+        <div class="col-12 card" id="dataTable2">
+            <table class="table" id="dataTable"  style="width:100%;overflow: auto;border-spacing: 0px 20px;" *ngIf="!datanotfound else nodata">
+                <thead class="headers"  style="color:#134276">
+                    <tr>
+                        <th>SNo.</th>
+                        <th>Camera Image</th>
+                        <th>Camera Name</th>
+                        <th>Camera IP</th>
+                        
+                    </tr>
+                </thead>
+
+                <tbody>
+                    <tr *ngFor="let camera of NWCamDetails;let i=index">
+                        <td>{{i+1}}.</td>
+                        <td>
+                            <img  (click)="OpenCameraImage(camera.imagename)"
+                             [src]="IP+'/get_roi_image/'+camera.imagename" class="image"
+                            alt=""> 
+                        </td>
+                        <td>{{camera.camera_name}}</td>
+                        <td>{{camera.camera_ip}}</td>
+                    </tr>
+                </tbody>
+
+            </table>
+           
+        </div>
+    </div>
+
+</ng-template>
+
+<ng-template let-modal id="ecCamera" #allViolations>
+    <div class="modal-header">
+        <h4 class="modal-title" style="color: #178489;">All Violations Details</h4>
+        <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click')"></button>
+    </div>
+
+    <div class="modal-body" id="dataTable">
+        <div class="col-12 card">
+            <table class="table" id="dataTable"  style="width:100%;overflow: auto;border-spacing: 0px 20px;"*ngIf="!datanotfound else nodata">
+                <thead  class="headers"  style="color:#134276">
+                    <tr>
+                        <th>SNo.</th>
+                        <th>Camera Image</th>
+                        <th>Camera Name</th>
+                        <th>Camera IP</th>                        
+                        <th>Danger Zone Violations Count</th>
+                        <th>Personal Protective Equipment Violations Count</th>
+                        <th>Crowd Count Violations Count</th>
+                    </tr>
+                </thead>
+                
+                <tbody>
+                    <tr *ngFor="let camera of allViolationDetails ; let i=index">
+                        <td>{{i+1}}.</td>
+                        <td>
+                            <img (click)="OpenCameraImage(camera.imagename)"
+                            [src]="IP+'/get_roi_image/'+camera.imagename" class="image" alt=""> 
+                        </td>
+                        <td>{{camera.camera_name}}</td>
+                        <td>{{camera.camera_ip}}</td>                        
+                        <td>{{camera.roi_type_counts}}</td>
+                        <td>{{camera.ppe_type_counts}}</td>
+                        <td>{{camera.cr_type_counts}}</td>
+                    </tr>
+                </tbody>
+
+            </table>
+
+        </div>
+    </div>
+
+</ng-template>
+
+<ng-template let-modal #ppeViolation>
+    <div class="modal-header">
+        <h4 class="modal-title" style="color: #178489;">Personal Protective Equipment Violations Details</h4>
+        <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click')"></button>
+    </div>
+
+    <div class="modal-body" id="dataTablePPE">
+        <div class="col-12 card">
+            <table class="table" id="dataTable"  style="width:100%;overflow: auto;border-spacing: 0px 20px;" *ngIf="!datanotfound else nodata">
+                <thead  class="headers"  style="color:#134276">
+                    <tr>
+                        <th>SNo.</th>
+                        <th>Camera Image</th>
+                        <th>Camera Name</th>
+                        <th>Camera IP</th>    
+                        <th>Violations Count</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    <tr *ngFor="let camera of ppeViolations ; let i = index">
+                        <td>{{i+1}}.</td>
+                        <td>
+                            <img (click)="OpenCameraImage(camera.imagename)"
+                            [src]="IP+'/get_roi_image/'+camera.imagename" class="image" alt=""> 
+                        </td>
+                        <td>{{camera.camera_name}}</td>
+                        <td>{{camera.camera_ip}}</td>   
+                        <td>{{camera.ppe_type_counts}}</td>
+                    </tr>
+                </tbody>
+
+            </table>
+        </div>
+    </div>
+
+</ng-template>
+
+<ng-template let-modal #raViolation>
+    <div class="modal-header">
+        <h4 class="modal-title" style="color: #178489;">Danger Zone Violations Details</h4>
+        <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click')"></button>
+    </div>
+
+    <div class="modal-body" id="dataTableRA">
+        <div class="col-12 card">
+            <table class="table" id="dataTable"  style="width:100%;overflow: auto;border-spacing: 0px 20px;" *ngIf="!datanotfound else nodata">
+                <thead  class="headers"  style="color:#134276">
+                    <tr>
+                        <th>SNo.</th>
+                        <th>Camera Image</th>
+                        <th>Camera Name</th>
+                        <th>Camera IP</th>
+                        <th>Violations Count</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    <tr *ngFor="let camera of RAViolations ; let i = index">
+                        <td>{{i+1}}.</td>
+                        <td>
+                            <img (click)="OpenCameraImage(camera.imagename)"
+                            [src]="IP+'/get_roi_image/'+camera.imagename" class="image" alt=""> 
+                        </td>
+                        <td>{{camera.camera_name}}</td>
+                        <td>{{camera.camera_ip}}</td>
+                        <td>{{camera.roi_type_counts}}</td>
+                    </tr>
+                </tbody>
+
+            </table>
+            
+        </div>
+    </div>
+
+</ng-template>
+
+<ng-template let-modal #CCViolation>
+    <div class="modal-header">
+        <h4 class="modal-title" style="color: #178489;">Crowd Count Violations Details</h4>
+        <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click')"></button>
+    </div>
+
+    <div class="modal-body" id="dataTableCC">
+        <div class="col-12 card">
+            <table class="table" id="dataTable"  style="width:100%;overflow: auto;border-spacing: 0px 20px;" *ngIf="!datanotfound else nodata">
+                <thead  class="headers"  style="color:#134276">
+                    <tr>
+                        <th>SNo.</th>
+                        <th>Camera Image</th>
+                        <th>Camera Name</th>
+                        <th>Camera IP</th>
+                        <th>Violations Count</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    <tr *ngFor="let camera of ccViolations; let i = index">
+                        <td>{{i+1}}.</td>
+                        <td>
+                            <img (click)="OpenCameraImage(camera.imagename)"
+                            [src]="IP+'/get_roi_image/'+camera.imagename" class="image" alt=""> 
+                        </td>
+                        <td>{{camera.camera_name}}</td>
+                        <td>{{camera.camera_ip}}</td>
+                        <td>{{camera.cr_type_counts}}</td>
+                    </tr>
+                </tbody>
+
+            </table>
+            <!-- <ng-template #errorContent>
+                <div class="col-12 card alert alert-danger">
+                    <div class="d-flex justify-content-center">
+                        <div class="">Error while fetching the data</div>
+                    </div>
+
+                </div>
+            </ng-template> -->
+        </div>
+    </div>
+
+</ng-template>
+
+<ng-template #nodata>
+    <div class="row card card-body" id="data-card">
+        <div class="d-flex justify-content-center align-items-center"*ngIf="dataFetchStatus=='init'">
+            <h4> Loading...</h4>
+        </div>
+        <div class="d-flex justify-content-center align-items-center" *ngIf="dataFetchStatus=='success'">
+            <h4> Data Not Found</h4>
+        </div>
+        <div class="d-flex justify-content-center align-items-center"*ngIf="dataFetchStatus=='Error'">
+            <h4>Error While Fetching data</h4>
+        </div>
+    </div>
+</ng-template>
