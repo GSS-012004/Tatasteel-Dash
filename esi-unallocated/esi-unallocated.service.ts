@@ -8,9 +8,9 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 })
 export class EsiUnallocatedService {
  
-  IP:string
-  unplannedInterval:any
-
+IP:string
+unplannedInterval:any
+API: string
   
 constructor
 (public http:HttpClient,
@@ -20,6 +20,7 @@ constructor
   var res=this.loadConfigFile('assets/config.json')
   res=JSON.parse(res)
   this.IP=res.IP
+  this.API=res.API
   this.unplannedInterval = res.unallocatedInterval
 
 }
@@ -84,7 +85,14 @@ GetUnallocatedLiveCount(){
 return this.http.get(this.IP+'/GetUnplannedLivecount')
 }
 
-    
+DeleteRemark(riro_key_id:any){
+  return this.http.post(this.IP+'/RemoveRemarksForUnplannedJob', riro_key_id)
+}
+
+DeleteFeedNo(riro_key_id:any){
+  return this.http.post(this.IP+'/DeleteFeedernumber',riro_key_id)
+
+} 
 
 // getPrevJobsheetData(id:string){
 //   return this.http.get(this.IP+'/unplanned_data/'+id)
@@ -93,5 +101,41 @@ return this.http.get(this.IP+'/GetUnplannedLivecount')
 // GetJobSheet(){
 //   return this.http.get(this.IP+'/unplanned_data')
 //  }
+
+RTSP(rtsp:any){
+return this.http.get(this.API+'/rtsp_feed',rtsp)
 }
 
+
+
+// ModifyRtspString(inputString:any) {
+//   // Create a regular expression that matches all characters to be replaced
+//   let replacements:any = {
+//     ':': '%3A',
+//     '/': '%2F',
+//     '@': '%40',
+//     '?': '%3F',
+//     '&':'%26',
+//     '=':'%3D'
+// rtsp%3A%2F%2Fadmin%3Aadmin123%4010.11.3.211%3A554%2Fcam%2Frealmonitor%3Fchannel%3D1%26subtype%3D0
+
+
+
+//     %2Frtsp%3A%2F%2Fadmin%3Aadmin123%4010.11.3.211%3A554%2Fcam%2Frealmonitor%3Fchannel%3D1%26subtype%3D0
+//     rtsp://admin:admin123@10.11.3.211:554/cam/realmonitor?channel=1&subtype=0
+//   };
+//   let resultString = inputString;
+
+//   for (const key in replacements) {
+//     // if (replacements.hasOwnProperty(key)) {
+//       resultString = resultString.split(key).join(replacements[key]);
+//     // }
+//   }
+
+//   return resultString;
+// }
+
+}
+// url : http://localhost:5800/rtsp_feed
+// method : GET
+// required_parameters: {"url":"rtsp"}

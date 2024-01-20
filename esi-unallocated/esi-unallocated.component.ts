@@ -4,7 +4,7 @@ import { Observable, of } from 'rxjs';
 import { EsiUnallocatedService } from './esi-unallocated.service';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ActivatedRoute, Router } from '@angular/router';
-import { FormControl, Validators } from '@angular/forms';
+import { FormControl, RequiredValidator, Validators } from '@angular/forms';
 import { Lightbox } from 'ngx-lightbox';
 import { saveAs } from 'file-saver';
 import { ToastrService } from 'ngx-toastr';
@@ -16,11 +16,13 @@ import { ToastrService } from 'ngx-toastr';
 })
 
 export class EsiUnallocatedComponent implements OnInit,OnDestroy {
+  remark:boolean
+  rtsp:string
     data:any[] = []
     Images: any[] = []
     tempData:any[]
-    pageSize: number = 10
-    page: number = 1
+    PageSize: number = 10
+    Page: number = 1
     id:any
     shutdownName: any;
     time: any;
@@ -35,15 +37,22 @@ export class EsiUnallocatedComponent implements OnInit,OnDestroy {
     editedFeedNo:any
     editField: string
     dataFetchStatus:string='init'
-    remarkControl:FormControl=new FormControl()
-    editfeedControl:FormControl=new FormControl()
+    remarkControl:FormControl=new FormControl('',Validators.required)
+   
+    verifyControl:FormControl=new FormControl()
+    editfeednoControl:FormControl=new FormControl('',Validators.required)
     verification:FormControl=new FormControl
     rackProcess:FormControl= new FormControl('',Validators.required)
     total: Observable<number> = of(0)
     panelData:Observable< any[]>=of([])
-    isHistory:boolean=false
+    IsHistory:boolean=false
     loading: boolean = false
     table: HTMLElement
+    ExcelLoader:boolean = false
+    FeedDeleteLoader:boolean = false
+    FeedSaveLoader:boolean = false
+    RemarkDeleteLoader:boolean = false
+    RemarkSaveLoader:boolean=false
     @ViewChild('unAllocatedJobAlert') Violation: ElementRef<any>;
   
     constructor
@@ -56,7 +65,7 @@ export class EsiUnallocatedComponent implements OnInit,OnDestroy {
       public currentRoute:ActivatedRoute)
     {
       this.currentRoute.queryParams.subscribe((data:any)=>{
-      this.isHistory=data.isHistory
+      this.IsHistory=data.isHistory
       this.id=data.shutdownId
       console.log(this.shutdownName=data.shutdownName)
       console.log(this.time=data.time)
@@ -95,9 +104,12 @@ export class EsiUnallocatedComponent implements OnInit,OnDestroy {
     ngOnInit(): void{
       var table = document.getElementById('dataTable')
       table?.classList.add('loading')
+      
       this.GetunallocatedJobs()
+      // this.RTSP();
+      // console.log(this.RTSP(),'rtsp')
 
-      if(!this.isHistory){
+      if(!this.IsHistory){
         this.GetUnplannedData()
       }
  
@@ -107,7 +119,7 @@ export class EsiUnallocatedComponent implements OnInit,OnDestroy {
     GetunallocatedJobs(){
       var table = document.getElementById('dataTable')
       table?.classList.add('loading')
-      this.server.GetunallocatedJobs(this.isHistory,this.id).subscribe((response:any) =>{
+      this.server.GetunallocatedJobs(this.IsHistory,this.id).subscribe((response:any) =>{
         if(response.success){
           this.tempData =  response.message;
           this.panelData=of(response.message)
@@ -125,17 +137,19 @@ export class EsiUnallocatedComponent implements OnInit,OnDestroy {
           table?.classList.remove('loading')
         }},
         Err => {
-          this.server.notification("Error While fetching the data",'Retry')
+          table?.classList.remove('loading')
+          this.server.notification("Error While Fetching the Data",'Retry')
+
           this.dataFetchStatus='Error'
         }) 
     }
 
 
     sliceData(){
-      this.total = of((this.tempData.slice((this.page - 1) * this.pageSize, (this.page - 1) * this.pageSize + this.pageSize)).length)
+      this.total = of((this.tempData.slice((this.Page - 1) * this.PageSize, (this.Page - 1) * this.PageSize + this.PageSize)).length)
       this.total = of(this.tempData.length)
-      this.data=(this.tempData.map((div: any, SINo: number) => ({ SNo: SINo + 1, ...div })).slice((this.page - 1) * this.pageSize, (this.page - 1) * this.pageSize + this.pageSize))
-      this.panelData = of((this.tempData.map((div: any, SINo: number) => ({ SNo: SINo + 1, ...div })).slice((this.page - 1) * this.pageSize, (this.page - 1) * this.pageSize + this.pageSize)))
+      this.data=(this.tempData.map((div: any, SINo: number) => ({ SNo: SINo + 1, ...div })).slice((this.Page - 1) * this.PageSize, (this.Page - 1) * this.PageSize + this.PageSize))
+      this.panelData = of((this.tempData.map((div: any, SINo: number) => ({ SNo: SINo + 1, ...div })).slice((this.Page - 1) * this.PageSize, (this.Page - 1) * this.PageSize + this.PageSize)))
     }
 
 
@@ -169,7 +183,7 @@ export class EsiUnallocatedComponent implements OnInit,OnDestroy {
     }
     
 
-    imageCarousal2(viol: any) {
+    ImageCarousal2(viol: any) {
       this.Images = [];
         if (Array.isArray(viol.Before)) {
           viol.Before.forEach((Before: string, index: number) => {
@@ -247,6 +261,7 @@ export class EsiUnallocatedComponent implements OnInit,OnDestroy {
 
 
     SaveFeedNoChanges() {
+      this.FeedSaveLoader=true
       var index = this.tempData.findIndex((data: any) => {
         return data.riro_key_id == this.selectedEditIndex
       })
@@ -254,19 +269,22 @@ export class EsiUnallocatedComponent implements OnInit,OnDestroy {
       riro_key_id:this.selectedEditIndex,
       }
 
-      data1[this.editField]=this.editfeedControl.value
+      data1[this.editField]=this.editfeednoControl.value
       this.server.EditRiroJob(data1).subscribe((response:any)=>{
     
       if(response.success){
+        this.FeedSaveLoader=false
         this.server.notification(response.message)
         this. GetunallocatedJobs()
         this.modalService.dismissAll()
       }
       else{
+        this.FeedSaveLoader=false
         this.server.notification(response.message,'Retry')
       }
       },
       _Err=>{
+        this.FeedSaveLoader=false
         this.server.notification('Error while updating','Retry')
       })
       
@@ -275,16 +293,19 @@ export class EsiUnallocatedComponent implements OnInit,OnDestroy {
 
     VerifyTrueViol(event: any, viol: any) {
       this.editViol = viol
+      console.log(viol)
+      // this.verifyControl.setValue(viol)
       this.server.VerifyViolation(this.editViol._id.$oid, true).subscribe((response: any) => {
         this.server.notification(response.message)
-       
+        // var table = document.getElementById('dataTable')
+        // table?.classList.add('loading')
         if (response.success) {
           this.GetunallocatedJobs();
-          this.modalService.dismissAll()
+          // this.modalService.dismissAll()
          
-          this. GetunallocatedJobs()
+          // this. GetunallocatedJobs()
         }
-        this. GetunallocatedJobs()
+        // this. GetunallocatedJobs()
         }, 
         (_Err: any) => {
         this.server.notification("Error while the  Process", 'Retry')
@@ -293,16 +314,19 @@ export class EsiUnallocatedComponent implements OnInit,OnDestroy {
 
     VerifyFalseViol(event: any, viol: any) {
       this.editViol = viol
+      // this.verifyControl.setValue(viol)
       this.server.VerifyViolation(this.editViol._id.$oid, false).subscribe((response: any) => {
+      //   var table = document.getElementById('dataTable')
+      // table?.classList.add('loading')
         this.server.notification(response.message)
        
         if (response.success) {
           this.GetunallocatedJobs();
-          this.modalService.dismissAll()
-          this. GetunallocatedJobs()
+          // this.modalService.dismissAll()
+          // this. GetunallocatedJobs()
           
         }
-        this. GetunallocatedJobs()
+        // this. GetunallocatedJobs()
         }, 
         (_Err: any) => {
             this.server.notification("Error while the  Process", 'Retry')
@@ -318,7 +342,16 @@ export class EsiUnallocatedComponent implements OnInit,OnDestroy {
       this.selectedEditIndex = data.riro_key_id
       this.modalService.open(modal, {size:'xl'})
       this.rackProcess.setValue(data.rack_process)
-       this.editfeedControl.setValue(data.panel_no)
+       this.editfeednoControl.setValue(data.panel_no)
+    }
+
+    FeedNoModal(modal:any,data:any,field:any){
+      this.editField=field
+      this.selectedRiro =data
+      this.selectedEditIndex = data.riro_key_id
+      this.modalService.open(modal,{size:'xl'})
+      this.editfeednoControl.setValue(data.panel_no)
+
     }
     
 
@@ -332,6 +365,7 @@ export class EsiUnallocatedComponent implements OnInit,OnDestroy {
       var temp = this.tempData[index]
       console.log(temp,'this.temp')
       this.remarkControl.setValue(temp.remarks)
+      
       this.modalService.open(modal, {  backdrop:'static'})
     }
 
@@ -344,13 +378,14 @@ export class EsiUnallocatedComponent implements OnInit,OnDestroy {
       })
       var temp = this.tempData[index]
       console.log(temp,'this.temp')
-      this.editfeedControl.setValue(temp.panel_no)
+      this.editfeednoControl.setValue(temp.panel_no)
       this.modalService.open(modal, {  backdrop:'static'})
     }
    
 
     
     SaveRemark() {
+      this.RemarkSaveLoader=true
       var index = this.tempData.findIndex((data: any) => {
         return data.riro_key_id == this.selectedEditIndex
       })
@@ -361,49 +396,66 @@ export class EsiUnallocatedComponent implements OnInit,OnDestroy {
      data1[this.editField]=this.remarkControl.value
      this.server.EditRiroJob(data1).subscribe((response:any)=>{
         if(response.success){
+          this.RemarkSaveLoader=false
           this.server.notification(response.message)
           this. GetunallocatedJobs()
           this.modalService.dismissAll()
         }
         else{
+          this.RemarkSaveLoader=false
           this.server.notification(response.message,'Retry')
         }
       },
       _Err=>{
+        this.RemarkSaveLoader=false
         this.server.notification('Error while updating','Retry')
       })
     }
     
-    clearTextarea() {
+    clearRemarkarea() {
       this.remarkControl.reset(); // Reset the value of the textarea
     }
     
+
+    clearFeedNoarea() {
+      this.editfeednoControl.reset(); // Reset the value of the textarea
+    }
     
 
 
 
-    createExcel(id?:any) {
-      if(this.isHistory){
+    CreateExcel(id?:any) {
+      // var table = document.getElementById('dataTable')
+      // table?.classList.add('loading')
+      this.ExcelLoader = true
+      if(this.IsHistory){
+        
         const createExcelUrl = this.API + '/UnplannedJobscreate_excel/' +id;
           // Make a GET request to create the Excel file
         this.http.get(createExcelUrl).subscribe((Response: any) => {
             console.log('Excel created successfully:', Response);
+            this.server.notification('Excel is downloading')
 
             // Extract relevant information from the server response
             const serverResponse = Response.message; // Adjust this based on the actual structure of the response
   
             // Call the downloadExcel function with the server response
             if(Response.success){
-              this.downloadExcel(serverResponse,Response.filename);
+              this.DownloadExcel(serverResponse,Response.filename);
+              // table?.classList.remove('loading')
             }
             else{
               this.server.notification(Response.message,'Retry')
+              // table?.classList.remove('loading')
+              this.ExcelLoader = false
             }
           }
          ,
           (error) => {
             // Display error message to the user
             this.handleServerError(error);
+            // table?.classList.remove('loading')
+            this.ExcelLoader=false
           }
         );
       }
@@ -417,16 +469,20 @@ export class EsiUnallocatedComponent implements OnInit,OnDestroy {
           const serverResponse = Response.message; // Adjust this based on the actual structure of the response
   
             // Call the downloadExcel function with the server response
-          this.downloadExcel(serverResponse,Response.filename);
+          this.DownloadExcel(serverResponse,Response.filename);
         },
         (error) => {
             // Display error message to the user
             this.handleServerError(error);
+            // table?.classList.remove('loading')
+            this.ExcelLoader=false
         }
       );}
     }
   
-    downloadExcel(serverResponse: any,filename?:any) {
+    DownloadExcel(serverResponse: any,filename?:any) {
+      // var table = document.getElementById('dataTable')
+      // table?.classList.add('loading')
       const downloadExcelUrl = this.API + '/Unplannedexcel_download';
   
       // Make a GET request to download the Excel file
@@ -441,10 +497,14 @@ export class EsiUnallocatedComponent implements OnInit,OnDestroy {
   
           // Display success message to the user using the server response
           this.handleServerResponse(serverResponse);
+          // table?.classList.remove('loading')
+          this.ExcelLoader=false
       },
       (error) => {
           // Display error message to the user
         this.handleServerError(error);
+        // table?.classList.remove('loading')
+        this.ExcelLoader=false
       });
     }
 
@@ -473,11 +533,12 @@ export class EsiUnallocatedComponent implements OnInit,OnDestroy {
 
 
     RiroDelete(){ 
-        var index = this.tempData.findIndex((data: any) => {
-          return data.riro_key_id === this.selectedEditIndex
-        })
+        // var index = this.tempData.findIndex((data: any) => {
+        //   return data.riro_key_id === this.selectedEditIndex
+        // })
         
-        var tempData = this.tempData[index]
+        // var tempData = this.tempData[index]
+        
         this.server.DeleteUnallocated(this.selectedEditIndex).subscribe((response: any) => {
           this.server.notification(response.message)
           if (response.success) {
@@ -490,6 +551,53 @@ export class EsiUnallocatedComponent implements OnInit,OnDestroy {
         })
 
     }
+DeleteRemark(){
+  // var index = this.tempData.findIndex((data:any) =>{
+  //   return data.riro_key_id === this.selectedEditIndex
+  // })
+  this.RemarkDeleteLoader = true
+  var data1:any ={
+    riro_key_id:this.selectedEditIndex,
+    }
+  this.server.DeleteRemark(data1).subscribe((Response:any) => {
+    this.server.notification(Response.message)
+    if(Response.success){
+      this.RemarkDeleteLoader=false
+      this.GetunallocatedJobs();
+      this.modalService.dismissAll();
+    }
+    // this.modalService.dismissAll();
+  }
+  ,_Err =>{
+    this.RemarkDeleteLoader=false
+    this.server.notification("Error while deleting the Remark",'Retry')
+  })
+
+}
+
+DeleteFeedNo(){
+  // var index = this.tempData.findIndex((data:any) =>{
+  //   return data.riro_key_id === this.selectedEditIndex
+  // })
+  this.FeedDeleteLoader=true
+  var data1:any ={
+    riro_key_id:this.selectedEditIndex,
+    }
+  this.server.DeleteFeedNo(data1).subscribe((Response:any) => {
+    this.server.notification(Response.message)
+    if(Response.success){
+      this.FeedDeleteLoader=false
+      this.GetunallocatedJobs();
+      this.modalService.dismissAll();
+    }
+    // this.modalService.dismissAll();
+  }
+  ,_Err =>{
+    this.FeedDeleteLoader=false
+    this.server.notification("Error while deleting the Remark",'Retry')
+  })
+
+}
 
 
 
@@ -521,5 +629,23 @@ export class EsiUnallocatedComponent implements OnInit,OnDestroy {
       data.violation_verificaton_status = null;
     }
 
+    RTSP(){
+      var rtsp= 'rtsp://admin:admin123@10.11.3.211:554/cam/realmonitor?channel=1&subtype=0';
+      console.log(rtsp,'this is from the RTSP Function')
+      var data
+      {
+        data:rtsp
+        
+      }
+      
+      this.server.RTSP(data).subscribe((response:any) =>
+      {
+       var rts = response;
+       console.log(rts,'this is rtsp from the RTSP function ')
+      })
+    }
+
+
+    
 }
 

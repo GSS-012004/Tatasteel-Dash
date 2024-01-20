@@ -3,16 +3,17 @@
   <div class="data-container">
     <div class="">
       <div class="header">
-        <h3 class="page-header">ESI Unplanned Jobs</h3>
+        <h4 class="page-header">ESI Unplanned Jobs</h4>
       </div>
-      <div *ngIf="isHistory">
-        <button class="btn default me-2 float-end" (click)="createExcel(queryParams.shutdownId)">
-        <fa-icon icon="download"></fa-icon>
+      <div *ngIf="IsHistory">
+        <button class="btn default me-2 float-end" (click)="CreateExcel(queryParams.shutdownId)">
+          <fa-icon *ngIf = '!ExcelLoader' icon="download"></fa-icon>
+          <fa-icon *ngIf = 'ExcelLoader' class="spinner-border spinner-border-sm me-1" ></fa-icon>
           Unplanned Jobsheet
         </button>
       </div>
 
-      <div class="sub-header mb-2" *ngIf="isHistory">
+      <div class="sub-header mb-2" *ngIf="IsHistory">
         <div class="row">
           <span class="float-start"><b>ShutdownName:</b> {{queryParams.shutdownName}}</span>
           <span class="float-end"><b>Uploaded Time:</b> {{queryParams.time|dateFormater}}</span>
@@ -20,14 +21,18 @@
       </div>
     </div>
 
-    <div class="row" *ngIf="!isHistory">
+    <div class="row" *ngIf="!IsHistory">
       <div class="col-12 mb-2">
         <div class="float-end">
-          <button  *ngIf="!isHistory" class="btn primary me-2 float-end" (click)="Back()"> 
+          <button  *ngIf="!IsHistory" class="btn primary me-2 float-end" (click)="Back()"> 
           <fa-icon icon="chevron-left" class="me-1"></fa-icon>Back
           </button>
-          <button class="btn default me-2 float-end" (click)="createExcel()">
-          <fa-icon icon="download"></fa-icon>
+          <!-- <button  *ngIf="!IsHistory" class="btn primary me-2 float-end" (click)="RTSP()"> 
+            <fa-icon icon="chevron-left" class="me-1"></fa-icon>RTSP
+            </button> -->
+          <button class="btn default me-2 float-end" (click)="CreateExcel()">
+          <fa-icon *ngIf = '!ExcelLoader' icon="download"></fa-icon>
+          <fa-icon *ngIf = 'ExcelLoader' class="spinner-border spinner-border-sm me-1" ></fa-icon>
           Unplanned Jobsheet
           </button>
         </div>
@@ -45,7 +50,7 @@
               <tr *ngIf="data.length>0;else nodata">
                 <th scope="col" rowspan="2"> SNo.</th>
                 <th scope="col" rowspan="2"> Job Type</th>
-                <th scope="col" rowspan="2"> Feeder No.</th>
+                <th scope="col" rowspan="2"> Feed No.</th>
                 <th scope="col" rowspan="2"> Department </th>
                 <th scope="col" rowspan="2"> Sub Area </th>
                 <th scope="col" rowspan="2">IP Address</th>
@@ -57,7 +62,7 @@
                 <th scope="col" rowspan="2">Rack  Process</th>
                 <th scope="col" rowspan="2">Is Valid?</th>
                 <th scope="col" rowspan="2">Remarks</th>
-                <th scope="col" rowspan="2"></th> 
+                <th scope="col" rowspan="2">Delete Job</th> 
               </tr>
             </thead>
              
@@ -67,22 +72,29 @@
                 <td>{{data.type}}</td>  
                 <td scope="col" >
                   <div *ngIf="data.riro_key_id">
-                    <div *ngIf="!data.panel_no;else remarks1" style="width: 4rem;" class="btn btn-sm default-outline"
-                        (click)="RemarkModal(editfeeder,data,'panel_no')">
-                    <fa-icon *ngIf="!data.panel_no" icon="plus"class="me-2"></fa-icon>Edit
+                    <div *ngIf="!data.panel_no;else feedno" style="width:3rem;" class="btn btn-sm default-outline"
+                        (click)="FeedNoModal(editfeedno,data,'panel_no')">
+                    Edit
                     </div>
                   </div>
         
-                  <ng-template #remarks1>
-                    <div *ngIf="data.riro_key_id">
-                      <div (click)="RemarkModal(editfeeder,data,'panel_no')" >{{data.panel_no}} <fa-icon (click)="RemarkModal(editfeeder,data,'panel_no')" icon="pen-to-square"></fa-icon>
+
+                  <ng-template #feedno>
+                    <!-- <div *ngIf="data.riro_key_id"> -->
+                      <div (click)="FeedNoModal(editfeedno,data,'panel_no')" class="editable-text" >{{data.panel_no}}
+                         <fa-icon icon="pen-to-square"></fa-icon>
                       </div>
+
+                      <!-- <div *ngIf="data.panel_no" style="width: 4rem;" class="btn btn-sm default-outline"
+                        (click)="RemarkModal(editfeeder,data,'panel_no')">
+                    <fa-icon icon="eye" class="me-1"></fa-icon>Edit
                     </div>
+                    </div> -->
                   </ng-template>
 
-                  <ng-template let-modal #editfeeder>
+                  <ng-template let-modal #editfeedno>
                     <div class="modal-header">
-                      <h4 class="modal-title w-100">Edit Feeder Number</h4>
+                      <h4 class="modal-title w-100">Edit Feed Number</h4>
                       <button type="button" class="btn w-30" (click)="modal.dismiss('Cross click')" aria-hidden="true">&times;</button>
                     </div>
                     <div class="modal-body">
@@ -96,7 +108,7 @@
                                   <div class="card-body">
                                     <div class="row">
                                       <h3>Image</h3>
-                                      <img class="img-fluid" src="{{API + '/Unplannedriroimage/' + data.riro_image.Before}}" alt="Before Image" (click)="imageCarousal2(data.riro_image)">
+                                      <img class="img-fluid" src="{{API + '/Unplannedriroimage/' + data.riro_image.Before}}" alt="Before Image" (click)="ImageCarousal2(data.riro_image)">
                                     </div>
                                   </div>
                       
@@ -107,15 +119,21 @@
                             <div class="modal-body">
                               <h3>Feed Number:</h3>
                                 <form action="">
-                                  <input [formControl]="editfeedControl" class="form-control" placeholder="Please Enter the Feed Number:">
+                                  <input [formControl]="editfeednoControl" class="form-control" placeholder="Please Enter the Feed Number:" >
                                 </form>
                             </div>
                           </div>
 
                           <div class="modal-footer justify-content-center">
-                            <button type="button" class="btn btn-secondary" (click)="modal.close('Cross click')"
-                            data-dismiss="modal">Cancel</button>
-                            <button type="button" class="btn default" (click)=" SaveFeedNoChanges()">Save</button>
+                            <!-- <button type="button" class="btn btn-secondary" (click)="modal.close('Cross click')"
+                            data-dismiss="modal">Cancel</button> -->
+                            <button type = "button" [disabled]="!editfeednoControl.valid" class="btn default-outline" (click)="clearFeedNoarea()" >Clear Feed No Field</button>
+                            <button  type="button" [disabled]="!editfeednoControl?.valid" class="me-2 btn danger" (click)="DeleteFeedNo()">
+                              <span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"
+                                *ngIf="FeedDeleteLoader"></span>Delete Feed No</button>
+                            <button type="button" class="btn default" [disabled]="!editfeednoControl.valid" (click)=" SaveFeedNoChanges()">
+                              <span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"
+                                *ngIf="FeedSaveLoader"></span>Save Feed No</button>
                           </div>
                         </div>
                       </div>
@@ -134,17 +152,17 @@
 
                 <td>{{data.ip_address}}</td> 
 
-                <td  style="white-space: nowrap;">{{data.irrd_in_time|dateFormater}}</td> 
+                <td  style="white-space:nowrap;">{{data.irrd_in_time|dateFormater}}</td> 
 
-                <td  style="white-space: nowrap;">{{data.irrd_out_time|dateFormater}}</td> 
+                <td  style="white-space:nowrap;">{{data.irrd_out_time|dateFormater}}</td> 
 
-                <td>
-                  <div class = "info-badge">{{data.rack_method}}</div>
+                <td >                    
+                      <div  class="info-text"> {{data.rack_method == 'automatic'?'Automatic':data.rack_method}} </div>
                 </td>  
 
                 <td>
                   <img [src]="API+'/Unplannedriroimage/'+data.riro_image.Before" class="image"
-                       loading="lazy"  (click)="imageCarousal2(data.riro_image)"> 
+                       loading="lazy"  (click)="ImageCarousal2(data.riro_image)"> 
                 </td>
 
                 <td>
@@ -180,14 +198,22 @@
                       
                       
                     </div>  -->
-                  <div class="" (click)="RemarkModal(editRack,data,'rack_process')"
+                  <!-- <div class="" (click)="RemarkModal(editRack,data,'rack_process')"
                     *ngIf="data.rack_process!=null;else elsep">
                      {{data.rack_process}} <fa-icon icon="pen-to-square"></fa-icon>
+                  </div> -->
+                  <div class="editable-text"(click)="RemarkModal(editRack,data,'rack_process')"
+                    *ngIf="data.rack_process!=null;else elsep">
+                    {{data.rack_process=='rack_in'?'Rack In':data.rack_process=='rack_out'?'Rack Out':data.rack_process=='maintenance'?'Maintenance':data.rack_process}}
+                    <!-- <div *ngIf="data.rack_process ==='rack_in'">Rack In</div>
+                    <div *ngIf="data.rack_process ==='rack_out'">Rack Out</div>
+                    <div *ngIf="data.rack_process ==='maintenance'">Maintenance</div> -->
+                    <fa-icon icon="pen-to-square" class="me-1"></fa-icon>
                   </div>
 
                   <ng-template #elsep>
-                    <button style="width: 7rem;" class="btn btn-sm default-outline" (click)="RemarkModal(editRack,data,'rack_process')"
-                      *ngIf="data.rack_process == null"><fa-icon icon="plus" class="me-2"></fa-icon>Edit Rack
+                    <button style="width:5rem;" class="btn btn-sm default-outline" (click)="RemarkModal(editRack,data,'rack_process')"
+                      *ngIf="data.rack_process == null">Edit Rack
                     </button>
                   </ng-template> 
 
@@ -208,7 +234,7 @@
                                     <div class="row">
                                       <div class="col-6">
                                         <h3> Before</h3>
-                                        <img class="img-fluid" src="{{API + '/Unplannedriroimage/' + data.riro_image.Before}}" alt="Before Image" (click)="imageCarousal2(data.riro_image)">
+                                        <img class="img-fluid" src="{{API + '/Unplannedriroimage/' + data.riro_image.Before}}" alt="Before Image" (click)="ImageCarousal2(data.riro_image)">
                                       </div>
                                       <div class="col-6">
                                         <h3> After</h3>
@@ -217,7 +243,7 @@
                                     </div>
                                   </div>
 
-                                  <p class="text-dark"><span class="text-muted me-2">Rack Process:</span>{{selectedRiro.rack_process=='rack_in'?    'RackIn':selectedRiro.rack_process=='rack_out'?'Rack Out':'No Process'}} </p><br>
+                                  <p class="text-dark"><span class="text-muted me-2">Rack Process:</span>{{selectedRiro.rack_process=='rack_in'?'RackIn':selectedRiro.rack_process=='rack_out'?'Rack Out':selectedRiro.rack_process=='maintenance'?'Maintenance':'No Process'}} </p><br>
                                   <p class="text-dark"><span class="text-muted me-2">Time :</span><b>{{selectedRiro.irrd_in_time|dateFormater}} -
                                   {{selectedRiro.irrd_out_time|dateFormater}}</b></p>
 
@@ -256,38 +282,94 @@
                     </div>
                   </ng-template>
                 </td> 
-                <td id="verify" style="width: 3rem">
-                  <div *ngIf="!data.violation_verificaton_status; else verified" class="mt-1">
-                    <div class="form-check form-check-inline" id="right">
+                <td id="verify" style="align-content: center;justify-content: center;" scope="col">
+                  <form [action]="" >
+                    <div *ngIf="data.violation_verificaton_status;else verified">
+                      <div class="form-check form-check-inline" id="right">
                       <input type="radio" [value]="true" (change)="VerifyTrueViol($event, data)"
-                       [id]="'yes'+data.SNo" class="form-check-input"
+                       [id]="'yes'+data.SNo" class="form-check-input" name="verify"  [defaultChecked]="data.violation_status==true"
                        [ngClass]="{'previously-selected': data.violation_verificaton_status === true}">
-                      <label [for]="'yes'+data.SNo" class="form-check-label text-success">Yes </label>
+                      <label [for]="'yes'+data.SNo" class="form-check-label text-success">Yes</label>
                     </div>
                     <div class="form-check form-check-inline" id="wrong">
                       <input type="radio" [value]="false" (change)="VerifyFalseViol($event, data)"
-                       [id]="'no'+data.SNo" class="form-check-input"
+                       [id]="'no'+data.SNo" class="form-check-input" name="verify"  [defaultChecked]="data.violation_status==false"
                        [ngClass]="{'previously-selected': data.violation_verificaton_status === false}">
-                     <label [for]="'no'+data.SNo" class="form-check-label text-danger">No </label>
+                     <label [for]="'no'+data.SNo" class="form-check-label text-danger">No</label>
                     </div>
                   </div>
-
+                </form>
+                
                   <ng-template #verified>
-                    <div *ngIf="data.violation_verificaton_status !== null" class="btn-success" (click)="resetVerification(data)">
-                      <div  style="white-space: nowrap;">Verified <fa-icon icon="pen-to-square"></fa-icon></div>
+                    <!-- <div *ngIf="data.violation_verificaton_status !== null">
+                      <div style="white-space: nowrap;">Verified <fa-icon icon="pen-to-square"></fa-icon></div>
+                    </div> -->
+                    <div *ngIf="data.violation_verificaton_status === false">
+                      <div class="form-check form-check-inline" id="right">
+                        <input type="radio" [value]="true" (change)="VerifyTrueViol($event, data)"
+                         [id]="'yes'+data.SNo" class="form-check-input" name="verify"  
+                         [ngClass]="{'previously-selected': data.violation_verificaton_status === true}">
+                        <label [for]="'yes'+data.SNo" class="form-check-label text-success">Yes</label>
+                      </div>
+                      <div class="form-check form-check-inline" id="wrong">
+                        <input type="radio" [value]="false" (change)="VerifyFalseViol($event, data)"
+                         [id]="'no'+data.SNo" class="form-check-input" name="verify" 
+                         [ngClass]="{'previously-selected': data.violation_verificaton_status === false}">
+                       <label [for]="'no'+data.SNo" class="form-check-label text-danger">No</label>
+                      </div>
                     </div>
                   </ng-template>
                 </td>
           
-                <td scope="col">
+                <td scope="col" style="overflow-wrap: break-word">
                   <div *ngIf="data.riro_key_id">
-                    <div *ngIf="data.remarks"  (click)="data.remarks==null?RemarkModal(addRemark,data,'remarks'):EditRemark(addRemark,  data,'remarks')">{{data.remarks}}  <fa-icon icon="pen-to-square"  (click)="data.remarks==null?RemarkModal(addRemark,data,'remarks') :EditRemark(addRemark,data,'remarks')"></fa-icon></div>
-                      <button *ngIf="!data.remarks " style="width: 6rem;" class="btn btn-sm default-outline"
-                        (click)="data.remarks==null?RemarkModal(addRemark,data,'remarks'):EditRemark(addRemark,data,'remarks')">
-                        <fa-icon *ngIf="!data.remarks" icon="plus" class="me-2"></fa-icon>Remark
+                    <!-- <div *ngIf="data.remarks !== null || data.remark !== null"  style="width: 6rem;" class="btn btn-sm default-outline" (click)="EditRemark(addRemark, data,'remarks')"> <fa-icon icon="eye"  class="me-1"></fa-icon>Remark</div> -->
+
+                      <button style="width:6rem;" class="btn btn-sm default-outline"
+                        (click)="EditRemark(addRemark,data,'remarks')">
+                        <fa-icon *ngIf='data.remarks === null || data.remarks === ""' icon="plus" class="me-1"></fa-icon>
+                        <fa-icon *ngIf='data.remarks !== null && data.remarks !== ""' icon="eye" class="me-1"></fa-icon>
+                        Remark
                       </button>
                   </div>
+
+                  <ng-template let-modal #addRemark>
+        <div class="modal-header">
+    <h4 class="modal-title w-100" style="text-align: center;">Add Remarks</h4>
+    <button type="button" class="btn w-30" (click)="modal.dismiss('Cross click')" aria-hidden="true">&times;</button>
+  </div>
+  <div class="modal-body">
+    <div class="modal-confirm">
+      <div class="modal-content">
+        <!-- <div class="modal-header flex-column">
+           <h4 class="modal-title w-100">Add the remark</h4>
+           
+        </div> -->
+        <div class="modal-body">
+          <form action="">
+            <textarea rows="5" [formControl]="remarkControl" class="form-control" placeholder="Please Enter the Remarks here..."></textarea>
+          </form>
+        </div>
+        <div class="modal-footer justify-content-center">
+
+          <button type = "button" [disabled]="!remarkControl.valid" class="btn default-outline" (click)="clearRemarkarea()" >Clear Remark Filed</button>
+          
+          <button  type="button" [disabled]="!remarkControl?.valid" class="me-2 btn danger" (click)="DeleteRemark()">
+            <span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"
+                                *ngIf="RemarkDeleteLoader"></span>Delete Remark</button>
+            
+          
+        </div>
+        <button type="button" [disabled]='!remarkControl?.valid' class="btn default"
+              (click)="SaveRemark()"><span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"
+              *ngIf="RemarkSaveLoader"></span>Save Remark</button>
+      </div>
+    </div>
+  </div>
+</ng-template>
                 </td>
+
+
                 <td>
                   <button class="btn"(click)="RirDeleteModal(deleteField,data.riro_key_id)">
                   <fa-icon class="text-danger" icon="trash"></fa-icon>
@@ -301,15 +383,19 @@
         </div>
       </ng-scrollbar>
     </div>
+    
+    <div class="w-10" >
+      <!-- <ng-scrollbar #scrollable style="width:100% !important;" track="all" pointerEventsMethod="scrollbar"
+    [autoHeightDisabled]="false" [disabled]="false"> -->
+      <div class="d-flex mx-auto justify-content-start">
+       
 
-    <div class="w-100">
-      <div class="d-flex mx-auto justify-content-center">
-          <ngb-pagination [collectionSize]="total|async" [(page)]="page" [pageSize]="pageSize"
-            style="width: 95vw;overflow-x: auto;" (pageChange)="sliceData()">
+          <ngb-pagination [collectionSize]="total|async" [(page)]="Page" [pageSize]="PageSize"
+            style="width: 95vw;  overflow-x:auto" (pageChange)="sliceData()">
           </ngb-pagination>
-
+          
         <div class="d-flex mx-auto justify-content-start">
-          <select class="form-select" style="width:auto" [(ngModel)]="pageSize" (ngModelChange)="sliceData()">
+          <select class="form-select" style="width:auto;overflow-x:scroll" [(ngModel)]="PageSize" (ngModelChange)="sliceData()">
             <option [ngValue]="5">5</option> 
             <option [ngValue]="10">10</option>
             <option [ngValue]="15">15</option>
@@ -317,11 +403,15 @@
             <option [ngValue]="50">50</option>
           </select>
         </div>
+       
       </div>
+      <!-- </ng-scrollbar> -->
     </div>
-
+  
   </div>
+
 </div>
+
 
 <ng-template style="text-align:center;" #elsep>---</ng-template>
 
@@ -347,36 +437,19 @@
     </div>
 </ng-template>
 
-<ng-template let-modal #addRemark>
-  <div class="modal-body">
-    <div class="modal-confirm">
-      <div class="modal-content">
-        <div class="modal-header flex-column">
-           <h4 class="modal-title w-100">Add the remark</h4>
-        </div>
-        <div class="modal-body">
-          <form action="">
-            <textarea rows="5" [formControl]="remarkControl" class="form-control"></textarea>
-          </form>
-        </div>
-        <div class="modal-footer justify-content-center">
-          <button type="button" class="btn btn-secondary" (click)="modal.close('Cross click')"
-            data-dismiss="modal">Cancel</button>
-          <button type="button" [disabled]="!remarkControl.valid" class="btn default"
-              (click)="SaveRemark()">Save</button>
-        </div>
-      </div>
-    </div>
-  </div>
-</ng-template>
+
 
 <ng-template #nodata>
   <div class="row card card-body" id="data-card">
-    <div class="d-flex justify-content-center align-items-center"*ngIf="dataFetchStatus=='init'">Loading...</div>
+    <div class="d-flex justify-content-center align-items-center"*ngIf="dataFetchStatus=='init'">
+      <h4> Loading...</h4>
+    </div>
     <div class="d-flex justify-content-center align-items-center" *ngIf="dataFetchStatus=='success'">
       <h4> Data Not Found</h4>
     </div>
-    <div class="d-flex justify-content-center align-items-center"*ngIf="dataFetchStatus=='Error'">Error while fetching data</div>
+    <div class="d-flex justify-content-center align-items-center"*ngIf="dataFetchStatus=='Error'">
+      <h4>Error While Fetching data</h4>
+    </div>
   </div>
 </ng-template>
 
