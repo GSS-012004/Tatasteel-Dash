@@ -1,0 +1,504 @@
+<div class="container-fluid dashboard-content" id="content">
+    <div class="">
+        <h5> Crowd Count Violations </h5>
+    </div>
+
+    <!-- ============================================================== -->
+    <!-- INPUTS -->
+    <!-- ============================================================== -->
+    <div class="row">
+        <div class="">
+            <div class="d-flex flex-row card p-2" id="data-card" style="border-radius:7px !important;">
+
+
+
+                <div class="me-3">
+                    <div class="container p-3">
+                        <fa-icon icon="filter"></fa-icon>
+                    </div>
+                </div>
+                <div class="col-10 ">
+                    <div class="row d-flex align-items-center">
+                        <span class="col-2">
+                            <div class="datePickerContainer" (click)="openDatePicker($event)">
+                                <span>
+                                    <input type="text" [showCustomRangeLabel]="true" ngxDaterangepickerMd #datepicker
+                                        [ranges]="ranges" [timePicker]="true" placeholder="Select Date"
+                                        [(ngModel)]="selectedMoments" required id="dateInput" class="form-control" />
+                                </span>
+                                <span class="input-group-append">
+
+                                    <button class="ngx-daterangepicker-action btn default" type="button">
+                                        <fa-icon icon="calendar" class="ngx-daterangepicker-action"
+                                            (click)="openDatePicker($event)"></fa-icon>
+                                    </button>
+                                </span>
+
+                            </div>
+
+                        </span>
+                        <span class="col-2" id="filter">
+                            <p-treeSelect containerStyleClass="w-100" class="w-100" [(ngModel)]="selectedItems"
+                                [ngModelOptions]="{standalone: true}" [options]="dropdownList|async"
+                                (onNodeSelect)="onCameraIdSelect($event)" placeholder="Select Camera"></p-treeSelect>
+
+                        </span>
+
+                        <div class="col-xl-7 col-sm-12 col-lg-12 col-xs-12 col-md-12 align-items-center">
+                            <button class="btn default-outline ms-3 me-3" (click)="ResetFilters()"
+                                *ngIf="selectedItems!==null||selectedMoments.startDate!=null ">&times; Cancel
+                                Filters</button>
+
+                            <button class="btn default text-white me-3 ms-1" style="width:80px" (click)="Submit()"
+                                style="width:80px"
+                                [disabled]="(selectedMoments.startDate===null || selectedMoments.endDate===null)"><span
+                                    *ngIf="!loading">Submit</span>
+                                <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"
+                                    *ngIf="loading"></span>
+                            </button>&nbsp;
+                            <button type="submit" class="btn default text-white me-3" (click)="submitForm()"
+                                [disabled]="(selectedMoments.startDate===null || selectedMoments.endDate===null)||excelLoad">
+                                <fa-icon icon="download" class="ms-1 me-1" style="cursor: pointer;"
+                                    *ngIf="!excelLoad"></fa-icon>
+                                <span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"
+                                    *ngIf="excelLoad"></span> Excel
+                            </button>&nbsp;
+                            <div class="float-end">
+                                <!-- <div class="col-xl-2 co mel-sm-4 col-lg-4 col-xs-4 col-md-4 mb-3"> -->
+                                <button class="btn default text-white" *ngIf="isdatewise || isLatest"
+                                    (click)="BackToToday()" style="width:100px">
+                                    <fa-icon icon="chart-area" *ngIf="!loader2" class="text-white me-2"></fa-icon>
+                                    <span *ngIf="!loader2">&nbsp; Live &nbsp;</span>
+                                    <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"
+                                        *ngIf="loader2"></span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+
+    <!-- ============================================================== -->
+    <!-- END OF INPUTS -->
+    <!-- ============================================================== -->
+
+
+
+
+    <!-- ============================================================== -->
+    <!-- DATA TABLE -->
+
+
+    <!-- ============================================================== -->
+
+
+
+    <div class="row">
+
+        <div class="col-12">
+
+            <div class="card" id="data-card">
+
+                <div class="">
+                    <!-- Violation Data -->
+
+                    <!-- <button class="btn default-outline me-2 float-start" (click)="alertToggle()" style="width:7%"
+                        placement="bottom" [ngbTooltip]="alert?'notification on':'notification off'">
+                        <fa-icon icon="bell" *ngIf="alert" class="me-1"></fa-icon>
+                        <fa-icon icon="bell-slash" *ngIf="!alert" class="me-1"></fa-icon>
+
+                    </button>&nbsp;
+                    <button class="btn default-outline float-start me-2" (click)="volumeToggle()" style="width:7%"
+                        placement="bottom" [ngbTooltip]="audioOff ?'mute':'unmute'">
+                        <fa-icon icon="volume-up" *ngIf="!audioOff" class="me-1"></fa-icon>
+                        <fa-icon icon="volume-off" *ngIf="audioOff" class="me-1"></fa-icon>
+
+                    </button>&nbsp; -->
+
+                    <!-- <h3 class="mb-2 float-start mx-auto" style="margin-left: auto ;margin-right:auto;">Violation Data</h3> -->
+
+                    <!-- <button class="btn float-end" type="button"  *ngIf="!isdatewise"> -->
+
+                    <!-- </button> -->
+
+
+                </div>
+                <div class="">
+                    <div class="form-group">
+
+                        <div class="">
+
+                            <button *ngIf="!isdatewise" (click)=GetLatestCCData()
+                                class="btn default me-2 text-white float-start">
+                                <span class="spinner-border spinner-border-sm me-2 ms-1" role="status"
+                                    aria-hidden="true" *ngIf="loaderLatest"></span>
+                                <fa-icon icon="filter" *ngIf="!loaderLatest" class="ms-1 me-2 text-white"
+                                    style="cursor: pointer;"></fa-icon>Latest
+                            </button>
+                            <span class="float-end" *ngIf="!(isdatewise || isLatest)"> <span
+                                    class="spinner-grow spinner-grow-sm me-2 text-danger" role="status"
+                                    aria-hidden="true"></span>Live Data</span>
+
+                        </div>
+
+                        <span class="float-start ms-2 mt-2 me-2"></span>
+
+
+                        <!-- <span class="form-inline mb-2 float-start">
+                            <span class="input-group"><span class="ms-1 mt-2 input-group-append input-group-text"
+                                    style="height: 36px;">
+                                    <fa-icon icon="search" class="font-custome"></fa-icon>
+                                </span><input type="text" class="form-control mt-2" [formControl]="filterOut"
+                                    placeholder="Search by camera name"></span></span> -->
+
+                        <span class="d-flex justify-content-end p-1"> <span class="mr-2 mt-2"
+                                *ngIf="isdatewise"><b>Show:</b></span>
+
+                            <select class="custom-select col-2" *ngIf="isdatewise" style="width: auto"
+                                [(ngModel)]="pageSize" (ngModelChange)="sliceVD()">
+                                <option ngValue=30>30 items per page</option>
+                                <option ngValue=40>40 items per page</option>
+                                <option ngValue=50>50 items per page</option>
+
+                                <!-- <option [ngValue]=show2>{{show2}} items per page</option>
+                                <option [ngValue]=show3>{{show3}} items per page</option> -->
+                            </select>
+                        </span>
+                    </div>
+
+                </div>
+                <div class="" id="dataTable" style="width:100%;overflow: auto;">
+
+                    <table class="table table-bordered" style="width:100%;overflow: auto;"
+                        *ngIf="(violData|async).length>0;else noData">
+                        <thead style="text-align: center;">
+                            <tr>
+                                <th scope="col"><b>S No</b></th>
+                                <th scope="col"><b>
+                                        <fa-icon icon="image" class="font-custome me-1"></fa-icon>Violation Image
+                                    </b></th>
+                                <th scope="col"><b>
+                                        Violation Details
+                                    </b></th>
+                                <th scope="col"><b>
+                                        <fa-icon icon="camera-retro" class="font-custome me-1"></fa-icon>Camera Name
+                                    </b></th>
+                                
+
+                                <th scope="col"><b>
+                                        <fa-icon icon="clock" class="font-custome me-1"></fa-icon>Detected Time
+                                    </b></th>
+                               
+
+                                <th *ngIf="isEditTable" scope="col">
+                                    Is Valid?
+                                </th>
+                                <th scope="col"></th>
+
+
+                            </tr>
+                        </thead>
+
+                        <tbody>
+
+
+
+                            <tr *ngFor="let d of violData|async;let i=index" style="text-align: center;">
+                                <td>{{d.SNo}}</td>
+                                <td>
+                                    <!-- <single-canvas [canvas]="d"></single-canvas> -->
+
+                                    <img [src]="API+'/image/'+d.imagename[0]" loading="lazy" class="image" (click)="imageCarousal(d)">
+                                    <br />
+
+                                    <button class="btn btn-sm  mt-2" (click)="imageCarousal(d)">&nbsp;&nbsp; <fa-icon
+                                            icon="images" class="mr-1"></fa-icon> More Images &nbsp;&nbsp;</button>
+                                    &nbsp;<button class="btn btn-sm default text-white mt-2"
+                                        (click)="downloadImage(API+'/image/'+d.imagename)"> Download Image
+                                        <fa-icon icon="download" class="ms-1 me-1" style="cursor: pointer;"></fa-icon>
+                                    </button>
+                                </td>
+                                <td>
+                                    <div *ngIf="d.crowdcountdetails!=null">
+                                        <div *ngIf="d.analytics_data.data[0].violation_type=='MIN'" class="m-2">
+                                            Minimum <span
+                                                class="success-badge">{{d.crowdcountdetails.data_object[0].min_count}}</span>
+                                            peop1e should be there,But only <span
+                                                class="danger-badge">{{d.analytics_data.data[0].count}}</span>people
+                                            detected
+                                        </div>
+                                        <div *ngIf="d.analytics_data.data[0].violation_type=='MAX'" class="m-2">
+                                            Maximum <span
+                                                class="success-badge">{{d.crowdcountdetails.data_object[0].max_count}}</span>
+                                            people can be there,But <span
+                                                class="danger-badge">{{d.analytics_data.data[0].count}}</span>people
+                                            detected
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    {{d.camera_name?d.camera_name:'null'}}
+                                </td>
+
+                                <td>
+                                    {{d.timestamp|dateFormater}}
+                                </td>
+
+                                <td *ngIf="isEditTable" id="verify" style="width:3rem">
+                                    <!-- <fa-icon icon="pen-to-square" style="cursor: pointer;"></fa-icon> -->
+                                    <div *ngIf="!d.violation_verificaton_status;else verified">
+                                        <div class="form-check form-check-inline" id="right">
+                                            <input type="radio" [value]=0 (change)="VerifyTrueViol($event,d)"
+                                                [defaultValue]=true id="yes" class="form-check-input">
+                                            <label for="yes" class="form-check-label text-success">Yes </label>
+                                        </div>
+                                        <div class="form-check form-check-inline" id="wrong">
+                                            <input type="radio" [value]=false (change)="VerifyFalseViol($event,d)"
+                                                [defaultValue]=false id="no" class="form-check-input">
+                                            <label for="no" class="form-check-label text-danger">No </label>
+                                        </div>
+                                    </div>
+                                    <ng-template #verified>
+                                        <div class="success-badge">Verified</div>
+                                    </ng-template>
+                                </td>
+                                <td >
+                                    <div class="">
+                                        <div class="btn" (click)="IsDeleteData(deleteModal,d)">
+                                            <fa-icon icon="trash" class="text-danger"></fa-icon>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+
+
+
+                    </table>
+                    <ng-template #noData>
+                        <div class="row card card-body" id="data-card">
+                            <div class="row card card-body" id="data-card">
+                                <div class="d-flex justify-content-center align-items-center" *ngIf="dataFetchStatus=='success'">
+                                    <h4> No violation details found</h4>
+                                </div>
+                                <div class="d-flex justify-content-center align-items-center" *ngIf="dataFetchStatus=='init'">Loading...
+                                </div>
+                                <div class="d-flex justify-content-center align-items-center" *ngIf="dataFetchStatus=='Error'">Error
+                                    while fetching data</div>
+                
+                            </div>
+                        </div>
+                
+                
+                    </ng-template>
+
+                    <div class="d-flex mx-auto justify-content-center p-1">
+                        <ngb-pagination [collectionSize]="total|async" [(page)]="page" [pageSize]="pageSize"
+                            style="width: 95vw;overflow-x: auto;" (pageChange)="sliceVD()">
+                        </ngb-pagination>
+
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+
+
+
+    <!-- ============================================================== -->
+    <!-- END OF DATA TABLE -->
+    <!-- ============================================================== -->
+
+    <!-- ============================================================== -->
+    <!-- POP UP FOR violation image -->
+    <!-- ============================================================== -->
+    <!-- <ng-template #image let-modal>
+            <div class="">
+                <div class="modal-header">
+
+                    <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col">
+
+
+
+                            <div>
+                                <lib-ngx-image-zoom [thumbImage]=imageUrl zoomMode="click" [fullImage]=imageUrl
+                                    [magnification]="1" [enableScrollZoom]="true">
+                                </lib-ngx-image-zoom>
+
+
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </ng-template> -->
+
+    <!-- ============================================================== -->
+    <!-- END OF POPO UP -->
+    <!-- ============================================================== -->
+
+    <!-- ============================================================== -->
+    <!-- POP UP FOR  VIOLATION -->
+    <!-- ============================================================== -->
+
+    <!-- <ng-image-slider [images]="imageObject" #nav></ng-image-slider> -->
+
+
+    <div style="display: none;">
+        <div class="col-12">
+            <div #dangerAlert>
+
+                <div class="mb-0"
+                    style="border: 2px solid rgba(121, 20, 20, 0.699);background-color:rgba(214, 148, 148, 0.459);">
+                    <div class="modal-header" style="text-align: center;color:rgba(121, 20, 20, 0.699);">
+                        <h3 class="" style="color:rgb(196, 54, 54) !important;">Violation</h3>
+                        <!-- <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+                        <span aria-hidden="true">&times;</span>
+                    </button> -->
+                    </div>
+
+                    <div class="modal-body" *ngIf="currentViol">
+                        <div class="row">
+
+                            <div class="col-12">
+                                <img [src]="API+'/image/'+currentViol.imagename" loading="lazy" alt="" class="violImage" width="100%"
+                                    style="width:30%;height: 30%;object-fit: fill;border-radius:5px 5px 5px 5px ;">
+                            </div>
+                            <div class="col-xl-12 col-md-12 col-lg-12 col-xs-12 text-white mt-2">
+                                <!-- <h5><b> <span></span> ID : </b>
+                                    <span class="text-muted">{{currentViol.cameraid ?currentViol.cameraid:0}}</span>
+                                </h5> -->
+                                <h5><span class="text-muted"> Camera Name :</span>
+                                    <b><span class="text-white">{{currentViol.camera_name
+                                            ?currentViol.camera_name:'null'}}</span></b>
+                                </h5>
+                                <!-- <h5><b> Device Name : </b>
+                                    <span class="text-dark">{{currentViol.deviceid?currentViol.deviceid:'--'}}</span>
+                                </h5> -->
+
+                                <h5><span class="text-muted"> Detected Time : </span>
+                                    <b><span
+                                            class="text-white">{{currentViol.timestamp?currentViol.timestamp:'--'}}</span></b>
+                                </h5>
+
+
+
+                            </div>
+
+
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+
+            <!-- ============================================================== -->
+            <!-- END OF POP UP -->
+            <!-- ============================================================== -->
+
+        </div>
+    </div>
+</div>
+
+<!-- <div style="width: 840px; height: 500px; text-align:center;margin:0; padding:0;" *ngIf="imageObject">
+        <ng-image-slider #nav
+          [images]="imageObject"
+          [infinite]="false"
+          [autoSlide]="1"
+          [imageSize]="{width: '25%', height: 200}"
+          slideImage="1"></ng-image-slider>
+      </div> -->
+
+
+
+<!-----------------------------------MODAL TEMPLATE FOR EXCEL DOWNLOAD------------------------------------------------------------>
+
+
+<ng-template let-modal #editViolation>
+    <div class="card p-2">
+        <div class="row">
+            <div class="col-6 d-flex align-items-center">
+                <div class="card-img-top">
+                    <img [src]="API+'/image/'+editViol.imagename[0]" style="width:100%;height:auto;object-fit:contain"
+                        alt="">
+
+                    <!-- <lib-ngx-image-zoom class="card-img-top" [enableScrollZoom]=true
+                              [thumbImage]="API+'/image/'+editViol.imagename[0]"
+                              [fullImage]="API+'/image/'+editViol.imagename[0]">
+                            </lib-ngx-image-zoom> -->
+                </div>
+            </div>
+            <div class="col-6">
+                <div style="height: 90%;overflow:scroll;">
+                    <div class="" style="width:100%;">
+                        <h5 class="">{{editViol.analyticstype}}</h5><br />
+                        <div style="width:100%;"
+                            *ngIf="editViol.analyticstype ==='PPE'||editViol.analyticstype ==='RA'">
+                            <div *ngFor="let object of editViol.object_data;let in=index" class="border-bottom">
+
+                                <div>
+                                    <div class=""> {{object.violation_count}}</div><br>
+                                    <ul class="list-unstyled p-4">
+                                        <li>
+                                            <div *ngFor="let key of objectKeys(object);">
+
+                                                <div style="width:5rem" class="d-inline" id="editViol"
+                                                    *ngIf="(key==='Helmet'?object[key]==='none'?false:object[key]===false?true:false:key==='Vest'?object[key]==='no_vest'?true:false:false)">
+                                                    <input class="me-4" id="item1" type="checkbox"
+                                                        [checked]="key==='Vest'?object[key]=='no_vest'?true:false:object[key]">
+                                                    <label for="item1" class="ms-4">{{key==='Vest'?'Vest':key}}</label>
+                                                </div>
+
+                                            </div>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- <button style="width:50%" class="btn success"(click)="VerifyTrueViol()" >Correct</button><button  style="width:50%"(click)="VerifyFalseViol()" class="btn danger">Incorrect</button> -->
+            </div>
+        </div>
+    </div>
+</ng-template>
+
+<ng-template let-modal #deleteModal>
+    <div class="modal-body">
+        <div class="modal-confirm">
+            <div class="modal-content">
+                <div class="modal-header flex-column">
+                    <div class="icon-box">
+                        <i class="material-icons">&#xE5CD;</i>
+                    </div>
+                    <h4 class="modal-title w-100">Are you sure?</h4>
+                    <!-- <button type="button" class="btn"  aria-hidden="true">&times;</button> -->
+                </div>
+                <div class="modal-body">
+                    <p>Do you really want to delete this violation Details? This process cannot be undone.
+                    </p>
+                </div>
+                <div class="modal-footer justify-content-center">
+                    <button type="button" class="btn btn-secondary" (click)="modal.close('Cross click')"
+                        data-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn danger" (click)="DeleteViolationData()">Delete</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</ng-template>

@@ -1,0 +1,124 @@
+<div class="container-fluid dashboard-content" #datatable id="content">
+    <div class="">
+        <h3 class="page-header">Violations Details </h3>
+    </div>
+
+
+    <div class="row">
+        <div class="col-12">
+            <div class="card-header">
+
+                <button class="btn default-outline me-2 float-start" (click)="alertToggle()" style="width:7%"
+                    placement="bottom" [ngbTooltip]="alert?'notification on':'notification off'">
+                    <fa-icon icon="bell" *ngIf="alert" class="me-1"></fa-icon>
+                    <fa-icon icon="bell-slash" *ngIf="!alert" class="me-1"></fa-icon>
+
+                </button>&nbsp;
+                <button class="btn default-outline float-start me-2" (click)="volumeToggle()" style="width:7%"
+                    placement="bottom" [ngbTooltip]="audioOff ?'mute':'unmute'">
+                    <fa-icon icon="volume-up" *ngIf="!audioOff" class="me-1"></fa-icon>
+                    <fa-icon icon="volume-off" *ngIf="audioOff" class="me-1"></fa-icon>
+
+                </button>&nbsp;
+
+
+                <!-- <span class="float-end" *ngIf="!(isdatewise || isLatest)">
+                    <span class="d-flex justify-centent-center align-items-center"><span class="text-muted">Analytics
+                            :</span>
+                        <span class="success-badge" *ngIf="isActive">
+                            
+                            <span *ngIf="!isActive2">Running</span>
+                            <span *ngIf="isActive2">Running in Mockdrill Mode</span>
+
+                        </span>
+                        <span class="danger-badge" *ngIf="!isActive">Stopped</span></span></span> -->
+
+
+
+            </div>
+        </div>
+    </div>
+   <div class="card card-body mt-3" id="data-card">
+        <p-tabView (onChange)="OnTabChange($event)" [(activeIndex)]="activeIndex">
+            <p-tabPanel header="Danger Zone">
+                <router-outlet *ngIf="activeIndex==0"></router-outlet>
+            </p-tabPanel>
+            <p-tabPanel header="Personal Protective Equipment">
+                <router-outlet *ngIf="activeIndex==1"></router-outlet>
+            </p-tabPanel>
+            <p-tabPanel header="Crowd Count">
+                <router-outlet *ngIf="activeIndex==2"></router-outlet>
+            </p-tabPanel>
+            <p-tabPanel header="Fire and Dust Detection">
+                <router-outlet *ngIf="activeIndex==3"></router-outlet>
+            </p-tabPanel>  
+            <!-- <p-tabPanel header="Spillage Detection">
+                <router-outlet *ngIf="activeIndex==4"></router-outlet>
+            </p-tabPanel> -->
+        </p-tabView>
+
+    </div>
+
+
+    
+
+
+    <div style="display: none;">
+        <div class="col-12">
+            <div #dangerAlert (click)="GetCurrentViolInfo(currentViol)">
+
+                <div class="mb-0"
+                    style="border: 2px solid rgba(121, 20, 20, 0.699);background-color:rgba(214, 148, 148, 0.459);">
+                    <div class="modal-header" style="text-align: center;color:rgba(121, 20, 20, 0.699);">
+                        <h3 class="" style="color:rgb(196, 54, 54) !important;">Violation</h3>
+                      
+                    </div>
+
+                    <div class="modal-body" *ngIf="currentViol">
+                        <div class="row">
+
+                            <div class="col-12">
+                                <img [src]="API+'/image/'+currentViol.imagename" alt="" class="violImage" width="100%"
+                                    style="width:30%;height: 30%;object-fit: fill;border-radius:5px 5px 5px 5px ;">
+                            </div>
+                            <div class="col-xl-12 col-md-12 col-lg-12 col-xs-12 text-white mt-2">
+                             
+                                <h5><span class="text-gray"> Camera Name :</span>
+                                    <b><span class="text-white">{{currentViol.camera_name
+                                            ?currentViol.camera_name:'null'}}</span></b>
+                                </h5>
+ <h5><span class="text-gray"> Detected Time : </span>
+                                    <b><span
+                                            class="text-white">{{currentViol.timestamp?(currentViol.timestamp|dateFormater):'--'}}</span></b>
+                                </h5>
+                                <h5><span class="text-gray"> Violation Type :</span>
+                                    <b><span class="text-white">{{currentViol.analyticstype
+                                            ?aiSolutionsList[currentViol.analyticstype]:'null'}}</span></b>
+                                </h5>
+
+
+
+                            </div>
+
+
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+
+            <!-- ============================================================== -->
+            <!-- END OF POP UP -->
+            <!-- ============================================================== -->
+
+        </div>
+    </div>
+</div>
+
+
+
+
+<!-----------------------------------MODAL TEMPLATE FOR EXCEL DOWNLOAD------------------------------------------------------------>
+
+
