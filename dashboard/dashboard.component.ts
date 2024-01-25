@@ -280,7 +280,8 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
       name: 'Crowd Count',
       
       y: this.violationsCount.cr_count? this.violationsCount.cr_count:0,
-      color: '#B9B9B9',
+      // color: '#00d4ff',
+      color:'#128ec1',
     })
    }
    if( this.violationList.indexOf('PPE')>=0){
@@ -288,6 +289,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
       name: 'Personal Protective Equipment',
       y: this.violationsCount.ppe_count? this.violationsCount.ppe_count:0,
       color: '#6287b2',
+ 
     })
    }
    console.log(this.chartOptionsPie)
@@ -324,6 +326,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
 
         y: this.violationsCount.ra_count? this.violationsCount.ra_count:0,
         color: '#5DABFF',
+        // color:'#128ec1',
       })
      }
      if( this.violationList.indexOf('PPE')>=0){
@@ -332,6 +335,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
 
         y: this.violationsCount.ppe_count? this.violationsCount.ppe_count:0,
         color: '#6287b2',
+        
       },)
      }
      if( this.violationList.indexOf('CRDCNT')>=0){
@@ -339,7 +343,8 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
         label: 'Crowd Count',
 
         y: this.violationsCount.cr_count? this.violationsCount.cr_count:0,
-        color: '#B9B9B9',
+        // color: '#00d4ff',
+        color:'#128ec1',
       },)
      }
      console.log(this.chartOptionsBar)
@@ -599,7 +604,36 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     }
     tempImgs.push(temp)
     this._lightbox.open(tempImgs,0)
+
+
+    // if (this._lightbox.supportsZoom()) {
+    // }
   }
+
+  // OpenCameraImage(img: any) {
+  //   var tempImgs: any[] = [];
+  //   var temp = {
+  //     src: this.IP + '/get_roi_image/' + img,
+  //     thumb: this.IP + '/get_roi_image/' + img,
+  //     caption: img,
+  //   };
+  //   tempImgs.push(temp);
+  
+  //   // Example: Set options for the lightbox, including max and min size
+  //   var lightboxOptions = {
+  //     maxWidth: 400, // Set the maximum width of the image
+  //     maxHeight: 200, // Set the maximum height of the image
+  //     minWidth: 100,  // Set the minimum width of the image
+  //     minHeight: 50  // Set the minimum height of the image
+  //   };
+  
+  //   // Example: Assuming _lightbox is the lightbox library object
+  //   this._lightbox.open(tempImgs, 0, lightboxOptions);
+  // }
+  
+
+
+
 
   // DateWiseViolationsCount() {
 

@@ -47,7 +47,7 @@ export class DashboardService {
   }
 
   GetPPEViolCountCamWise(){
-    return this.http.get(this.IP+ "/cam_wise_PPE_violations_details")
+    return this.http.get(this.IP+ "/cam_wise_PPE_violations_count")
  }
 
   GetViolationList(){
@@ -59,7 +59,7 @@ export class DashboardService {
  }
 
   GetLiveViolationCount(){
-    return this.http.get(this.IP+'/get_current_date_violation')
+    return this.http.get(this.IP+'/get_current_date_violation_counts')
   }
  
   notification(message: string, action?: string) {
@@ -76,11 +76,11 @@ export class DashboardService {
   }
 
   GetTotalViolDetailsDatewise(fromDate:any,toDate:any){
-    return this.http.post(this.IP+'/date_wise_violations_count',{from_date:fromDate,to_date:toDate})
+    return this.http.post(this.IP+'/cam_wise_violations_count_by_date',{from_date:fromDate,to_date:toDate})
   }
 
   GetTotaliveViolationsDetails(){
-    return this.http.get(this.IP+'/current_date_violations_count')
+    return this.http.get(this.IP+'/current_date_violations_cam_wise')
   }
 
   DisableCamDetails(){
@@ -92,7 +92,7 @@ export class DashboardService {
   }
 
   GetViolationCountDatewise(fromDate:any,toDate:any,violationType?:any){
-    return this.http.post(this.IP+'/date_wise_given_violation_count',{from_date:fromDate,to_date:toDate,violation_type:violationType?[violationType]:[]})
+    return this.http.post(this.IP+'/date_wise_violations_count',{from_date:fromDate,to_date:toDate})
   }
 
   dateTransform(date:Date){
@@ -104,27 +104,27 @@ export class DashboardService {
   }
 
   GetCCCamwiseDateWise(fromDate:any,toDate:any){
-    return this.http.get(this.IP+'/cam_wise_CR_violations_details')
+    return this.http.post(this.IP+'/cam_wise_CR_violations_by_date',{from_date:fromDate,to_date:toDate})
   }
 
   GetCCLiveDataCamwise(){
-    return this.http.get(this.IP+'/cam_wise_CR_violations_details')
+    return this.http.get(this.IP+'/cam_wise_CR_violations_count')
   }
 
   GetPPEViolationDetails(fromDate:any,toDate:any){
-    return this.http.post(this.IP+'/date_wise_ppe_violations_count',{from_date:fromDate,to_date:toDate})
+    return this.http.post(this.IP+'/cam_wise_PPE_violations_by_date',{from_date:fromDate,to_date:toDate})
   }
 
   ppeViolCountCamwise(){
-    return this.http.get(this.IP+'/cam_wise_PPE_violations_details')
+    return this.http.get(this.IP+'/cam_wise_PPE_violations_count')
   }
 
   GetRAViolationsDetails(fromDate:any,toDate:any){
-    return this.http.post(this.IP+'/date_wise_ra_violations_count',{from_date:fromDate,to_date:toDate})
+    return this.http.post(this.IP+'/cam_wise_RA_violations_by_date',{from_date:fromDate,to_date:toDate})
   }
 
   RAViolCountCamWise(){
-    return this.http.get(this.IP+'/cam_wise_RA_violations_details')
+    return this.http.get(this.IP+'/cam_wise_RA_violations_count')
   }
   
 }
