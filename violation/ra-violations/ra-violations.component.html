@@ -16,14 +16,14 @@
                         <fa-icon icon="filter"></fa-icon>
                     </div>
                 </div>
-                <div class="col-xl-10 col-lg-12 col-md-12 col-xs-12 col-sm-12 mb-2">
+                <div class="col-xl-12 col-lg-12 col-md-12 col-xs-12 col-sm-12 mb-2">
                     <div class="row d-flex align-items-center">
                         <span class="col-xl-2 col-lg-2 col-md-4 col-xs-12 col-sm-12">
                             <div class="datePickerContainer" (click)="openDatePicker($event)">
                                 <div class="w-80">
-                                    <input type="text" [showCustomRangeLabel]="true" ngxDaterangepickerMd #datepicker
+                                    <input type="text"  [showCustomRangeLabel]="true" ngxDaterangepickerMd #datepicker
                                         [ranges]="ranges" [timePicker]="true" placeholder="Select Date"
-                                        [(ngModel)]="selectedMoments" required id="dateInput" class="form-control" />
+                                        [(ngModel)]="selectedMoments" required id="dateInput" autocomplete="off" class="form-control" />
                                 </div>
                                 <div class="input-group-append">
 
@@ -43,7 +43,7 @@
                                 (onNodeSelect)="onCameraIdSelect($event)" placeholder="Select Camera"></p-treeSelect>
                         </div>
 
-                        <div class="col-xl-7 col-sm-12 col-lg-12 col-xs-12 col-md-12 d-flex align-items-center">
+                        <div class="col-xl-8 col-sm-12 col-lg-12 col-xs-12 col-md-12 d-flex align-items-center">
                             <button class="btn default-outline ms-3 me-3" (click)="ResetFilters()"
                                 *ngIf="selectedItems!==null||  selectedMoments?.startDate!==null ">&times;
                                 Cancel
@@ -64,12 +64,12 @@
                                     *ngIf="excelLoad"></span> Excel
                             </button>&nbsp;
 
-                            <div class="float-end">
+                            <div class="">
                                 <!-- <div class="col-xl-2 co mel-sm-4 col-lg-4 col-xs-4 col-md-4 mb-3"> -->
                                 <button class="btn default text-white" *ngIf="isdatewise || isLatest"
                                     (click)="BackToToday()" style="width:100px">
                                     <fa-icon icon="chart-area" *ngIf="!loader2" class="text-white me-2"></fa-icon>
-                                    <span *ngIf="!loader2">&nbsp; Live &nbsp;</span>
+                                    <span *ngIf="!loader2"> Live </span>
                                     <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"
                                         *ngIf="loader2"></span>
                                 </button>
@@ -147,7 +147,7 @@
                             <div class="header" style="overflow: auto;">
 
                                 <div scope="col" class="d-flex align-items-center justify-centent-center">
-                                    <div><b>S No</b>
+                                    <div><b>SNo</b>
                                     </div>
                                 </div>
                                 <div scope="col" class="d-flex justify-content-center align-items-center">
@@ -185,26 +185,27 @@
                                 <div *ngIf="data?.data">
                                     <p-carousel  [value]="data.data"  [id]="data.SNo"  >
                                         <ng-template let-d   pTemplate="d"  >
-                                            <div class="data-wrapper p-2"  >
-                                                <div>{{data.SNo}}.{{d.id}}</div>
+                                            <div class="data-wrapper p-2"   >
+                                                <div  class="column-flex" style="padding-left: 2rem">{{data.SNo}}.{{d.id}}</div>
                                                 <div class="d-flex justify-content-center align-items-center">
                                                     <div class="column-flex">
                                                         <img [src]="API+'/image/'+d.imagename[0]" class="image"
                                                             loading="lazy" (click)="imageCarousal(d)">
-                                                        <br />
-
-                                                        <button class="btn btn-sm  mt-2"
-                                                            (click)="imageCarousal(d)">&nbsp;&nbsp;
+                                                        <br>
+                                                    <div class="column-flex">
+                                                        <button   *ngIf="(d.imagename).length<1" class="btn btn-sm  mt-2"
+                                                          (click)="imageCarousal(d)">&nbsp;&nbsp;
                                                             <fa-icon icon="images" class="mr-1"></fa-icon> More
-                                                            Images
-                                                            &nbsp;&nbsp;</button>
-                                                               &nbsp;<button class="btn btn-sm default text-white mt-2"
+                                                            Images</button>
+                                                            
+                                                               <button class="btn btn-sm default text-white mt-2"
                                                             (click)="downloadImage(API+'/image/'+d.imagename)">
                                                             Download
                                                             Image
                                                             <fa-icon icon="download" class="ms-1 me-1"
                                                                 style="cursor: pointer;"></fa-icon>
                                                         </button>
+                                                        </div>
                                                     </div>
                                                 </div>
                                                 <div class="d-flex justify-content-center align-items-center">
@@ -240,6 +241,11 @@
                                                     {{d.timestamp|dateFormater}}
                                                 </div>
 
+                                                <div
+                            class="d-flex justify-content-center align-items-center"
+                          >
+                            <div class="column-flex">
+
                                                 <div *ngIf="isEditTable" id="verify" style="width:5rem"
                                                     class="d-flex justify-content-center align-items-center">
                                                     <div *ngIf="!d.violation_verificaton_status;else verified">
@@ -260,8 +266,29 @@
                                                     </div>
                                                     <ng-template #verified>
                                                         <div class="success-badge w-full mt-3">Verified</div>
+                                                        <!-- <div class="column-flex"> -->
+                                                        <!-- <div *ngIf="isEditTable" id="verify" style="width:5rem"
+                                                        class="d-flex justify-content-center align-items-center">
+                                                        <div class="" id="right">
+                                                            <input type="radio" [value]=0
+                                                                (change)="VerifyTrueViol($event,d,data.SNo)" [defaultValue]=true
+                                                                [id]="'yes'+String(data.SNo)+String(d.id)" class="">
+                                                            <label [for]="'yes'+String(data.SNo)+String(d.id)" class="form-check-label text-success">Yes
+                                                            </label>
+                                                        </div>
+                                                        <div class="" id="wrong">
+                                                            <input type="radio" [value]=1
+                                                                (change)="VerifyFalseViol($event,d,data.SNo)"
+                                                               [defaultValue]=false [id]="'no'+String(data.SNo)+String(d.id)" class="">
+                                                            <label [for]="'no'+String(data.SNo)+String(d.id)" class="form-check-label text-danger">No
+                                                            </label> -->
+                                                        <!-- </div> -->
+                                                    <!-- </div></div> -->
                                                     </ng-template>
                                                 </div>
+                                                </div>
+                                                </div>
+
                                                 <div class="d-flex justify-content-center align-items-center">
                                                     <div>
                                                         <div class="btn" (click)="IsDeleteData(deleteModal,d)">

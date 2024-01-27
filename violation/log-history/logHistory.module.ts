@@ -19,7 +19,8 @@ const routes:Routes=[{path:'',component:LogHistoryComponent,children:[
     { path: 'CrowdCount', loadChildren: () => import('../crowd-count-violations/crowd-count-violations.module').then(m => m.CrowdCountViolationsModule) },
     { path: 'DangerZone', loadChildren: () => import('../ra-violations/ra-violations.module').then(m => m.RaViolationsModule) },
     { path: 'FireDetection', loadChildren: () => import('../fire-and-smoke-violation/fire-and-smoke-violation.module').then(m => m.FireAndSmokeViolationModule) },
-    { path: 'SpillageDetection', loadChildren: () => import('../spillage-violation/spillage-violation.module').then(m => m.SpillageViolationModule) }
+    { path: 'SpillageDetection', loadChildren: () => import('../spillage-violation/spillage-violation.module').then(m => m.SpillageViolationModule) },
+    { path:'Steam-SuitDetection',loadChildren:()=> import('../../steam-suit/steam-suit-details/steam-suit-details.module').then(m=>m.SteamSuitDetailsModule)}
 
 ]}
 ]

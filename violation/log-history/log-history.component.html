@@ -49,12 +49,15 @@
             <p-tabPanel header="Crowd Count">
                 <router-outlet *ngIf="activeIndex==2"></router-outlet>
             </p-tabPanel>
-            <p-tabPanel header="Fire and Dust Detection">
+            <p-tabPanel header="Fire Detection">
                 <router-outlet *ngIf="activeIndex==3"></router-outlet>
             </p-tabPanel>  
-            <!-- <p-tabPanel header="Spillage Detection">
+            <p-tabPanel header="Spillage Detection">
                 <router-outlet *ngIf="activeIndex==4"></router-outlet>
-            </p-tabPanel> -->
+            </p-tabPanel>
+            <p-tabPanel header="Steam-Suit Detection">
+                <router-outlet *ngIf="activeIndex==5"></router-outlet>
+            </p-tabPanel>
         </p-tabView>
 
     </div>

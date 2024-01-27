@@ -810,6 +810,11 @@ export class LogHistoryComponent implements OnDestroy ,OnInit,AfterViewInit{
     case 4:{
       this.activeIndex=4
       this.router.navigate(['app','violations','SpillageDetection'])
+      break;
+    }
+    case 5:{
+      this.activeIndex=5
+      this.router.navigate(['app','violations','Steam-SuitDetection'])
     }
    }
   }

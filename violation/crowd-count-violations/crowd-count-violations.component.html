@@ -24,7 +24,7 @@
                                 <span>
                                     <input type="text" [showCustomRangeLabel]="true" ngxDaterangepickerMd #datepicker
                                         [ranges]="ranges" [timePicker]="true" placeholder="Select Date"
-                                        [(ngModel)]="selectedMoments" required id="dateInput" class="form-control" />
+                                        [(ngModel)]="selectedMoments" required id="dateInput" class="form-control" autocomplete="off" />
                                 </span>
                                 <span class="input-group-append">
 
@@ -215,7 +215,7 @@
                                     <img [src]="API+'/image/'+d.imagename[0]" loading="lazy" class="image" (click)="imageCarousal(d)">
                                     <br />
 
-                                    <button class="btn btn-sm  mt-2" (click)="imageCarousal(d)">&nbsp;&nbsp; <fa-icon
+                                    <button *ngIf = "(d.imagename).length<1"class="btn btn-sm  mt-2" (click)="imageCarousal(d)">&nbsp;&nbsp; <fa-icon
                                             icon="images" class="mr-1"></fa-icon> More Images &nbsp;&nbsp;</button>
                                     &nbsp;<button class="btn btn-sm default text-white mt-2"
                                         (click)="downloadImage(API+'/image/'+d.imagename)"> Download Image

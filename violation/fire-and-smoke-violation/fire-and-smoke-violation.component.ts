@@ -58,7 +58,7 @@ export class FireAndSmokeViolationComponent implements OnInit, OnDestroy, AfterV
   tempdata: any[] = [];
   total: Observable<number> = of(0)
   violData: Observable<any[]> = of([])
- 
+
   isdate: boolean = false
   pageSize: number = 30
   selectedViolType: string | null = null
@@ -69,7 +69,8 @@ export class FireAndSmokeViolationComponent implements OnInit, OnDestroy, AfterV
   excelLoad: boolean = false
   isExcel: boolean = false
   selectedViolation!: any
-  selectedMoments: { startDate: Moment, endDate: Moment } = {startDate: null,endDate: null}
+  // selectedMoments: { startDate: Moment, endDate: Moment } = {startDate: null,endDate: null}
+  selectedMoments: { startDate: Moment, endDate: Moment } = null;
   excelFromDate: FormControl = new FormControl(new Date(), Validators.required)
   excelToDate: FormControl = new FormControl(new Date(), Validators.required)
   ExcelRange: number
@@ -167,8 +168,8 @@ export class FireAndSmokeViolationComponent implements OnInit, OnDestroy, AfterV
 
 
   openDatePicker(event: any) {
-    var dateInput = document.getElementById('dateInput')
-    dateInput.click()
+    var dateInput = document.getElementById('dateInput');
+    dateInput.click();
   }
 
   onCameraIdSelect(event: any) {
@@ -211,8 +212,6 @@ export class FireAndSmokeViolationComponent implements OnInit, OnDestroy, AfterV
 
 
         this.dropdownList = of(cameralist)
-
-        
       }
 
     })
@@ -830,11 +829,6 @@ table?.classList.add('loading')
     this.isdate = false
     this.tempdata = []
     this.total = of(0)
-
-    this.Images = []
-    var table = document.getElementById('dataTable')
-    table?.classList.add('loading')
-    this.loader2 = true
     this.isdate = false
     this.tempdata = []
     this.total = of(0)
@@ -852,7 +846,6 @@ table?.classList.add('loading')
         var cviol = Rdata.message
         Rdata.success ? this.tempdata = Rdata.message : this.tempdata = []
         this.sliceVD()
-        this.loader2 = true
         this.isdatewise = false
         localStorage.setItem("updatedLen", JSON.stringify(cviol.length))
         var updatedLen = Number(localStorage.getItem("updatedLen"))

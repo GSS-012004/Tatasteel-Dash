@@ -85,7 +85,8 @@ export class SpillageViolationComponent implements OnInit, OnDestroy, AfterViewI
   excelLoad: boolean = false
   isExcel: boolean = false
   selectedViolation!: any
-  selectedMoments: { startDate: Moment, endDate: Moment } = {startDate: null,endDate: null}
+  // selectedMoments: { startDate: Moment, endDate: Moment } = {startDate: null,endDate: null}
+  selectedMoments: { startDate: Moment, endDate: Moment } = null
   excelFromDate: FormControl = new FormControl(new Date(), Validators.required)
   excelToDate: FormControl = new FormControl(new Date(), Validators.required)
   ExcelRange: number
@@ -835,10 +836,6 @@ console.log('this is spillage')
     this.tempdata = []
     this.total = of(0)
 
-    this.Images = []
-    var table = document.getElementById('dataTable')
-    table?.classList.add('loading')
-    this.loader2 = true
     this.isdate = false
     this.tempdata = []
     this.total = of(0)
@@ -854,7 +851,6 @@ console.log('this is spillage')
         var cviol = Rdata.message
         Rdata.success ? this.tempdata = Rdata.message : this.tempdata = []
         this.sliceVD()
-        this.loader2 = true
         this.isdatewise = false
         localStorage.setItem("updatedLen", JSON.stringify(cviol.length))
         var updatedLen = Number(localStorage.getItem("updatedLen"))
@@ -870,6 +866,48 @@ console.log('this is spillage')
 
   //function to get the latest data
   getLatestData() {
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
     this.loader2 = false
     this.loaderLatest = true
     this.latest = true
