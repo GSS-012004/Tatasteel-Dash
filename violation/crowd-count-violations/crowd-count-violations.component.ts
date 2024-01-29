@@ -196,9 +196,9 @@ export class CrowdCountViolationsComponent
     //------------Reading the camera details--------------
     //uncomment while you work
 
-    this.dataFetchStatus = "init";
-    var table = document.getElementById("dataTable");
-    table?.classList.add("loading");
+    // this.dataFetchStatus = "init";
+    // var table = document.getElementById("dataTable");
+    // table?.classList.add("loading");
 
     if (!this.latest || this.isLatest) {
       this.webServer.LiveCCViolationData().subscribe(
@@ -207,7 +207,7 @@ export class CrowdCountViolationsComponent
           if (Rdata.success) {
             this.prevViolCount = Rdata.now_live_count;
 
-            table?.classList.remove("loading");
+            // table?.classList.remove("loading");
 
             var data = Rdata.message;
 
@@ -225,14 +225,14 @@ export class CrowdCountViolationsComponent
             // console.log(this.violData)
             this.sliceVD();
           } else {
-            table?.classList.remove("loading");
+            // table?.classList.remove("loading");
             this.notification(Rdata.message);
           }
         },
         (err) => {
           this.dataFetchStatus = "Error";
 
-          table?.classList.remove("loading");
+          // table?.classList.remove("loading");
 
           this.notification("Error While fetching the data");
         }
@@ -569,6 +569,7 @@ export class CrowdCountViolationsComponent
     this.tempdata = [];
     this.total = of(0);
     this.webServer.LiveCCViolationData().subscribe((Rdata: any) => {
+      this.loader2 = false
       if (Rdata) {
         this.isLatest = false;
         table?.classList.remove("loading");
@@ -602,6 +603,7 @@ export class CrowdCountViolationsComponent
     this.selectedCameraId = this.selectedItems.data;
     console.log(this.selectedItems);
     console.log(event);
+    this.Submit();
   }
 
   onViolationTypeSelect(event: any) {

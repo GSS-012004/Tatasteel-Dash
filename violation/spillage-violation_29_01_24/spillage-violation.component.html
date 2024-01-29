@@ -231,7 +231,7 @@
                                                             <img *ngIf="d.processing_mode==='IMAGE'" loading="lazy" class="image"  [src]="API +'/GETSPILLAGEIMAGE/'+d.video_file_name"  (click)="imageCarousal(d.video_file_name)">
                                                         
                                                             <br/>
-                                                    <div style="padding-left: 5rem;"  *ngIf="d.processing_mode==='VIDEO'">
+                                                    <div style=" padding-left: 5rem;"  *ngIf="d.processing_mode==='VIDEO'">
                                                             <button class="btn btn-sm default text-white mt-2" > 
                                                                 <a (click)="downloadVideo(API+'/getSpillageVideo/'+d.video_file_name)">Download Video</a>
                                                                 <fa-icon icon="download" class="ms-1 me-1" style="cursor: pointer;"></fa-icon>
@@ -420,14 +420,14 @@
 <ng-template #noData>
     <div class="row card card-body" id="data-card">
         <div class="d-flex justify-content-center align-items-center" *ngIf="dataFetchStatus=='success'">
-            <h4> Violation Details are Not Found.</h4>
+            <h4> No violation details found</h4>
         </div>
         <div class="d-flex justify-content-center align-items-center" *ngIf="dataFetchStatus=='init'">
-            <span class="spinner-border spinner-border-sm me-2" role="status" ></span>
             <h4>Loading...</h4>
         </div>
         <div class="d-flex justify-content-center align-items-center" *ngIf="dataFetchStatus=='Error'">
-            <h4>Error While Fetching the Data.</h4></div>
+            <h4>Error while fetching data</h4></div>
+
     </div>
 </ng-template>
 

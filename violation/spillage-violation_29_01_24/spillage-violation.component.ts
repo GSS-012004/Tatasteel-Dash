@@ -144,7 +144,7 @@ export class SpillageViolationComponent implements OnInit, OnDestroy, AfterViewI
   ) {
     this.ngbCarousal.showNavigationArrows = true
     this.ngbCarousal.showNavigationIndicators = true
-    // this.ngbCarousal.interval = 30000
+    this.ngbCarousal.interval = 30000
     console.log(ngbCarousal,'ngbcarousal config')
     this.API = webServer.IP
     this.ExcelRange = 0
@@ -155,11 +155,11 @@ export class SpillageViolationComponent implements OnInit, OnDestroy, AfterViewI
         localStorage.setItem('appStatus', response.message[0].process_status)
         var process = response.message.find((el: any) => {
 
-          return el.process_name == 'spillage_app' ? el : ''
+          return el.process_name == 'fire_smoke_app' ? el : ''
         })
         this.isActive = process.process_status
         // this.cd.detectChanges();
-        console.log('spillage analytics:',this.isActive)
+        console.log('fire analytics:',this.isActive)
 
 
       }
@@ -279,26 +279,26 @@ console.log('this is spillage')
     //uncomment while you work
     
   
-    // var table = document.getElementById('dataTable')
-    // table?.classList.add('loading')
+    var table = document.getElementById('dataTable')
+    table?.classList.add('loading')
 
     if (!this.latest || !this.isLatest) {
-      this.webServer.GetSpillageLiveViolation().subscribe((Sdata: any) => {
-        // this.ngZone.run(() => {
+      this.webServer.GetSpillageLiveViolation().subscribe((Rdata: any) => {
+        this.ngZone.run(() => {
 
         // this.cd.detectChanges();
-        if (Sdata.success) {
+        if (Rdata.success) {
 
-          // table?.classList.remove('loading')
+          table?.classList.remove('loading')
 
         
 
-          this.imageData = Sdata.message
-          this.tempdata = Sdata.message
-          Number(localStorage.setItem("updatedLen", Sdata.message.length?Sdata.message.length : 0))
-          this.tempdata = Sdata.message
+          this.imageData = Rdata.message
+          this.tempdata = Rdata.message
+          Number(localStorage.setItem("updatedLen", Rdata.message.length?Rdata.message.length : 0))
+          this.tempdata = Rdata.message
           this.total = of(this.tempdata.length)
-          this.violData = of(Sdata.message)
+          this.violData = of(Rdata.message)
           // console.log(this.violData)
           this.sliceVD()
             // Manually trigger change detection to update the view
@@ -306,18 +306,18 @@ console.log('this is spillage')
         }
         else {
           this.dataFetchStatus='success'
-          // table?.classList.remove('loading')
-          this.notification(Sdata.message)
+          table?.classList.remove('loading')
+          this.notification(Rdata.message)
         }
         
           ( _Error: any) => {
-          // table?.classList.remove('loading')
+          table?.classList.remove('loading')
           this.dataFetchStatus='Error'
           this.notification("Error While fetching the data")
         }
      
 
-    // });
+    });
 
   })
 }
@@ -353,7 +353,6 @@ console.log('this is spillage')
         if (Response.success) {
           table?.classList.remove('loading')
           if (Response.message.length === 0) {
-            this.dataFetchStatus='success'
             this.notification("No violations found")
           }
           data = Response.message
@@ -461,6 +460,7 @@ console.log('this is spillage')
     var length
     this.webServer.DatewiseViolations(fromDate, toDate, null, null, cameraName ? cameraName : null, violationType ? violationType : null).subscribe((Response: any) => {
       if (Response.success) {
+
         length = Response.message.length
       }
     })
@@ -548,7 +548,6 @@ console.log('this is spillage')
           },
             err => {
               this.loading = false
-              this.dataFetchStatus='Error'
               this.notification("Error while fetching the data")
             })
         }
@@ -561,8 +560,7 @@ console.log('this is spillage')
         this.total = of(0)
         this.loading = false
         table?.classList.remove('loading')
-        // table?.classList.remove('loading')
-        this.dataFetchStatus='success'
+        table?.classList.remove('loading')
         this.notification("No violations found")
         // this.loading = false
       }
@@ -620,49 +618,49 @@ console.log('this is spillage')
     
     this.dataread()
     
-  //   var table = document.getElementById('dataTable')
-  //   table?.classList.add('loading')
-  //   if (!this.latest || !this.isLatest) {
+    var table = document.getElementById('dataTable')
+    table?.classList.add('loading')
+    if (!this.latest || !this.isLatest) {
       
-  //     this.webServer.GetSpillageLiveViolation().subscribe((Sdata: any) => {
-  //       this.ngZone.run(() => {
-  //       // this.cd.detectChanges();
-  //       if (Sdata.success) {
+      this.webServer.GetSpillageLiveViolation().subscribe((Rdata: any) => {
+        this.ngZone.run(() => {
+        // this.cd.detectChanges();
+        if (Rdata.success) {
           
-  //         this.dataFetchStatus='success'
-  //         table?.classList.remove('loading')
+          this.dataFetchStatus='success'
+          table?.classList.remove('loading')
 
           
 
-  //         this.imageData = Sdata.message
-  //         this.tempdata = Sdata.message
-  //         Number(localStorage.setItem("updatedLen", Sdata.message.length ? Sdata.message.length : 0))
-  //         this.tempdata = Sdata.message
-  //         this.total = of(this.tempdata.length)
-  //         this.violData = of(Sdata.message)
-  //         // console.log(this.violData)
-  //         this.sliceVD()
-  //       }
-  //       else {
-  //         this.dataFetchStatus='Error'
-  //         table?.classList.remove('loading')
-  //         this.notification(Sdata.message)
-  //       }
-  //     })
-  //       // err => {
-  //       //   table?.classList.remove('loading')
+          this.imageData = Rdata.message
+          this.tempdata = Rdata.message
+          Number(localStorage.setItem("updatedLen", Rdata.message.length ? Rdata.message.length : 0))
+          this.tempdata = Rdata.message
+          this.total = of(this.tempdata.length)
+          this.violData = of(Rdata.message)
+          // console.log(this.violData)
+          this.sliceVD()
+        }
+        else {
+          this.dataFetchStatus='Error'
+          table?.classList.remove('loading')
+          this.notification(Rdata.message)
+        }
+      })
+        // err => {
+        //   table?.classList.remove('loading')
 
-  //       //   this.notification("Error While fetching the data")
-  //       // }
+        //   this.notification("Error While fetching the data")
+        // }
 
 
-  //   })
+    })
 
     
    
 
 
-  // }
+  }
 }
 
   public dataread() {
@@ -672,14 +670,13 @@ console.log('this is spillage')
         if (Number(localStorage.getItem("updatedLen"))) {
           this.violLength = Number(localStorage.getItem("updatedLen"))
         }
-        this.Subsciption = this.webServer.GetSpillageLiveViolation().subscribe((Sdata: any) => {
+        this.Subsciption = this.webServer.GetSpillageLiveViolation().subscribe((Rdata: any) => {
           // console.log(Rdata)
-          
+          this.dataFetchStatus = 'success'
 
-          if (Sdata.success) {
-            this.dataFetchStatus = 'success'
-            var response = { ...Sdata }
-            var cviol = [...Sdata.message]
+          if (Rdata.success) {
+            var response = { ...Rdata }
+            var cviol = [...Rdata.message]
             localStorage.setItem("updatedLen", JSON.stringify(cviol.length))
             var updatedLen = Number(localStorage.getItem("updatedLen"))
             if ((response.now_live_count - response.previous_live_count) > 0) {
@@ -707,17 +704,20 @@ console.log('this is spillage')
 
                 }
               }
-              this.tempdata = Sdata.message
+              this.tempdata = Rdata.message
               this.total = of(this.tempdata.length)
-              this.violData = of(Sdata.message)
+              this.violData = of(Rdata.message)
               // console.log(this.violData)
               this.sliceVD()
 
             }
           }
 
-        
-       else  {
+        }, Err => {
+          this.dataFetchStatus = 'Error'
+        }
+        )
+        if (false) {
           this.webServer.GetSpillageLiveViolation().subscribe((Response: any) => {
             if (!this.latest) {
               if (Response.success === true) {
@@ -753,19 +753,14 @@ console.log('this is spillage')
                 this.tempdata = []
                 this.violData = of([])
                 this.total = of(0)
-                this.dataFetchStatus='success'
+
               }
             }
           }, (err: any) => {
             console.log(err)
           })
         }
-      },
-     Err => {
-      this.dataFetchStatus = 'Error'
-    }
-    )
-  }
+      }
     }, this.delay)
   }
 
@@ -841,26 +836,21 @@ console.log('this is spillage')
     this.tempdata = []
     this.total = of(0)
 
-    this.Images = []
-    var table = document.getElementById('dataTable')
-    table?.classList.add('loading')
-    this.loader2 = true
     this.isdate = false
     this.tempdata = []
     this.total = of(0)
-    this.webServer.LiveViolationData().subscribe((Sdata: any) => {
-      if (Sdata) {
+    this.webServer.LiveViolationData().subscribe((Rdata: any) => {
+      if (Rdata) {
         this.isLatest = false
         table?.classList.remove('loading')
-        this.imageData = Sdata.message
-        this.total = of(Sdata.message.length)
-        if (!Sdata.success) {
-          this.notification(Sdata.message)
+        this.imageData = Rdata.message
+        this.total = of(Rdata.message.length)
+        if (!Rdata.success) {
+          this.notification(Rdata.message)
         }
-        var cviol = Sdata.message
-        Sdata.success ? this.tempdata = Sdata.message : this.tempdata = []
+        var cviol = Rdata.message
+        Rdata.success ? this.tempdata = Rdata.message : this.tempdata = []
         this.sliceVD()
-        this.loader2 = true
         this.isdatewise = false
         localStorage.setItem("updatedLen", JSON.stringify(cviol.length))
         var updatedLen = Number(localStorage.getItem("updatedLen"))
@@ -876,6 +866,48 @@ console.log('this is spillage')
 
   //function to get the latest data
   getLatestData() {
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
     this.loader2 = false
     this.loaderLatest = true
     this.latest = true
@@ -883,22 +915,22 @@ console.log('this is spillage')
     var table = document.getElementById('dataTable')
     table?.classList.add('loading')
     console.log(this.selectedViolType)
-    this.webServer.LatestData(this.selectedViolType, this.selectedCameraId).subscribe((Sdata: any) => {
-      if (Sdata.success) {
+    this.webServer.LatestData(this.selectedViolType, this.selectedCameraId).subscribe((Rdata: any) => {
+      if (Rdata.success) {
         this.isLatest = true
         table?.classList.remove('loading')
         this.loaderLatest = false
-        data = Sdata.message
-        Sdata.message.length === 0 ? this.notification("No violations found") : ''
-        this.imageData = Sdata.message
-        this.tempdata = Sdata.message
+        data = Rdata.message
+        Rdata.message.length === 0 ? this.notification("No violations found") : ''
+        this.imageData = Rdata.message
+        this.tempdata = Rdata.message
         console.log(this.tempdata)
 
-        this.tempdata = Sdata.message
+        this.tempdata = Rdata.message
 
 
-        this.total = of(Sdata.message.length)
-        this.violData = of(Sdata.message)
+        this.total = of(Rdata.message.length)
+        this.violData = of(Rdata.message)
         this.sliceVD()
 
 
@@ -1095,8 +1127,7 @@ console.log('this is spillage')
       if (response.success) {
         this.modalService.dismissAll()
         if (this.isdatewise)
-          // this.Submit()
-        this.sliceVD();
+          this.Submit()
       }
       if (!this.isdatewise) {
         this.GetViolationData()
@@ -1115,30 +1146,30 @@ console.log('this is spillage')
     table?.classList.add('loading')
 
     if (!this.latest || this.isLatest) {
-      this.webServer.GetSpillageLiveViolation().subscribe((Sdata: any) => {
-        if (Sdata.success) {
+      this.webServer.GetSpillageLiveViolation().subscribe((Rdata: any) => {
+        if (Rdata.success) {
 
           table?.classList.remove('loading')
 
-          this .data = Sdata.message
+          var data = Rdata.message
 
-          this.imageData = Sdata.message
-          this.tempdata = Sdata.message
-          Number(localStorage.setItem("updatedLen", Sdata.message.length ? Sdata.message.length : 0))
+          this.imageData = Rdata.message
+          this.tempdata = Rdata.message
+          Number(localStorage.setItem("updatedLen", Rdata.message.length ? Rdata.message.length : 0))
 
-          this.tempdata =Sdata.message
+          this.tempdata = Rdata.message
           // this.imageCarousal()
 
 
           this.total = of(this.tempdata.length)
-          this.violData = of(Sdata.message)
+          this.violData = of(Rdata.message)
           this.sliceVD()
 
 
         }
         else {
           table?.classList.remove('loading')
-          this.notification(Sdata.message)
+          this.notification(Rdata.message)
         }
       },
         err => {
@@ -1160,8 +1191,8 @@ console.log('this is spillage')
         this.modalService.dismissAll()
         // this.GetViolationData()
         if (this.isdatewise)
-this.sliceVD();
-          // this.Submit()
+
+          this.Submit()
       }
       if (!this.isdatewise) {
         this.GetViolationData()

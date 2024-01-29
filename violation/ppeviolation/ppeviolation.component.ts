@@ -137,7 +137,7 @@ export class PpeviolationComponent implements OnInit, OnDestroy, AfterViewInit {
     ],
   };
 
-  selectedMoments: { startDate: Moment; endDate: Moment };
+  selectedMoments: { startDate: Moment; endDate: Moment }  = null
   @ViewChildren(DaterangepickerDirective) pickerDirective: any;
   editViol: any;
 
@@ -241,14 +241,14 @@ export class PpeviolationComponent implements OnInit, OnDestroy, AfterViewInit {
     //------------Reading the camera details--------------
     //uncomment while you work
 
-    var table = document.getElementById("dataTable");
-    table?.classList.add("loading");
+    // var table = document.getElementById("dataTable");
+    // table?.classList.add("loading");
 
     if (!this.latest || this.isLatest) {
       this.webServer.LivePPEViolationData().subscribe(
         (Rdata: any) => {
           if (Rdata.success) {
-            table?.classList.remove("loading");
+            // table?.classList.remove("loading");
 
             var data = Rdata.message;
             this.prevLiveCount = Rdata.now_live_count;
@@ -266,13 +266,14 @@ export class PpeviolationComponent implements OnInit, OnDestroy, AfterViewInit {
             // console.log(this.violData)
             this.sliceVD();
           } else {
-            table?.classList.remove("loading");
+            // table?.classList.remove("loading");
+            this.dataFetchStatus='success'
             this.notification(Rdata.message);
           }
         },
         (err) => {
-          table?.classList.remove("loading");
-
+          // table?.classList.remove("loading");
+          this.dataFetchStatus='Error'
           this.notification("Error While fetching the data");
         }
       );
@@ -309,6 +310,7 @@ export class PpeviolationComponent implements OnInit, OnDestroy, AfterViewInit {
               //    var table = document.getElementById('dataTable')
               // table?.classList.add('loading')
               this.dataFetchStatus = "success";
+              // console.log('hiiiiereriieijrerejewfkj')
               if (Rdata.success) {
                 var response = { ...Rdata };
                 var cviol = [...Rdata.message];
@@ -348,52 +350,53 @@ export class PpeviolationComponent implements OnInit, OnDestroy, AfterViewInit {
                   }
                 }
               }
+              else {
+                this.webServer.LivePPEViolationData().subscribe(
+                  (Response: any) => {
+                    if (!this.latest) {
+                      if (Response.success === true) {
+                        console.log(Response);
+                        console.log(this.selectedCameraId);
+                        console.log(Response.message);
+      
+                        this.imageData = Response.message;
+                        this.tempdata = Response.message;
+                        console.log(this.tempdata);
+                        //  this.imageCarousal()
+                        this.total = of(this.violdata.length);
+                        this.loader2 = false;
+                        this.isdatewise = false;
+      
+                        this.violData = of(Response.message);
+      
+                        data = Response.message;
+                        this.sliceVD();
+                        var data = Response.message;
+                        this.violdata = Response.message;
+                        // this.tempdata = this.violdata
+      
+                        if (this.tempdata.length > 0) {
+                          this.Excel = true;
+                        } else {
+                          false;
+                        }
+      
+                        this.sliceVD();
+                      } else {
+                      }
+                    }
+                  },
+                  (err: any) => {
+                    console.log(err);
+                  }
+                );
+              }
             },
             (Err) => {
               this.dataFetchStatus = "Error";
             }
           );
-        if (false) {
-          this.webServer.LivePPEViolationData().subscribe(
-            (Response: any) => {
-              if (!this.latest) {
-                if (Response.success === true) {
-                  console.log(Response);
-                  console.log(this.selectedCameraId);
-                  console.log(Response.message);
 
-                  this.imageData = Response.message;
-                  this.tempdata = Response.message;
-                  console.log(this.tempdata);
-                  //  this.imageCarousal()
-                  this.total = of(this.violdata.length);
-                  this.loader2 = false;
-                  this.isdatewise = false;
-
-                  this.violData = of(Response.message);
-
-                  data = Response.message;
-                  this.sliceVD();
-                  var data = Response.message;
-                  this.violdata = Response.message;
-                  // this.tempdata = this.violdata
-
-                  if (this.tempdata.length > 0) {
-                    this.Excel = true;
-                  } else {
-                    false;
-                  }
-
-                  this.sliceVD();
-                } else {
-                }
-              }
-            },
-            (err: any) => {
-              console.log(err);
-            }
-          );
-        }
       }
     }, this.delay);
   }
@@ -486,6 +489,7 @@ export class PpeviolationComponent implements OnInit, OnDestroy, AfterViewInit {
           if (Response.success) {
             table?.classList.remove("loading");
             if (Response.message.length === 0) {
+              this.dataFetchStatus='success'
               this.notification("No violations found");
             }
             this.tempdata = Response.message;
@@ -527,7 +531,7 @@ export class PpeviolationComponent implements OnInit, OnDestroy, AfterViewInit {
       )
       .subscribe(
         (Response: any) => {
-          this.dataFetchStatus = "init";
+          // this.dataFetchStatus = "init";
           if (Response.success) {
             if (Response.message.length == 0) {
               this.tempdata = [];
@@ -558,7 +562,8 @@ export class PpeviolationComponent implements OnInit, OnDestroy, AfterViewInit {
                       this.loading = false;
                       table?.classList.remove("loading");
                       // console.log(Response.message)
-                      if (Response.message.length === 0) {
+                      if (Response.message.length === 0) {    
+                        this.dataFetchStatus='success'
                         this.notification("No violations found");
                         this.violData = of([]);
                         this.isdatewise = true;
@@ -593,6 +598,7 @@ export class PpeviolationComponent implements OnInit, OnDestroy, AfterViewInit {
             this.total = of(0);
             table?.classList.remove("loading");
             table?.classList.remove("loading");
+            this.dataFetchStatus='success'
             this.notification("No violations found");
             this.loading = false;
           }
@@ -607,7 +613,7 @@ export class PpeviolationComponent implements OnInit, OnDestroy, AfterViewInit {
   // fetching the violation  details by  ppe violation percentage
 
   SetPPEFilters() {
-    this.dataFetchStatus = "init";
+    // this.dataFetchStatus = "init";
     this.webServer
       .ChangePPEFiltersData({
         ppepercentage: {
@@ -647,6 +653,7 @@ export class PpeviolationComponent implements OnInit, OnDestroy, AfterViewInit {
               } else {
                 table?.classList.remove("loading");
                 this.notification(Rdata.message);
+                this.dataFetchStatus='success'
               }
             },
             (err) => {
@@ -678,7 +685,7 @@ export class PpeviolationComponent implements OnInit, OnDestroy, AfterViewInit {
   //-----------------METHOD TO GO BACK TO LIVE-------------------------
 
   BackToToday() {
-    this.dataFetchStatus = "init";
+    // this.dataFetchStatus = "init";
     this.page = 1;
 
     this.Images = [];
@@ -695,6 +702,7 @@ export class PpeviolationComponent implements OnInit, OnDestroy, AfterViewInit {
     this.total = of(0);
     this.webServer.LivePPEViolationData().subscribe(
       (Rdata: any) => {
+        this.loader2 = false;
         this.dataFetchStatus = "success";
         if (Rdata) {
           this.isLatest = false;
@@ -703,6 +711,7 @@ export class PpeviolationComponent implements OnInit, OnDestroy, AfterViewInit {
           this.total = of(Rdata.message.length);
           if (!Rdata.success) {
             this.notification(Rdata.message);
+            this.dataFetchStatus='success'
           }
           var cviol = Rdata.message;
           Rdata.success
@@ -735,6 +744,7 @@ export class PpeviolationComponent implements OnInit, OnDestroy, AfterViewInit {
     this.selectedCameraId = this.selectedItems.data;
     console.log(this.selectedItems);
     console.log(event);
+    this.Submit();
   }
 
   imageCarousal(viol: any) {
@@ -905,7 +915,8 @@ export class PpeviolationComponent implements OnInit, OnDestroy, AfterViewInit {
           this.loaderLatest = false;
           Rdata.message.length === 0
             ? this.notification("No violations found")
-            : "";
+            :this.dataFetchStatus='success';
+            
           this.imageData = Rdata.message;
           this.tempdata = Rdata.message;
           console.log(this.tempdata);
@@ -1072,6 +1083,7 @@ export class PpeviolationComponent implements OnInit, OnDestroy, AfterViewInit {
             this.modalService.dismissAll();
             this.RefreshViolationData();
             this.webServer.notification(response.message);
+            
           } else {
             this.modalService.dismissAll();
             this.webServer.notification(response.message, "Retry");
@@ -1168,6 +1180,7 @@ export class PpeviolationComponent implements OnInit, OnDestroy, AfterViewInit {
                         // console.log(Response.message)
                         if (Response.message.length === 0) {
                           this.notification("No violations found");
+                          this.dataFetchStatus='success'
                           this.violData = of([]);
                         } else {
                           this.tempdata = Response.message;
@@ -1193,6 +1206,7 @@ export class PpeviolationComponent implements OnInit, OnDestroy, AfterViewInit {
               table?.classList.remove("loading");
               table?.classList.remove("loading");
               this.notification("No violations found");
+              this.dataFetchStatus='success'
             }
           },
           (err) => {}
@@ -1233,6 +1247,7 @@ export class PpeviolationComponent implements OnInit, OnDestroy, AfterViewInit {
           } else {
             table?.classList.remove("loading");
             this.notification(Rdata.message);
+            this.dataFetchStatus='success'
           }
         },
         (err) => {

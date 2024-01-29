@@ -22,7 +22,7 @@
                             <div class="datePickerContainer" (click)="openDatePicker($event)">
                                 <div class="w-80">
                                     <input type="text"  [showCustomRangeLabel]="true" ngxDaterangepickerMd #datepicker
-                                        [ranges]="ranges" [timePicker]="true" placeholder="Select Date"
+                                        [ranges]="ranges" [timePicker]="true" placeholder="Select Date"(datesUpdated)=" Submit()"
                                         [(ngModel)]="selectedMoments" required id="dateInput" autocomplete="off" class="form-control" />
                                 </div>
                                 <div class="input-group-append">
@@ -181,6 +181,7 @@
                                 <div></div>
 
                             </div>
+                            <ng-container *ngIf="(violData | async).length > 0; else noData">
                             <div *ngFor="let data of violData|async;let i=index;trackBy: trackByFn" style="text-align: center;">
                                 <div *ngIf="data?.data">
                                     <p-carousel  [value]="data.data"  [id]="data.SNo"  >
@@ -304,21 +305,22 @@
                                 
 
                             </div>
+                        </ng-container>
                         </div>
                         <ng-template #noData>
                             <div class="row card card-body" id="data-card">
                                 <div class="d-flex justify-content-center align-items-center"
                                     *ngIf="dataFetchStatus=='success'">
-                                    <h4> No violation details found</h4>
+                                    <h4> Violation Details are Not Found.</h4>
                                 </div>
                                 <div class="d-flex justify-content-center align-items-center"
                                     *ngIf="dataFetchStatus=='init'">
-                                    <!-- <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true" ></span> -->
-                                    Loading...
+                                    <span class="spinner-border spinner-border-sm me-2" role="status"  ></span>
+                                    <h4>Loading...</h4>
                                 </div>
                                 <div class="d-flex justify-content-center align-items-center"
-                                    *ngIf="dataFetchStatus=='Error'">Error
-                                    while fetching data</div>
+                                    *ngIf="dataFetchStatus=='Error'">
+                                    <h4>Error While Fetching the Data.</h4></div>
 
                             </div>
                         </ng-template>
