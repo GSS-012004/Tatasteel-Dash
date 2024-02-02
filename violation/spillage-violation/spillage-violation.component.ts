@@ -45,7 +45,9 @@ var data: any[] = [];
 export class SpillageViolationComponent implements OnInit, OnDestroy, AfterViewInit {
 
   selectedCameraId: string | null = null
+  selectedDepartment: string | null = null
   selectedItems: any
+  selectedItems1: any
   isdatewise: boolean = false;
   page: number = 1
   // selected : {start:any, end:any } ;
@@ -53,6 +55,7 @@ export class SpillageViolationComponent implements OnInit, OnDestroy, AfterViewI
   cameraDetails: any[] = [];
   data: any[] = []
   dropdownList: Observable<any[]> = of([])
+  dropdownList1: Observable<any[]> = of([])
   isActive:string
   ranges: any = {
     'Today': [dayjs().hour(0).minute(0).second(0), dayjs()],
@@ -178,6 +181,7 @@ export class SpillageViolationComponent implements OnInit, OnDestroy, AfterViewI
     console.log(this.relayDelay)
     this.hooterDelay = this.webServer.delay
     this.getCameraList()
+    this.getDepartmentList()
     this.getViolationTypes()
   
 
@@ -194,6 +198,15 @@ export class SpillageViolationComponent implements OnInit, OnDestroy, AfterViewI
     this.selectedCameraId = this.selectedItems.data
     console.log(this.selectedItems)
     console.log(event)
+    this.Submit();
+  }
+
+  onDepartmentIdSelect(event: any) {
+    this.isdatewise ? this.page = 1 : ''
+    this.selectedDepartment = this.selectedItems1.data
+    console.log(this.selectedItems1)
+    console.log(event)
+    this.Submit();
   }
 
   ngOnDestroy() {
@@ -213,7 +226,7 @@ export class SpillageViolationComponent implements OnInit, OnDestroy, AfterViewI
     var cameraIdList: any[] = []
 
     cameralist[0] = { key: '0', label: 'All Cameras', data: 'all_cameras'}
-    this.webServer.GetCameraDetails().subscribe((data: any) => {
+    this.webServer.GetCameraDetails((this.selectedMoments !== null)?(this.selectedMoments.startDate.format("YYYY-MM-DD HH:mm:ss")):null,(this.selectedMoments !== null)?(this.selectedMoments.endDate.format("YYYY-MM-DD HH:mm:ss")):null).subscribe((data: any) => {
       if (data.success === true) {
         data.message.forEach((el: any, i: number) => {
           cameraIdList.push({ cameraid: i, cameraname: el })
@@ -229,6 +242,34 @@ export class SpillageViolationComponent implements OnInit, OnDestroy, AfterViewI
 
 
         this.dropdownList = of(cameralist)
+      }
+
+    })
+
+  }
+
+
+  getDepartmentList() {
+    var departmentlist: any[] = []
+    var departmentIdList: any[] = []
+
+    departmentlist[0] = { key: '0', label: 'All Departments', data: 'all_departments'}
+    this.webServer.GetDepartmentDetails((this.selectedMoments !== null)?(this.selectedMoments.startDate.format("YYYY-MM-DD HH:mm:ss")):null,(this.selectedMoments !== null)?(this.selectedMoments.endDate.format("YYYY-MM-DD HH:mm:ss")):null).subscribe((data: any) => {
+      if (data.success === true) {
+        data.message.forEach((el: any, i: number) => {
+          departmentIdList.push({ departmentid: i, department: el })
+        });
+        departmentIdList = departmentIdList.filter((el, i, a) => i === a.indexOf(el))
+        departmentIdList.forEach((element: any, i: number) => {
+          // cameralist[i + 1] = { item_id: element.cameraid, item_text: element.cameraname }
+          var obj;
+          obj = { key: ((i + 1).toString()), label: element.department, data: element.department }
+
+          departmentlist.push(obj)
+        });
+
+
+        this.dropdownList1 = of(departmentlist)
       }
 
     })
@@ -388,11 +429,13 @@ console.log('this is spillage')
 
 
     this.selectedCameraId = this.selectedItems ? this.selectedItems.data : null
+    this.selectedDepartment = this.selectedItems1 ? this.selectedItems1.data : null
 
     var body = {
       from_date: this.selectedMoments.startDate.format('YYYY-MM-DD HH:mm:ss'),
       to_date: this.selectedMoments.endDate.format('YYYY-MM-DD HH:mm:ss'),
       cameraname: this.selectedItems ? this.selectedItems.data : 'none',
+      department:this.selectedItems1 ? this.selectedItems1.data : 'none',
     }
     console.log(body)
 
@@ -473,13 +516,17 @@ console.log('this is spillage')
 
 
   Submit() {
+    this.dataFetchStatus='Loading'
     this.ngZone.run(() => {
     this.isLatest = false
     this.selectedViolType = this.selectedViolation ? <any>this.selectedViolation.data : null
     this.selectedCameraId = this.selectedItems ? this.selectedItems.data : null
+    this.selectedDepartment = this.selectedItems1 ? this.selectedItems1.data : null
     this.Images = []
     this.fromDate = this.selectedMoments.startDate.format('YYYY-MM-DD HH:mm:ss')
     this.toDate = this.selectedMoments.endDate.format('YYYY-MM-DD HH:mm:ss')
+    this.getCameraList()
+    this.getDepartmentList()
     this.Subsciption ? this.Subsciption.unsubscribe() : ''
     // this.table.nativeElement.querySelectorAll('table.table.table-striped.table-bordered')
     var table = document.getElementById('dataTable')
@@ -516,7 +563,7 @@ console.log('this is spillage')
             if (Response.success) {
               this.loading = false
               // this.cd.detectChanges();
-             this. GetViolationData()
+            //  this. GetViolationData()
               table?.classList.remove('loading')
               // console.log(Response.message)
               if (Response.message.length === 0) {
@@ -686,33 +733,37 @@ console.log('this is spillage')
 
               var diff = response.now_live_count - response.previous_live_count;
 
-              if (this.alert) {
-                for (let i = diff - 1; i >= 0; i--) {
-                  // var todayi = new Date()
-                  // var tempi = new Date(cviol[i].timestamp)
+              // if (this.alert) {
+              //   for (let i = diff - 1; i >= 0; i--) {
+              //     // var todayi = new Date()
+              //     // var tempi = new Date(cviol[i].timestamp)
 
-                  //hooter configaration
+              //     //hooter configaration
 
-                  if (this.alert) {
+              //     if (this.alert) {
 
 
-                    setTimeout(() => {
-                      this.currentViol = cviol[i]
+              //       setTimeout(() => {
+              //         this.currentViol = cviol[i]
 
-                      this.showViol()
+              //         this.showViol()
 
-                    }, 300);
-                    !this.audioOff ? this.alertSound() : ''
-                  }
+              //       }, 300);
+              //       !this.audioOff ? this.alertSound() : ''
+              //     }
 
-                }
-              }
+              //   }
+              // }
               this.tempdata = Sdata.message
               this.total = of(this.tempdata.length)
               this.violData = of(Sdata.message)
               // console.log(this.violData)
               this.sliceVD()
 
+            }
+            else{
+              this.dataFetchStatus = 'success'
+              this.notification(Sdata.message)
             }
           }
 
@@ -721,10 +772,10 @@ console.log('this is spillage')
           this.webServer.GetSpillageLiveViolation().subscribe((Response: any) => {
             if (!this.latest) {
               if (Response.success === true) {
-                console.log(Response)
+                // console.log(Response)
 
-                console.log(this.selectedCameraId)
-                console.log(Response.message)
+                // console.log(this.selectedCameraId)
+                // console.log(Response.message)
 
                 this.imageData = Response.message
                 this.tempdata = Response.message
@@ -754,10 +805,12 @@ console.log('this is spillage')
                 this.violData = of([])
                 this.total = of(0)
                 this.dataFetchStatus='success'
+                this.loader2 = false
               }
             }
           }, (err: any) => {
             console.log(err)
+            this.dataFetchStatus = 'Error'
           })
         }
       },
@@ -998,9 +1051,15 @@ console.log('this is spillage')
   ResetFilters() {
     this.selectedMoments = null
     this.selectedItems = null
+    this.selectedItems1 = null
+    // this.selectedCameraId = null
+    // this.selectedDepartment = null
     this.isdatewise = false
-
+    // this.violData = of()
+    
+    this.dataFetchStatus = "Loading"
     this.dataread()
+    // this.Submit();
   }
 
   // VerifyTrueViol(event: any, viol: any) {

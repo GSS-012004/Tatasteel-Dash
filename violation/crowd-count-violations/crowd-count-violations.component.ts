@@ -23,6 +23,7 @@ import { MatSnackBar } from "@angular/material/snack-bar";
 import { Moment } from "moment";
 import { DaterangepickerDirective } from "ngx-daterangepicker-material";
 import dayjs from "dayjs/esm";
+import { CrowdCountViolationsService } from "./crowd-count-violations.service";
 @Component({
   selector: "app-crowd-count-violations",
   templateUrl: "./crowd-count-violations.component.html",
@@ -71,7 +72,9 @@ export class CrowdCountViolationsComponent
   selectedViolType: string | null = null;
   Subsciption!: Subscription;
   selectedCameraId: string | null = null;
+  selectedDepartment: string | null = null;
   dropdownList: Observable<any[]> = of([]);
+  dropdownList1: Observable<any[]> = of([]);
 
   excelFromDate: FormControl = new FormControl(new Date(), Validators.required);
   excelToDate: FormControl = new FormControl(new Date(), Validators.required);
@@ -80,6 +83,7 @@ export class CrowdCountViolationsComponent
   @ViewChild("dangerAlert") Violation: ElementRef<any>;
   dropdownSettings!: IDropdownSettings;
   selectedItems: any = null;
+  selectedItems1: any = null;
   violationTypeList: Observable<any[]> = of([
     { key: "0", label: "All Violations", icon: "pi", data: "all_violations" },
   ]);
@@ -121,7 +125,7 @@ export class CrowdCountViolationsComponent
 
   constructor(
     private http: HttpClient,
-    private webServer: ServerService,
+    private webServer: CrowdCountViolationsService,
     private datepipe: DatePipe,
     private toasterService: ToastrService,
     private _lightbox: Lightbox,
@@ -144,6 +148,7 @@ export class CrowdCountViolationsComponent
     this.delay = this.webServer.logInterval;
 
     this.getCameraList();
+    this.getDepartmentList()
     this.getViolationTypes();
     this.ExcelRange = 0;
     //.............lightbox configaration...........
@@ -281,18 +286,14 @@ export class CrowdCountViolationsComponent
 
                         setTimeout(() => {
                           this.showViol();
-                        }, 300);
+                        }, 30000);
                         !this.audioOff ? this.alertSound() : "";
                       }
                     }
                   }
                 }
               }
-            },
-            (Err) => {
-              this.dataFetchStatus = "Error";
-            }
-          );
+            
         if (false) {
           this.webServer.LiveCCViolationData().subscribe(
             (Response: any) => {
@@ -334,8 +335,16 @@ export class CrowdCountViolationsComponent
             }
           );
         }
+      },
+      (Err) => {
+        this.dataFetchStatus = "Error";
       }
-    }, this.delay);
+    );
+    }else{
+      this.dataFetchStatus = 'success'
+    }
+  },
+    this.delay);
   }
 
   //modal to view the image
@@ -412,16 +421,21 @@ export class CrowdCountViolationsComponent
   //----------METHOD TO FETCH DATE WISE DATA-----------------
 
   Submit() {
+    this.dataFetchStatus='Loading'
     this.isLatest = false;
     this.selectedViolType = this.selectedViolation
       ? <any>this.selectedViolation.data
       : null;
     this.selectedCameraId = this.selectedItems ? this.selectedItems.data : null;
+    this.selectedDepartment = this.selectedItems1 ? this.selectedItems1.data : null;
+
     this.Images = [];
     this.fromDate = this.selectedMoments.startDate.format(
       "YYYY-MM-DD HH:mm:ss"
     );
     this.toDate = this.selectedMoments.endDate.format("YYYY-MM-DD HH:mm:ss");
+    this.getCameraList();
+    this.getDepartmentList()
     this.Subsciption ? this.Subsciption.unsubscribe() : "";
     var table = document.getElementById("dataTable");
     table?.classList.add("loading");
@@ -477,6 +491,7 @@ export class CrowdCountViolationsComponent
                         this.violData = of([]);
                         this.isdatewise = true;
                         this.loading = false;
+                        table?.classList.remove("loading");
                       } else {
                         this.tempdata = Response.message;
                         this.isdatewise = true;
@@ -484,14 +499,16 @@ export class CrowdCountViolationsComponent
                         this.sliceVD();
 
                         this.loading = false;
+                        table?.classList.remove("loading");
                       }
                     }
 
-                    this.loading = false;
+                    // this.loading = false;
                   },
                   (err) => {
                     this.dataFetchStatus = "Error";
                     this.loading = false;
+                    table?.classList.remove("loading");
                     this.notification("Error while fetching the data");
                   }
                 );
@@ -510,6 +527,8 @@ export class CrowdCountViolationsComponent
         },
         (err) => {
           this.loading = false;
+          table?.classList.remove("loading");
+          this.dataFetchStatus = 'success'
         }
       );
 
@@ -527,7 +546,7 @@ export class CrowdCountViolationsComponent
 
             if (response.now_live_count - response.previous_live_count > 0) {
               this.violdata = Rdata.message;
-              //this.imageData = Rdata.message
+              this.imageData = Rdata.message
               var diff = response.now_live_count - response.previous_live_count;
               //this.imageCarousal()
 
@@ -539,7 +558,7 @@ export class CrowdCountViolationsComponent
                     setTimeout(() => {
                       this.showViol();
                       !this.audioOff ? this.alertSound() : "";
-                    }, 300);
+                    }, this.delay);
                   }
                 }
               }
@@ -547,7 +566,7 @@ export class CrowdCountViolationsComponent
           }
         });
       }
-    }, 3000);
+    }, this.delay);
   }
 
   //-----------------METHOD TO GO BACK TO LIVE-------------------------
@@ -605,6 +624,13 @@ export class CrowdCountViolationsComponent
     console.log(event);
     this.Submit();
   }
+  onDepartmentIdSelect(event: any) {
+    !this.isdatewise ? (this.page = 1) : "";
+    this.selectedDepartment = this.selectedItems1.data;
+    console.log(this.selectedItems1);
+    console.log(event);
+    this.Submit();
+  }
 
   onViolationTypeSelect(event: any) {
     console.log(this.selectedViolation);
@@ -646,6 +672,7 @@ export class CrowdCountViolationsComponent
       ? <any>this.selectedViolation.data
       : null;
     this.selectedCameraId = this.selectedItems ? this.selectedItems.data : null;
+    this.selectedDepartment = this.selectedItems1 ? this.selectedItems1.data : null;
 
     var body = {
       from_date: this.selectedMoments.startDate.format("YYYY-MM-DD HH:mm:ss"),
@@ -655,6 +682,7 @@ export class CrowdCountViolationsComponent
           ? null
           : this.selectedItems.data
         : null,
+        department:this.selectedItems1? this.selectedItems1.data == "all_departments"? null: this.selectedItems1.data: null,
     };
     this.webServer.CreateCCViolationExcel(body).subscribe(
       (Response: any) => {
@@ -833,7 +861,7 @@ export class CrowdCountViolationsComponent
     var cameraIdList: any[] = [];
 
     cameralist[0] = { key: "0", label: "All Cameras", data: "all_cameras" };
-    this.webServer.GetCCCameraDetails().subscribe((data: any) => {
+    this.webServer.GetCCCameraDetails((this.selectedMoments !== null)?(this.selectedMoments.startDate.format("YYYY-MM-DD HH:mm:ss")):null,(this.selectedMoments !== null)?(this.selectedMoments.endDate.format("YYYY-MM-DD HH:mm:ss")):null).subscribe((data: any) => {
       if (data.success === true) {
         data.message.forEach((el: any, i: number) => {
           cameraIdList.push({ cameraid: i, cameraname: el });
@@ -852,6 +880,35 @@ export class CrowdCountViolationsComponent
         });
 
         this.dropdownList = of(cameralist);
+      }
+    });
+  }
+
+
+  getDepartmentList() {
+    var departmentlist: any[] = [];
+    var departmentIdList: any[] = [];
+
+    departmentlist[0] = { key: "0", label: "All Departments", data: "all_departments" };
+    this.webServer.GetCCDepartmentDetails((this.selectedMoments !== null)?(this.selectedMoments.startDate.format("YYYY-MM-DD HH:mm:ss")):null,(this.selectedMoments !== null)?(this.selectedMoments.endDate.format("YYYY-MM-DD HH:mm:ss")):null).subscribe((data: any) => {
+      if (data.success === true) {
+        data.message.forEach((el: any, i: number) => {
+          departmentIdList.push({ departmentid: i, department: el });
+        });
+        departmentIdList = departmentIdList.filter((el, i, a) => i === a.indexOf(el));
+        departmentIdList.forEach((element: any, i: number) => {
+          // cameralist[i + 1] = { item_id: element.cameraid, item_text: element.cameraname }
+          var obj;
+          obj = {
+            key: (i + 1).toString(),
+            label: element.department,
+            data: element.department,
+          };
+
+          departmentlist.push(obj);
+        });
+
+        this.dropdownList1 = of(departmentlist);
       }
     });
   }
@@ -935,7 +992,9 @@ export class CrowdCountViolationsComponent
   ResetFilters() {
     this.selectedMoments = null;
     this.selectedItems = null;
+    this.selectedItems1 = null;
     this.selectedCameraId = null;
+    this.selectedDepartment = null;
 
     this.dataread();
   }

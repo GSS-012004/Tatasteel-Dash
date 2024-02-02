@@ -32,6 +32,7 @@ import { MatSnackBar } from "@angular/material/snack-bar";
 import { Moment } from "moment";
 import { DaterangepickerDirective } from "ngx-daterangepicker-material";
 import dayjs from "dayjs/esm";
+import { RaViolationsService } from "./ra-violations.service";
 declare var $: any;
 @Component({
   selector: "app-ra-violations",
@@ -43,7 +44,7 @@ export class RaViolationsComponent implements OnInit, OnDestroy, AfterViewInit {
   String: any = String;
   activeIndex: number = 0;
   isalert: boolean = false;
-  dataFetchStatus: string = "init";
+  dataFetchStatus: string = 'init';
   tempdata: any[] = [];
   page: number = 1;
   pageSize: number = 30;
@@ -82,7 +83,9 @@ export class RaViolationsComponent implements OnInit, OnDestroy, AfterViewInit {
   isdate: boolean = false;
   Subsciption!: Subscription;
   selectedCameraId: string | null = null;
+  selectedDepartment: string | null = null;
   dropdownList: Observable<any[]> = of([]);
+  dropdownList1: Observable<any[]> = of([]);
   fromDateControl: FormControl = new FormControl(
     new Date().getTime(),
     Validators.required
@@ -94,6 +97,7 @@ export class RaViolationsComponent implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild("dangerAlert") Violation: ElementRef<any>;
   dropdownSettings!: IDropdownSettings;
   selectedItems: any = null;
+  selectedItems1:any = null;
   violationTypeList: Observable<any[]> = of([
     { key: "0", label: "All Violations", icon: "pi", data: "all_violations" },
   ]);
@@ -135,7 +139,7 @@ export class RaViolationsComponent implements OnInit, OnDestroy, AfterViewInit {
   constructor(
     public cd: ChangeDetectorRef,
     private http: HttpClient,
-    private webServer: ServerService,
+    private webServer: RaViolationsService,
     private datepipe: DatePipe,
     private toasterService: ToastrService,
     private _lightbox: Lightbox,
@@ -156,6 +160,7 @@ export class RaViolationsComponent implements OnInit, OnDestroy, AfterViewInit {
 
     //  this.ngbCarousal.
     this.getCameraList();
+    this.getDepartmentList()
     this.getViolationTypes();
     this.ExcelRange = 0;
     //.............lightbox configaration...........
@@ -302,7 +307,9 @@ export class RaViolationsComponent implements OnInit, OnDestroy, AfterViewInit {
   Reset() {
     this.selectedMoments = null;
     this.selectedItems = null;
+    this.selectedItems1 = null;
     this.selectedCameraId = null;
+    // this.selectedDepartment = null
   }
 
   openDatePicker(event: any) {
@@ -510,19 +517,29 @@ export class RaViolationsComponent implements OnInit, OnDestroy, AfterViewInit {
   //----------METHOD TO FETCH DATE WISE DATA-----------------
 
   Submit() {
+
+  //  var body
+  //   {var fromDate = this.selectedMoments.startDate.format('YYYY-MM-DD HH:mm:ss')
+  //   var toDate = this.selectedMoments.endDate.format('YYYY-MM-DD HH:mm:ss')}
+
+    this.dataFetchStatus = 'Loading'
+    
     this.zone.run(() => {
       // this.cd.detectChanges()
       clearInterval(this.webServer.raLiveInterval);
       this.isLatest = false;
-      this.dataFetchStatus = "init";
+      
       this.selectedCameraId = this.selectedItems
         ? this.selectedItems.data
         : null;
+        this.selectedDepartment = this.selectedItems1?this.selectedItems1.data:null;
       this.Images = [];
       this.fromDate = this.selectedMoments.startDate.format(
         "YYYY-MM-DD HH:mm:ss"
       );
       this.toDate = this.selectedMoments.endDate.format("YYYY-MM-DD HH:mm:ss");
+      this.getCameraList();
+      this.getDepartmentList()
       this.Subsciption ? this.Subsciption.unsubscribe() : "";
       var table = document.getElementById("dataTable");
       table?.classList.add("loading");
@@ -684,6 +701,15 @@ export class RaViolationsComponent implements OnInit, OnDestroy, AfterViewInit {
     this.Submit();
   }
 
+  onDepartmentIdSelect(event: any) {
+    !this.isdatewise ? (this.page = 1) : "";
+    this.selectedDepartment = this.selectedItems1.data;
+     this.Submit();
+  }
+
+
+
+
   imageCarousal(viol: any) {
     this.Images = [];
     viol.imagename.forEach((imgname: string, index: number) => {
@@ -709,6 +735,7 @@ export class RaViolationsComponent implements OnInit, OnDestroy, AfterViewInit {
     this.excelLoad = true;
     this.isExcel = false;
     this.selectedCameraId = this.selectedItems ? this.selectedItems.data : null;
+    this.selectedDepartment = this.selectedItems1?this.selectedItems1.data:null;
 
     var body = {
       from_date: this.selectedMoments.startDate.format("YYYY-MM-DD HH:mm:ss"),
@@ -718,7 +745,7 @@ export class RaViolationsComponent implements OnInit, OnDestroy, AfterViewInit {
           ? null
           : this.selectedItems.data
         : null,
-    };
+        department:this.selectedItems1?this.selectedItems1.data == "all_departments"?null:this.selectedItems1.data:null    };
     this.webServer.CreateRAViolationExcel(body).subscribe(
       (Response: any) => {
         if (Response.success) {
@@ -883,8 +910,31 @@ export class RaViolationsComponent implements OnInit, OnDestroy, AfterViewInit {
     var cameralist: any[] = [];
     var cameraIdList: any[] = [];
 
+    // var body = {
+    //   from_date: this.selectedMoments.startDate.format("YYYY-MM-DD HH:mm:ss"),
+    //   to_date: this.selectedMoments.endDate.format("YYYY-MM-DD HH:mm:ss"),
+      
+    // };
+
+    // this.fromDate = this.selectedMoments.startDate.format(
+    //   "YYYY-MM-DD HH:mm:ss"
+    // );
+    console.log(this.fromDate,'this date is from the raviolations')
+    // this.toDate = this.selectedMoments.endDate.format("YYYY-MM-DD HH:mm:ss");
+    console.log(this.selectedMoments,'this is from the raviolations')
+
     cameralist[0] = { key: "0", label: "All Cameras", data: "all_cameras" };
-    this.webServer.GetRACameraDetails().subscribe((data: any) => {
+    // console.log(this.selectedMoments.startDate)
+//     var date;
+// if(this.selectedMoments!==null){
+//   date = this.selectedMoments 
+// }
+// else{
+//   date = null
+// }
+    
+    this.webServer.GetRACameraDetails((this.selectedMoments !== null)?(this.selectedMoments.startDate.format("YYYY-MM-DD HH:mm:ss")):null,(this.selectedMoments !== null)?(this.selectedMoments.endDate.format("YYYY-MM-DD HH:mm:ss")):null).subscribe((data: any) => {
+
       if (data.success === true) {
         data.message.forEach((el: any, i: number) => {
           cameraIdList.push({ cameraid: i, cameraname: el });
@@ -894,7 +944,7 @@ export class RaViolationsComponent implements OnInit, OnDestroy, AfterViewInit {
           // cameralist[i + 1] = { item_id: element.cameraid, item_text: element.cameraname }
           var obj;
           obj = {
-            key: (i + 1).toString(),
+            key: ((i + 1).toString()),
             label: element.cameraname,
             data: element.cameraname,
           };
@@ -906,6 +956,62 @@ export class RaViolationsComponent implements OnInit, OnDestroy, AfterViewInit {
       }
     });
   }
+
+
+
+
+
+  getDepartmentList() {
+    var departmentlist: any[] = [];
+    var departmentIdList: any[] = [];
+
+    // var body = {
+    //   from_date: this.selectedMoments.startDate.format("YYYY-MM-DD HH:mm:ss"),
+    //   to_date: this.selectedMoments.endDate.format("YYYY-MM-DD HH:mm:ss"),
+      
+    // };
+
+    // this.fromDate = this.selectedMoments.startDate.format(
+    //   "YYYY-MM-DD HH:mm:ss"
+    // );
+    console.log(this.fromDate,'this date is from the raviolations')
+    // this.toDate = this.selectedMoments.endDate.format("YYYY-MM-DD HH:mm:ss");
+    console.log(this.selectedMoments,'this is from the raviolations')
+
+    departmentlist[0] = { key: "0", label: "All Departments", data: "all_departments" };
+    // console.log(this.selectedMoments.startDate)
+//     var date;
+// if(this.selectedMoments!==null){
+//   date = this.selectedMoments 
+// }
+// else{
+//   date = null
+// }
+    
+    this.webServer.GetRADepartmentDetails((this.selectedMoments !== null)?(this.selectedMoments.startDate.format("YYYY-MM-DD HH:mm:ss")):null,(this.selectedMoments !== null)?(this.selectedMoments.endDate.format("YYYY-MM-DD HH:mm:ss")):null).subscribe((data: any) => {
+
+      if (data.success === true) {
+        data.message.forEach((el: any, i: number) => {
+          departmentIdList.push({ departmentid: i, department: el });
+        });
+        departmentIdList = departmentIdList.filter((el, i, a) => i === a.indexOf(el));
+        departmentIdList.forEach((element: any, i: number) => {
+          // cameralist[i + 1] = { item_id: element.cameraid, item_text: element.cameraname }
+          var obj;
+          obj = {
+            key: ((i + 1).toString()),
+            label: element.department,
+            data: element.department,
+          };
+
+          departmentlist.push(obj);
+        });
+
+        this.dropdownList1 = of(departmentlist);
+      }
+    });
+  }
+
 
   //function to fetch the available violation types
   getViolationTypes() {
@@ -1109,6 +1215,7 @@ export class RaViolationsComponent implements OnInit, OnDestroy, AfterViewInit {
             this.dataFetchStatus = "success";
             if (Response.success) {
               if (Response.message.length == 0) {
+                2
                 this.tempdata = [];
                 this.violData = of([]);
 

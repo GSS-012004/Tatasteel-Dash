@@ -223,7 +223,7 @@ input[type='radio'] {
     padding-left: 1% !important;
     padding-top: 1rem !important;
     padding-bottom:1rem !important;
-    grid-template-columns: 5% 30% 20% 15% 15% 10% 5%;
+    grid-template-columns: 3% 30% 12% 12% 15% 15% 10% 3%;
     border:var(--border);
     border-radius: 7px;
    
@@ -244,7 +244,7 @@ input[type='radio'] {
     overflow-wrap: break-word;
     border:var(--border);
     border-radius: 10px;
-    grid-template-columns: 5% 30% 20% 15% 15% 10% 5%;
+    grid-template-columns: 3% 30% 12% 12% 15% 15% 10% 3%;
 
   }
 

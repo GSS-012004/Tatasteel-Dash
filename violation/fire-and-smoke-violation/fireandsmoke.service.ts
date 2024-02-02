@@ -32,9 +32,23 @@ export class FireandsmokeService {
   return this.datePipe.transform(date,'yyyy-MM-dd HH:mm:ss')
 }
 
-GetCameraNames(){
-  return this.http.get(this.IP+'/Firecameradetails')
+GetCameraNames(from:any,to:any){
+  return from === null && to === null?this.http.get(this.IP+'/Firecameradetails'):this.http.post(this.IP+'/Firecameradetails',{from_date:from,to_date:to})
 }
+
+GetDepartmentNames(from:any,to:any){
+  return from === null && to === null?this.http.get(this.IP+'/Firedepartmentdetails'):this.http.post(this.IP+'/Firedepartmentdetails',{from_date:from,to_date:to})
+}
+
+// GetCameraNames(startDate:any,endDate:any){
+//   return this.http.post(this.IP+'/Firecameradetails',{start_Date:startDate,end_Date:endDate})
+// }
+// GetRACameraDetails(from:any,to:any){
+//   // var fromD = this.dateTransform(from)
+//   // var toD = this.dateTransform(to)
+//   return from === null && to === null? this.http.get(this.IP+'/camera_detailsRA'):this.http.post(this.IP+'/camera_detailsRA',{from_date:from,to_date:to})
+// }
+
 
 CheckApplicationStatus(){
   return this.http.get(this.IP+'/check_process')
@@ -43,10 +57,10 @@ CheckApplicationStatus(){
 LiveViolationData (cameraName?:string | null,violType?:string|null,page?:number,size?:number) {
   cameraName==="all_cameras"?cameraName=null:''
   violType==="all_violations"?violType=null:''
-  return  page && size && cameraName && !violType ? this.http.get(this.IP + '/live_data1/cameraname/' + cameraName + '/' + page + '/' + size): 
-   page && size && (!cameraName) && (!violType) ? this.http.get(this.IP + '/live_data1/pagination/'+ page + '/' + size):
-   !page && !size &&cameraName &&!violType? this.http.get(this.IP +'/live_data1/cameraname/'+ cameraName):
-   this.http.get(this.IP + '/live_data1')
+  return  page && size && cameraName && !violType ? this.http.get(this.IP + '/FiresmokeLiveviolationdata/cameraname/' + cameraName + '/' + page + '/' + size): 
+   page && size && (!cameraName) && (!violType) ? this.http.get(this.IP + '/FiresmokeLiveviolationdata/pagination/'+ page + '/' + size):
+   !page && !size &&cameraName &&!violType? this.http.get(this.IP +'/FiresmokeLiveviolationdata/cameraname/'+ cameraName):
+   this.http.get(this.IP + '/FiresmokeLiveviolationdata ')
 }
 
 CreateViolationExcel(data:any){

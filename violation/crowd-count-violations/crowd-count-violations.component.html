@@ -1,6 +1,6 @@
 <div class="container-fluid dashboard-content" id="content">
     <div class="">
-        <h5> Crowd Count Violations </h5>
+        <h5> Crowd Count Violations </h5><br>
     </div>
 
     <!-- ============================================================== -->
@@ -38,13 +38,19 @@
 
                         </span>
                         <span class="col-2" id="filter">
+                            <p-treeSelect containerStyleClass="w-100" class="w-100" [(ngModel)]="selectedItems1"
+                                [ngModelOptions]="{standalone: true}" [options]="dropdownList1|async"
+                                (onNodeSelect)="onDepartmentIdSelect($event)" placeholder="Select Department"></p-treeSelect>
+
+                        </span>
+                        <span class="col-2" id="filter">
                             <p-treeSelect containerStyleClass="w-100" class="w-100" [(ngModel)]="selectedItems"
                                 [ngModelOptions]="{standalone: true}" [options]="dropdownList|async"
                                 (onNodeSelect)="onCameraIdSelect($event)" placeholder="Select Camera"></p-treeSelect>
 
                         </span>
 
-                        <div class="col-xl-8 col-sm-12 col-lg-12 col-xs-12 col-md-12 d-flex align-items-center">
+                        <div class="col-xl-5 col-sm-12 col-lg-12 col-xs-12 col-md-12 d-flex align-items-center">
                             <button class="btn default-outline ms-3 me-3" (click)="ResetFilters()"
                                 *ngIf="selectedItems!==null||selectedMoments.startDate!=null ">&times; Cancel
                                 Filters</button>
@@ -177,20 +183,28 @@
                         *ngIf="(violData|async).length>0;else noData">
                         <thead style="text-align: center;">
                             <tr>
-                                <th scope="col"><b>S No</b></th>
+                                <th scope="col"><b>SNo.</b></th>
                                 <th scope="col"><b>
-                                        <fa-icon icon="image" class="font-custome me-1"></fa-icon>Violation Image
+                                        <!-- <fa-icon icon="image" class="font-custome me-1"></fa-icon> -->
+                                        Violation Image
                                     </b></th>
                                 <th scope="col"><b>
                                         Violation Details
                                     </b></th>
+
+                                    <th scope="col"><b>
+                                        <!-- <fa-icon icon="camera-retro" class="font-custome me-1"></fa-icon> -->
+                                        Department
+                                    </b></th>
                                 <th scope="col"><b>
-                                        <fa-icon icon="camera-retro" class="font-custome me-1"></fa-icon>Camera Name
+                                        <!-- <fa-icon icon="camera-retro" class="font-custome me-1"></fa-icon> -->
+                                        Camera Name
                                     </b></th>
                                 
 
                                 <th scope="col"><b>
-                                        <fa-icon icon="clock" class="font-custome me-1"></fa-icon>Detected Time
+                                        <!-- <fa-icon icon="clock" class="font-custome me-1"></fa-icon> -->
+                                        Detected Time
                                     </b></th>
                                
 
@@ -224,14 +238,14 @@
                                 </td>
                                 <td>
                                     <div *ngIf="d.crowdcountdetails!=null">
-                                        <div *ngIf="d.analytics_data.data[0].violation_type=='MIN'" class="m-2">
+                                        <div *ngIf="d.analytics_data.data[0].violation_type=='MIN'" class="m-1">
                                             Minimum <span
                                                 class="success-badge">{{d.crowdcountdetails.data_object[0].min_count}}</span>
                                             peop1e should be there,But only <span
                                                 class="danger-badge">{{d.analytics_data.data[0].count}}</span>people
                                             detected
                                         </div>
-                                        <div *ngIf="d.analytics_data.data[0].violation_type=='MAX'" class="m-2">
+                                        <div *ngIf="d.analytics_data.data[0].violation_type=='MAX'" class="m-1">
                                             Maximum <span
                                                 class="success-badge">{{d.crowdcountdetails.data_object[0].max_count}}</span>
                                             people can be there,But <span
@@ -239,6 +253,10 @@
                                             detected
                                         </div>
                                     </div>
+                                </td>
+
+                                <td>
+                                    {{d.department?d.department:'null'}}
                                 </td>
                                 <td>
                                     {{d.camera_name?d.camera_name:'null'}}
@@ -287,6 +305,10 @@
                                 </div>
                                 <div class="d-flex justify-content-center align-items-center" *ngIf="dataFetchStatus=='init'">
                                     <span class="spinner-border spinner-border-sm me-2" role="status" ></span>
+                                    <h4>Loading...</h4>  
+                                </div>
+                                <div class="d-flex justify-content-center align-items-center" *ngIf="dataFetchStatus=='Loading'">
+                                    <!-- <span class="spinner-border spinner-border-sm me-2" role="status" ></span> -->
                                     <h4>Loading...</h4>  
                                 </div>
                                 <div class="d-flex justify-content-center align-items-center" *ngIf="dataFetchStatus=='Error'">

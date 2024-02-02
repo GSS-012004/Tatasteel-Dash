@@ -55,17 +55,31 @@ export class SpillageViolationService {
 
 
 
-GetCameraDetails(){
-    return this.http.get(this.IP+ '/Spillagecameradetails')
+GetCameraDetails(from:any,to:any){
+  return  from === null && to === null? this.http.get(this.IP+'/Spillagecameradetails'):this.http.post(this.IP+'/Spillagecameradetails',{from_date:from,to_date:to})
+ }
+
+ GetDepartmentDetails(from:any,to:any){
+  return  from === null && to === null? this.http.get(this.IP+'/Spillagedepartmentdetails'):this.http.post(this.IP+'/Spillagedepartmentdetails',{from_date:from,to_date:to})
  }
 //  http://192.168.1.77:7500/Spillagecameradetails
  dateTransform(date:Date){
   return this.datePipe.transform(date,'yyyy-MM-dd HH:mm:ss')
 
 }
-GetCameraNames(){
-  return this.http.get(this.IP+'/Spillagecameradetails')
-}
+// GetCameraNames(from:any,to:any){
+//   return  from === null && to === null? this.http.get(this.IP+'/Spillagecameradetails'):this.http.post(this.IP+'/Spillagecameradetails',{from_date:from,to_date:to})
+// }
+
+// GetDepartmentNames(from:any,to:any){
+//   return  from === null && to === null? this.http.get(this.IP+'/Spillagecameradetails'):this.http.post(this.IP+'/Spillagecameradetails',{from_date:from,to_date:to})
+// }
+
+// GetRACameraDetails(from:any,to:any){
+//   // var fromD = this.dateTransform(from)
+//   // var toD = this.dateTransform(to)
+//   return from === null && to === null? this.http.get(this.IP+'/camera_detailsRA'):this.http.post(this.IP+'/camera_detailsRA',{from_date:from,to_date:to})
+// }
 CheckApplicationStatus(){
   return this.http.get(this.IP+'/check_process')
 }

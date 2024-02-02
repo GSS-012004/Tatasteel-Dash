@@ -215,22 +215,22 @@ border:1px solid #ccc;
   width:auto;
   display: grid;
   box-sizing: border-box;
-  margin-left: 3% !important;
-  margin-right: 3% !important;
+  margin-left: 3% ;
+  margin-right: 3% ;
 
-  box-sizing: content-box;
-  padding-right:2rem !important;
-  padding-left: 2rem !important;
+  /* box-sizing: content-box; */
+  padding-right:1% !important;
+  padding-left: 1% !important;
   padding-top: 1rem !important;
   padding-bottom:1rem !important;
   /* grid-template-columns: 5% 30% 20% 15% 15% 10% 5%; */
-  grid-template-columns: 5% 30% 10% 15% 15% 10% 10% ;
+  grid-template-columns: 7% 20% 12% 12% 12% 12% 10% 12% 3% ;
   /* grid-template-columns: 5% 30% 20% 15% 15% 10% 5% 10%; */
 
   border:var(--border);
   border-radius: 7px;
-  margin-right: 1rem;
-  margin-left: 1rem;
+  /* margin-right: 1rem;
+  margin-left: 1rem; */
    margin-bottom: 0.5rem !important;
    margin-top: 0.5rem !important;
 
@@ -238,22 +238,26 @@ border:1px solid #ccc;
 
 .data-container .data-wrapper{
   box-sizing: border-box;
-  width:auto;
+  width:inherit;
   display: grid;
-  padding-top:2rem !important;
-  padding-bottom: 2rem !important;
- margin-right: 1rem;
- margin-left: 1rem;
+  padding-top:0.5rem !important;
+  padding-bottom: 0.5rem !important;
+ /* margin-right: 1rem;
+ margin-left: 1rem; */
   margin-bottom: 1rem !important;
   overflow-wrap: break-word;
   border:var(--border);
   border-radius: 10px;
   /* grid-template-columns: 5% 30% 20% 15% 15% 10% 5%; */
-  grid-template-columns: 5% 30% 10% 15% 15% 10% 10% 5%;
+  grid-template-columns: 7% 20% 12% 12% 12% 12% 10% 12% 3%;
   /* grid-template-columns: 5% 30% 20% 15% 15% 10% 5% 10%; */
 
 
 }
+
+
+
+
 
 
 ngb-pagination ::ng-deep ul > li:not(.active) > a {

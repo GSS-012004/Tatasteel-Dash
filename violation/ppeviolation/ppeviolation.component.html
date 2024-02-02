@@ -1,6 +1,6 @@
 <div class="container-fluid dashboard-content" #datatable id="content">
     <div class="">
-        <h5>Personal Protective Equipment Violations </h5>
+        <h5>Personal Protective Equipment Violations </h5><br>
     </div>
 
     <!-- ============================================================== -->
@@ -53,6 +53,16 @@
 
                             </div>
                         </span>
+
+                        <div class="col-2" id="filter">
+                            <div class="">
+                                <p-treeSelect containerStyleClass="flex d-flex w-100" [style]="{'min-width':'100%'}"
+                                    class="w-100 w-full" [(ngModel)]="selectedItems1"
+                                    [ngModelOptions]="{standalone: true}" [options]="dropdownList1|async"
+                                    (onNodeSelect)="onDepartmentIdSelect($event)"
+                                    placeholder="Select Department"></p-treeSelect>
+                            </div>
+                        </div>
                         <div class="col-2" id="filter">
                             <!-- <div class="row d-block">
                                 <div class="w-100"> -->
@@ -66,8 +76,10 @@
                             <!-- 
                                     </div>
                                     </div> -->
+                                    
 
                         </div>
+                        
 
                         <span class="col-2">
 
@@ -115,10 +127,11 @@
                         </span>
 
 
-                        <div class="col-xl-5 col-sm-12 col-lg-12 col-xs-12 col-md-12">
+                        <div class="col-xl-4 col-sm-12 col-lg-12 col-xs-12 col-md-12">
                             <div class="d-flex align-items-center">
-                                <button class="btn default-outline ms-3 me-3" (click)="Reset()"
-                                    *ngIf="selectedItems!=null">&nbsp; Cancel Filters</button>
+                                <button class="btn default-outline ms-3 me-3"  style="white-space:nowrap;" (click)="Reset()"
+                                    *ngIf="selectedItems!=null||selectedMoments.startDate!=null">&times; Cancel Filters</button>
+
 
                                 <button class="btn default text-white me-3 ms-1" style="width:80px" (click)="Submit()"
                                     style="width:80px"
@@ -127,7 +140,7 @@
                                     <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"
                                         *ngIf="loading"></span>
                                 </button>&nbsp;
-                                <button type="submit" class="btn default text-white me-3" (click)="submitForm()"
+                                <button type="submit" class="btn default text-white me-3" (click)="submitForm()"style="white-space:nowrap;"
                                     [disabled]="(selectedMoments.startDate===null || selectedMoments.endDate===null)||excelLoad">
                                     <fa-icon icon="download" class="ms-1 me-1" style="cursor: pointer;"
                                         *ngIf="!excelLoad"></fa-icon>
@@ -190,7 +203,7 @@
 
                         <div class="">
 
-                            <button *ngIf="!isdatewise" (click)=GetLatestPPEData()
+                            <button *ngIf="!isdatewise" (click)="GetLatestPPEData()"
                                 class="btn default  me-2 text-white float-start">
                                 <span class="spinner-border spinner-border-sm me-2 ms-1" role="status"
                                     aria-hidden="true" *ngIf="loaderLatest"></span>
@@ -235,23 +248,32 @@
                     <table class="table table-bordered" *ngIf="(violData|async).length>0;else noData" style="width:100%;overflow: auto;">
                         <thead style="text-align: center;">
                             <tr>
-                                <th scope="col"><b>S No</b></th>
+                                <th scope="col"><b>SNo.</b></th>
                                 <th scope="col"><b>
-                                        <fa-icon icon="image" class="font-custome me-1"></fa-icon>Image
+                                        <!-- <fa-icon icon="image" class="font-custome me-1"></fa-icon> -->
+                                        Violation Image
                                     </b></th>
                                 <th scope="col"><b>
                                         <!-- <fa-icon icon="camera-retro" class="font-custome me-1"></fa-icon> -->
                                         Violation Details
                                     </b></th>
+                                    <th scope="col"><b>
+                                        <!-- <fa-icon icon="camera-retro" class="font-custome me-1"></fa-icon> -->
+                                        Department
+                                    </b></th>
+
+
                                 <th scope="col"><b>
-                                        <fa-icon icon="camera-retro" class="font-custome me-1"></fa-icon>Camera Name
+                                        <!-- <fa-icon icon="camera-retro" class="font-custome me-1"></fa-icon> -->
+                                        Camera Name
                                     </b></th>
                                 <!-- <th scope="col"><b>
                                          <fa-icon icon="laptop" class="font-custome me-1"></fa-icon>Device Name
                                     </b></th> -->
 
                                 <th scope="col"><b>
-                                        <fa-icon icon="clock" class="font-custome me-1"></fa-icon>Detected Time
+                                        <!-- <fa-icon icon="clock" class="font-custome me-1"></fa-icon> -->
+                                        Detected Time
                                     </b></th>
                                 <!-- <th scope="col"><b>
                                     <fa-icon icon="clock" class="font-custome me-1"></fa-icon>Exit Time
@@ -308,6 +330,10 @@
                                             </div>
                                         </div>
                                     </div>
+                                </td>
+
+                                <td>
+                                    {{d.department?d.department:'null'}}
                                 </td>
                                 <td>
                                     {{d.camera_name?d.camera_name:'null'}}
@@ -571,6 +597,10 @@
                     </div>
                     <div class="d-flex justify-content-center align-items-center"*ngIf="dataFetchStatus=='init'">
                         <span class="spinner-border spinner-border-sm me-2" role="status" ></span>
+                        <h4>Loading...</h4>
+                    </div>
+                    <div class="d-flex justify-content-center align-items-center"*ngIf="dataFetchStatus=='Loading'">
+                        <!-- <span class="spinner-border spinner-border-sm me-2" role="status" ></span> -->
                         <h4>Loading...</h4>
                     </div>
                     <div class="d-flex justify-content-center align-items-center"*ngIf="dataFetchStatus=='Error'">

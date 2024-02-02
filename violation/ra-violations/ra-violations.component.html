@@ -1,6 +1,6 @@
 <div class="container-fluid dashboard-content" id="content">
     <div class="">
-        <h5>Danger Zone Violations </h5>
+        <h5>Danger Zone Violations</h5><br>
     </div>
 
     <!-- ============================================================== -->
@@ -36,14 +36,23 @@
                             </div>
 
                         </span>
+
+
+                        <div class="col-xl-2 col-lg-2 col-md-4 col-xs-12 col-sm-12" id="filter">
+                            <p-treeSelect [containerStyleClass]="'w-100'" class="w-100 d-flex"
+                                [(ngModel)]="selectedItems1" [ngModelOptions]="{standalone: true}"
+                                [options]="dropdownList1|async" [style]="{'width':'inherit'}"
+                                (onNodeSelect)="onDepartmentIdSelect($event)" placeholder="Select Department"></p-treeSelect>
+                        </div>
                         <div class="col-xl-2 col-lg-2 col-md-4 col-xs-12 col-sm-12" id="filter">
                             <p-treeSelect [containerStyleClass]="'w-100'" class="w-100 d-flex"
                                 [(ngModel)]="selectedItems" [ngModelOptions]="{standalone: true}"
                                 [options]="dropdownList|async" [style]="{'width':'inherit'}"
                                 (onNodeSelect)="onCameraIdSelect($event)" placeholder="Select Camera"></p-treeSelect>
                         </div>
+                        
 
-                        <div class="col-xl-8 col-sm-12 col-lg-12 col-xs-12 col-md-12 d-flex align-items-center">
+                        <div class="col-xl-4 col-sm-12 col-lg-12 col-xs-12 col-md-12 d-flex align-items-center">
                             <button class="btn default-outline ms-3 me-3" (click)="ResetFilters()"
                                 *ngIf="selectedItems!==null||  selectedMoments?.startDate!==null ">&times;
                                 Cancel
@@ -51,7 +60,7 @@
 
                             <button class="btn default text-white me-3 ms-1" style="width:80px" (click)="Submit()"
                                 style="width:80px"
-                                [disabled]="( selectedMoments==null|| selectedMoments.startDate===null || selectedMoments.endDate===null)"><span
+                                [disabled]="( selectedMoments===null|| selectedMoments.startDate===null || selectedMoments.endDate===null)"><span
                                     *ngIf="!loading">Submit</span>
                                 <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"
                                     *ngIf="loading"></span>
@@ -147,7 +156,7 @@
                             <div class="header" style="overflow: auto;">
 
                                 <div scope="col" class="d-flex align-items-center justify-centent-center">
-                                    <div><b>SNo</b>
+                                    <div><b>SNo.</b>
                                     </div>
                                 </div>
                                 <div scope="col" class="d-flex justify-content-center align-items-center">
@@ -161,6 +170,16 @@
                                             Violation Details</b>
                                     </div>
                                 </div>
+
+                                <div scope="col" class="d-flex justify-content-center align-items-center">
+                                    <div>
+
+                                        <b>
+                                            Department 
+                                        </b>
+                                    </div>
+                                </div>
+
                                 <div scope="col" class="d-flex justify-content-center align-items-center">
                                     <div>
 
@@ -187,7 +206,7 @@
                                     <p-carousel  [value]="data.data"  [id]="data.SNo"  >
                                         <ng-template let-d   pTemplate="d"  >
                                             <div class="data-wrapper p-2"   >
-                                                <div  class="column-flex" style="padding-left: 2rem">{{data.SNo}}.{{d.id}}</div>
+                                                <div  class="column-flex" style="padding-left: 0.5rem">{{data.SNo}}.{{d.id}}</div>
                                                 <div class="d-flex justify-content-center align-items-center">
                                                     <div class="column-flex">
                                                         <img [src]="API+'/image/'+d.imagename[0]" class="image"
@@ -233,6 +252,9 @@
                                                             </div>
                                                         </div>
                                                     </div>
+                                                </div>
+                                                <div class="d-flex justify-content-center align-items-center">
+                                                    {{d.department?d.department:'null'}}
                                                 </div>
                                                 <div class="d-flex justify-content-center align-items-center">
                                                     {{d.camera_name?d.camera_name:'null'}}
@@ -310,16 +332,21 @@
                         <ng-template #noData>
                             <div class="row card card-body" id="data-card">
                                 <div class="d-flex justify-content-center align-items-center"
-                                    *ngIf="dataFetchStatus=='success'">
+                                    *ngIf="dataFetchStatus==='success'">
                                     <h4> Violation Details are Not Found.</h4>
                                 </div>
                                 <div class="d-flex justify-content-center align-items-center"
-                                    *ngIf="dataFetchStatus=='init'">
+                                    *ngIf="dataFetchStatus==='init'">
                                     <span class="spinner-border spinner-border-sm me-2" role="status"  ></span>
                                     <h4>Loading...</h4>
                                 </div>
                                 <div class="d-flex justify-content-center align-items-center"
-                                    *ngIf="dataFetchStatus=='Error'">
+                                    *ngIf="dataFetchStatus==='Loading'">
+                                    <!-- <span class="spinner-border spinner-border-sm me-2" role="status"  ></span> -->
+                                    <h4>Loading...</h4>
+                                </div>
+                                <div class="d-flex justify-content-center align-items-center"
+                                    *ngIf="dataFetchStatus==='Error'">
                                     <h4>Error While Fetching the Data.</h4></div>
 
                             </div>

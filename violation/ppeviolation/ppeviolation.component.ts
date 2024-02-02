@@ -22,12 +22,13 @@ import {
   NgbDate,
   NgbModal,
 } from "@ng-bootstrap/ng-bootstrap";
-import { saveAs } from "file-saver";
+import { saveAs } from "file-saver";0
 import { MatSnackBar } from "@angular/material/snack-bar";
 import { Moment } from "moment";
 import { DaterangepickerDirective } from "ngx-daterangepicker-material";
 import dayjs from "dayjs/esm";
 import { DateFormaterPipe } from "src/app/common/date-formater.pipe";
+import { PpeviolationService } from "./ppeviolation.service";
 @Component({
   selector: "app-ppeviolation",
   templateUrl: "./ppeviolation.component.html",
@@ -89,7 +90,9 @@ export class PpeviolationComponent implements OnInit, OnDestroy, AfterViewInit {
   selectedViolType: string | null = null;
   Subsciption!: Subscription;
   selectedCameraId: string | null = null;
+  selectedDepartment: string | null = null;
   dropdownList: Observable<any[]> = of([]);
+  dropdownList1: Observable<any[]> = of([]);
   fromDateControl: FormControl = new FormControl(
     new Date().getTime(),
     Validators.required
@@ -102,6 +105,7 @@ export class PpeviolationComponent implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild("dangerAlert") Violation: ElementRef<any>;
   dropdownSettings!: IDropdownSettings;
   selectedItems!: any;
+  selectedItems1!: any
   violationTypeList: Observable<any[]> = of([
     { key: "0", label: "All Violations", icon: "pi", data: "all_violations" },
   ]);
@@ -143,7 +147,8 @@ export class PpeviolationComponent implements OnInit, OnDestroy, AfterViewInit {
 
   constructor(
     private http: HttpClient,
-    private webServer: ServerService,
+     private webServer: PpeviolationService,
+    // private webServer: ServerService,
     private datepipe: DatePipe,
     private toasterService: ToastrService,
     private _lightbox: Lightbox,
@@ -167,7 +172,8 @@ export class PpeviolationComponent implements OnInit, OnDestroy, AfterViewInit {
     this.delay = this.webServer.logInterval;
 
     this.getCameraList();
-    this.getViolationTypes();
+    this.getDepartmentList()
+    // this.getViolationTypes();
     this.ExcelRange = 0;
     //.............lightbox configaration...........
     this._lightBoxConfig.showDownloadButton = false;
@@ -283,6 +289,7 @@ export class PpeviolationComponent implements OnInit, OnDestroy, AfterViewInit {
   Reset() {
     this.selectedMoments = null;
     this.selectedItems = null;
+    this.selectedItems1 = null;
 
     this.dataread();
   }
@@ -343,14 +350,14 @@ export class PpeviolationComponent implements OnInit, OnDestroy, AfterViewInit {
 
                         setTimeout(() => {
                           this.showViol();
-                        }, 300);
+                        }, 30000);
                         !this.audioOff ? this.alertSound() : "";
                       }
                     }
                   }
                 }
               }
-              else {
+             if(false) {
                 this.webServer.LivePPEViolationData().subscribe(
                   (Response: any) => {
                     if (!this.latest) {
@@ -397,6 +404,9 @@ export class PpeviolationComponent implements OnInit, OnDestroy, AfterViewInit {
             }
           );
 
+      }
+      else{
+        this.dataFetchStatus = 'success'
       }
     }, this.delay);
   }
@@ -503,14 +513,17 @@ export class PpeviolationComponent implements OnInit, OnDestroy, AfterViewInit {
   //----------METHOD TO FETCH DATE WISE DATA-----------------
 
   Submit() {
-    this.dataFetchStatus = "init";
+    this.dataFetchStatus = 'Loading'
     this.isLatest = false;
     this.selectedCameraId = this.selectedItems ? this.selectedItems.data : null;
+    this.selectedDepartment = this.selectedItems1 ? this.selectedItems1.data : null;
     this.Images = [];
     this.fromDate = this.selectedMoments.startDate.format(
       "YYYY-MM-DD HH:mm:ss"
     );
     this.toDate = this.selectedMoments.endDate.format("YYYY-MM-DD HH:mm:ss");
+    this.getCameraList();
+    this.getDepartmentList()
     this.Subsciption ? this.Subsciption.unsubscribe() : "";
     // this.table.nativeElement.querySelectorAll('table.table.table-striped.table-bordered')
     var table = document.getElementById("dataTable");
@@ -744,7 +757,14 @@ export class PpeviolationComponent implements OnInit, OnDestroy, AfterViewInit {
     this.selectedCameraId = this.selectedItems.data;
     console.log(this.selectedItems);
     console.log(event);
-    this.Submit();
+     this.Submit();
+  }
+  onDepartmentIdSelect(event: any) {
+    !this.isdatewise ? (this.page = 1) : "";
+    this.selectedDepartment = this.selectedItems1.data;
+    console.log(this.selectedItems1);
+    console.log(event);
+     this.Submit();
   }
 
   imageCarousal(viol: any) {
@@ -774,6 +794,7 @@ export class PpeviolationComponent implements OnInit, OnDestroy, AfterViewInit {
     this.excelLoad = true;
     this.isExcel = false;
     this.selectedCameraId = this.selectedItems ? this.selectedItems.data : null;
+    this.selectedDepartment = this.selectedItems1 ? this.selectedItems1.data : null;
 
     var body = {
       from_date: this.selectedMoments.startDate.format("YYYY-MM-DD HH:mm:ss"),
@@ -782,6 +803,11 @@ export class PpeviolationComponent implements OnInit, OnDestroy, AfterViewInit {
         ? this.selectedItems.data == "all_cameras"
           ? null
           : this.selectedItems.data
+        : null,
+        department: this.selectedItems1
+        ? this.selectedItems1.data == "all_departments"
+          ? null
+          : this.selectedItems1.data
         : null,
     };
 
@@ -972,7 +998,7 @@ export class PpeviolationComponent implements OnInit, OnDestroy, AfterViewInit {
     var cameraIdList: any[] = [];
 
     cameralist[0] = { key: "0", label: "All Cameras", data: "all_cameras" };
-    this.webServer.GetPPECameraDetails().subscribe((data: any) => {
+    this.webServer.GetPPECameraDetails((this.selectedMoments !== null)?(this.selectedMoments.startDate.format("YYYY-MM-DD HH:mm:ss")):null,(this.selectedMoments !== null)?(this.selectedMoments.endDate.format("YYYY-MM-DD HH:mm:ss")):null).subscribe((data: any) => {
       if (data.success === true) {
         data.message.forEach((el: any, i: number) => {
           cameraIdList.push({ cameraid: i, cameraname: el });
@@ -995,38 +1021,69 @@ export class PpeviolationComponent implements OnInit, OnDestroy, AfterViewInit {
     });
   }
 
-  //function to fetch the available violation types
-  getViolationTypes() {
-    var violTypeList: any[] = [];
-    var temp: any[] = [];
 
-    this.violationsList[0] = {
-      key: "0",
-      label: "All Violations",
-      data: "all_violations",
-    };
-    this.webServer.GetViolationList().subscribe((reponse: any) => {
-      if (reponse.success) {
-        reponse.message.forEach((element: any) => {
-          temp.push(element);
+
+
+  getDepartmentList() {
+    var departmentlist: any[] = [];
+    var departmentIdList: any[] = [];
+
+    departmentlist[0] = { key: "0", label: "All Departments", data: "all_departments" };
+    this.webServer.GetPPEDepartmentDetails((this.selectedMoments !== null)?(this.selectedMoments.startDate.format("YYYY-MM-DD HH:mm:ss")):null,(this.selectedMoments !== null)?(this.selectedMoments.endDate.format("YYYY-MM-DD HH:mm:ss")):null).subscribe((data: any) => {
+      if (data.success === true) {
+        data.message.forEach((el: any, i: number) => {
+          departmentIdList.push({ departmentid: i, department: el });
         });
-
-        temp.forEach((element: any, index: number) => {
+        departmentIdList = departmentIdList.filter((el, i, a) => i === a.indexOf(el));
+        departmentIdList.forEach((element: any, i: number) => {
+          // cameralist[i + 1] = { item_id: element.cameraid, item_text: element.cameraname }
           var obj;
-
           obj = {
-            key: (index + 1).toString(),
-            icon: "pi",
-            label: element,
-            data: element,
+            key: (i + 1).toString(),
+            label: element.department,
+            data: element.department,
           };
 
-          this.violationsList.push(obj);
+          departmentlist.push(obj);
         });
-        this.violationTypeList = of(this.violationsList);
+
+        this.dropdownList1 = of(departmentlist);
       }
     });
   }
+
+  //function to fetch the available violation types
+  // getViolationTypes() {
+  //   var violTypeList: any[] = [];
+  //   var temp: any[] = [];
+
+  //   this.violationsList[0] = {
+  //     key: "0",
+  //     label: "All Violations",
+  //     data: "all_violations",
+  //   };
+  //   this.webServer.GetViolationList().subscribe((reponse: any) => {
+  //     if (reponse.success) {
+  //       reponse.message.forEach((element: any) => {
+  //         temp.push(element);
+  //       });
+
+  //       temp.forEach((element: any, index: number) => {
+  //         var obj;
+
+  //         obj = {
+  //           key: (index + 1).toString(),
+  //           icon: "pi",
+  //           label: element,
+  //           data: element,
+  //         };
+
+  //         this.violationsList.push(obj);
+  //       });
+  //       this.violationTypeList = of(this.violationsList);
+  //     }
+  //   });
+  // }
 
   SelectViol(data: any, modal: any) {
     this.editViol = data;

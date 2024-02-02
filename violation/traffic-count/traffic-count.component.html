@@ -1,126 +1,134 @@
 <div class="container-fluid w-100">
-  <h3 class="page-header">Traffic Count</h3>
+    <h3 class="page-header">Traffic Count</h3>
 
-  <div class="col-12 mt-3">
-    <div class="">
+    <div class="col-12 mt-3">
+        <div class="">
+            <span class="">
+                <div class="row m-1 mt-3">
+                    <div class="card" id="data-card">
+                        <div class="d-flex flex-row">
+                            <div class="">
+                                <span class="container p-3">
+                                    <fa-icon icon="filter"></fa-icon>
+                                </span>
+                            </div>
+                            <div class="col-10">
+                                <div class="row">
+                                    <div class="col-xl-2 col-xs-6 col-md-6 col-sm-6 col-lg-4" id="dateInput">
+                                    <!-- <form class="search-form"> -->
+                                        <div class="ms-3 date-picker container">
+                                            <input ngxDaterangepickerMd #datepicker (datesUpdated)="dateUpdated($event)"
+                                                [showCustomRangeLabel]="true" [timePicker]="true" placeholder="Select Date" class="form-control"
+                                                [(ngModel)]="selectedMoments" required >
+                                            <fa-icon icon="calendar"></fa-icon>
+                                        </div>
+                                        <!-- <label><fa-icon icon="calendar"></fa-icon> </label>
+                                        </form> -->
+                                    </div>
+                                    <div class="col-xl-2 col-xs-12 col-sm-12 col-md-6 col-lg-6" id="filter">
 
-      <span class="">
+                                        <p-treeSelect containerStyleClass="w-100" [ngModelOptions]="{standalone: true}"
+                                        [(ngModel)]="selectedDepartment" (onNodeSelect)="onDepartmentIdSelect($event)"
+                                        [options]="departmentList|async" placeholder="Select Department"></p-treeSelect>
 
-        <div class="row m-1 mt-3">
-          <div class="card" id="data-card">
-            <div class="d-flex flex-row">
-              <div class="">
-                <span class="container p-3">
-                  <fa-icon icon="filter"></fa-icon>
-                </span>
-              </div>
-              <div class="col-10">
-                <div class="row">
-                  <div class="col-xl-2 col-xs-6 col-md-6 col-sm-6 col-lg-4" id="dateInput">
-                    <!-- <form class="search-form"> -->
-                    <div class="ms-3 date-picker container">
-                      <input ngxDaterangepickerMd #datepicker (datesUpdated)="dateUpdated($event)"
-                        [showCustomRangeLabel]="true" [timePicker]="true" placeholder="Select Date" class="form-control"
-                        [(ngModel)]="selectedMoments" required>
-                      <fa-icon icon="calendar"></fa-icon>
+                                    </div>
+
+                                    <div class="col-2" id="filter">
+
+                                        <p-treeSelect containerStyleClass="w-100" [ngModelOptions]="{standalone: true}"
+                                              [(ngModel)]="selectedCamera" (onNodeSelect)="onCameraIdSelect($event)"
+                                        [options]="cameraList|async" placeholder="Select Camera"></p-treeSelect>
+
+                                    </div>
+                                    <div class="col-2">
+                                        <button class="btn default-outline m-1" (click)="ResetFilters()"
+                                            *ngIf="selectedMoments.startDate!=null||selectedCamera!=null|| selectedDepartment!=null">&times; Cancel Filters</button>
+                                    </div>
+                                </div>
+                            </div>
+                                <!-- </span> -->
+                        </div>
                     </div>
-                    <!-- <label><fa-icon icon="calendar"></fa-icon> </label>
-                     </form> -->
-                  </div>
-                  <div class="col-xl-2 col-xs-12 col-sm-12 col-md-6 col-lg-6" id="filter">
-
-                    <p-treeSelect containerStyleClass="w-100" [ngModelOptions]="{standalone: true}"
-                      [(ngModel)]="selectedCamera" (onNodeSelect)="onCameraIdSelect($event)"
-                      [options]="cameraList|async" placeholder="Select Camera"></p-treeSelect>
-
-                  </div>
-                  <div class="col-2">
-                    <button class="btn default-outline m-1" (click)="ResetFilters()"
-                      *ngIf="selectedMoments.startDate!=null||selectedCamera!=null">&times; Cancel Filters</button>
-                  </div>
                 </div>
-              </div>
-              <!-- </span> -->
-            </div>
-          </div>
-          </div>
-      </span>
-    </div>
-    <div class="card" id="data-card">
-      <div class="card-header">
-        <div>
-          <span class="float-start">
-            <h5>
-              Entry and Exit Analysis
-            </h5>
-          </span>
-          <span class="float-end">
-            <span class="d-flex">
-              <div class="me-2">
-                <!-- <div class="col-xl-2 co mel-sm-4 col-lg-4 col-xs-4 col-md-4 mb-3"> -->
-                <span class="d-flex align-items-center mt-2">
-                   <span class="text-muted">Last Updated : </span>
-                  <span >{{lastUpdatedDate|dateFormater }}</span></span>
-              </div>
-
-              <button class="btn default" (click)="RefreshDetails()"> <fa-icon icon="refresh" class="me-1"></fa-icon>
-                Refresh
-                Details</button>
             </span>
-          </span>
         </div>
-      </div>
-      <div class="row">
+        <div class="card" id="data-card">
+            <div class="card-header">
+                <div>
+                    <span class="float-start">
+                        <h5>
+                        Entry and Exit Analysis
+                        </h5>
+                    </span>
+                    <span class="float-end">
+                        <span class="d-flex">
+                            <div class="me-2">
+                                <!-- <div class="col-xl-2 co mel-sm-4 col-lg-4 col-xs-4 col-md-4 mb-3"> -->
+                                <span class="d-flex align-items-center mt-2">
+                                    <span class="text-muted">Last Updated : </span>
+                                    <span >{{lastUpdatedDate|dateFormater }}</span>
+                                </span>
+                            </div>
 
-        <div class="" id="data-container">
-          <div class="card-body" id="data-card">
-
-            <div class="row">
-              <div [ngClass]="isGraph?'col-xl-4':'col-xl-12'">
-                <p-table [value]="(tcData|async).reverse()" [scrollable]="true" rowGroupMode="rowspan" groupRowsBy="camera_name"
-                  [tableStyle]="{'min-width':'100%'}" *ngIf="(tcData|async).length>0;else noData">
-
-                  <ng-template pTemplate="header">
-                    <tr>
-                      <th>Camera Name</th>
-                      <th>Entry</th>
-                      <th>Exit</th>
-                      <th>Region</th>
-                      <th>Time</th>
-                      <!-- <th></th> -->
-                    </tr>
-                  </ng-template>
-                  <ng-template pTemplate="body" let-rowData let-rowIndex="rowIndex" let-rowgroup="rowgroup"
-                    let-rowspan="rowspan">
-                    <tr [pSelectableRow]="rowgroup">
-                      <td *ngIf="rowgroup" [attr.rowspan]="rowspan">
-                        <!-- <p-treeTableToggler [rowNode]="rowNode"></p-treeTableToggler> -->
-                        {{ rowData.camera_name }}
-                      </td>
-                      <td>
-                        <div *ngIf="rowData.direction=='entry';else elsePart"> {{ rowData.count.person }}</div>
-                        <ng-template #elsePart>---</ng-template>
-                      </td>
-                      <td>
-                        <div *ngIf="rowData.direction=='exit';else elsePart">{{ rowData.count.person }}</div>
-                        <ng-template #elsePart>---</ng-template>
-
-                      </td>
-                      <td>{{rowData.line_name}}</td>
-                      <td>{{rowData.timestamp|dateFormater}}</td>
-                      <!-- <td *ngIf="rowgroup" [attr.rowspan]="rowspan"><fa-icon icon="chart-line"
-                          (click)="GetGraphOfCamera(rowData)" style="cursor:pointer"></fa-icon></td> -->
-                    </tr>
-                  </ng-template>
-                </p-table>
-              </div>
-              <div *ngIf="isGraph" class="col-xl-8">
-                <div class="chart-wrapper mt-3">
-                  <canvas baseChart [datasets]="barChartData" [labels]="barChartLabels" [options]="barChartOptions"
-                    [plugins]="barChartPlugins" [legend]="barChartLegend" [type]="barChartType">
-                  </canvas>
+                            <button class="btn default" (click)="RefreshDetails()"> <fa-icon icon="refresh" class="me-1"></fa-icon>
+                             Refresh Details</button>
+                        </span>
+                    </span>
                 </div>
-              </div>
+            </div>
+            <div class="row">
+
+                <div class="" id="data-container">
+                    <div class="card-body" id="data-card">
+
+                        <div class="row">
+                            <div [ngClass]="isGraph?'col-xl-4':'col-xl-12'">
+                                <p-table [value]="(tcData|async).reverse()" [scrollable]="true" rowGroupMode="rowspan" groupRowsBy="camera_name"
+                                [tableStyle]="{'min-width':'100%'}" *ngIf="(tcData|async).length>0;else noData">
+
+                                    <ng-template pTemplate="header">
+                                        <tr>
+                                            <th>SNo.</th>
+                                            <th>Camera Name</th>
+                                            <th>Entry</th>
+                                            <th>Exit</th>
+                                            <th>Region</th>
+                                            <th>Time</th>
+                      <!-- <th></th> -->
+                                        </tr>
+                                    </ng-template>
+                                    <ng-template pTemplate="body" let-rowData let-rowIndex="rowIndex" let-rowgroup="rowgroup"
+                                        let-rowspan="rowspan">
+                                        <tr [pSelectableRow]="rowgroup">
+                                            <td>{{rowIndex+1}}.</td>
+                                            <td *ngIf="rowgroup" [attr.rowspan]="rowspan">
+                                                <!-- <p-treeTableToggler [rowNode]="rowNode"></p-treeTableToggler> -->
+                                                {{ rowData.camera_name }}
+                                            </td>
+                                            <td>
+                                                <div *ngIf="rowData.direction=='entry';else elsePart"> {{ rowData.count.person }}</div>
+                                                <ng-template #elsePart>---</ng-template>
+                                            </td>
+                                            <td>
+                                                <div *ngIf="rowData.direction=='exit';else elsePart">{{ rowData.count.person }}</div>
+                                                <ng-template #elsePart>---</ng-template>
+
+                                            </td>
+                                            <td>{{rowData.line_name}}</td>
+                                            <td>{{rowData.timestamp|dateFormater}}</td>
+                                                <!-- <td *ngIf="rowgroup" [attr.rowspan]="rowspan"><fa-icon icon="chart-line"
+                                                (click)="GetGraphOfCamera(rowData)" style="cursor:pointer"></fa-icon></td> -->
+                                        </tr>
+                                    </ng-template>
+                                </p-table>
+                            </div>
+                            <div *ngIf="isGraph" class="col-xl-8">
+                                <div class="chart-wrapper mt-3">
+                                    <canvas baseChart [datasets]="barChartData" [labels]="barChartLabels" [options]     ="barChartOptions"
+                                     [plugins]="barChartPlugins" [legend]="barChartLegend" [type]="barChartType">
+                                    </canvas>
+                                </div>
+                            </div>
 
               <!-- <div class="row">
           <div class="col-6">
@@ -134,21 +142,23 @@
               <!-- <div class="col-6">
           <app-heatmap></app-heatmap>
         </div> -->
-            </div>
-            <ng-template #noData>
-              <div class="row card card-body" id="data-card">
-                <div class="d-flex justify-content-center align-items-center" *ngIf="dataFetchStatus=='success'">
-                  <h4> No details found</h4>
-                </div>
-                <div class="d-flex justify-content-center align-items-center" *ngIf="dataFetchStatus=='init'">Loading...
-                </div>
-                <div class="d-flex justify-content-center align-items-center" *ngIf="dataFetchStatus=='Error'">Error
-                  while fetching data</div>
+                    </div>
+                    <ng-template #noData>
+                        <div class="row card card-body" id="data-card">
+                            <div class="d-flex justify-content-center align-items-center" *ngIf="dataFetchStatus=='success'">
+                                <h4> Details are Not Found.</h4>
+                            </div>
+                            <div class="d-flex justify-content-center align-items-center" *ngIf="dataFetchStatus=='init'">
+                                <h4>Loading...</h4>
+                            </div>
+                            <div class="d-flex justify-content-center align-items-center" *ngIf="dataFetchStatus=='Error'">Error
+                                <h4>while fetching data</h4>
+                            </div>
 
-              </div>
-            </ng-template>
-          </div>
-        </div>
+                        </div>
+                    </ng-template>
+                </div>
+            </div>
 
         <!-- <div class="row">
           <div class="col-6">
@@ -163,7 +173,7 @@
           <app-heatmap></app-heatmap>
         </div> -->
 
-      </div>
+        </div>
+        </div>
     </div>
-  </div>
 </div>

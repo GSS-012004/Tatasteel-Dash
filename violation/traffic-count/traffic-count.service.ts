@@ -30,5 +30,18 @@ export class TrafficCountService {
      this.http.post(this.AppServer.IP + '/datewiseTC', body)
   
   }
+
+  GetTCCameraDetails(from:any,to:any){
+    return  from === null && to === null? this.http.get(this.AppServer.IP+'/camera_detailsTC'):this.http.post(this.AppServer.IP+'/camera_detailsTC',{from_date:from,to_date:to})
+  }
   
+
+  GetTCDepartmentDetails(from:any,to:any){
+    return  from === null && to === null? this.http.get(this.AppServer.IP+'/department_detailsTC'):this.http.post(this.AppServer.IP+'/department_detailsTC',{from_date:from,to_date:to})
+  }
+
+  // GetCameraDetails(from:any,to:any){
+  //   return  from === null && to === null? this.http.get(this.IP+'/Spillagecameradetails'):this.http.post(this.IP+'/Spillagecameradetails',{from_date:from,to_date:to})
+  //  }
+
 }

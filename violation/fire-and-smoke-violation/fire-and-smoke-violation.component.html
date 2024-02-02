@@ -29,14 +29,15 @@
                     </div>
                 </div>
 
-                <div class="col-xl-10 col-lg-12 col-md-12 col-xs-12 col-sm-12 mb-2">
+                <div class="col-xl-12 col-lg-12 col-md-12 col-xs-12 col-sm-12 mb-2">
                     <div class="row d-flex align-items-center">
                         <span class="col-xl-2 col-lg-2 col-md-4 col-xs-12 col-sm-12">
-                            <div class="datePickerContainer mb-2" (click)="openDatePicker($event)">
+                            <div class="datePickerContainer " (click)="openDatePicker($event)">
                                 <div class="w-80">
                                     <input type="text"  placeholder="Select Date" [showCustomRangeLabel]="true" ngxDaterangepickerMd #datepicker
-                                        [ranges]="ranges" [timePicker]="true" 
-                                        [(ngModel)]="selectedMoments" required id="dateInput" class="form-control" />
+                                        [ranges]="ranges" [timePicker]="true" (datesUpdated)=" Submit()"
+                                        [(ngModel)]="selectedMoments" required id="dateInput" 
+                                        autocomplete="off"class="form-control" />
                                 </div>
 
                                 <div class="input-group-append">
@@ -49,7 +50,15 @@
                             </div>    
                         </span>
 
-                        <div class="col-2" id="filter">
+                        <div class="col-xl-2 col-lg-2 col-md-4 col-xs-12 col-sm-12" id="filter">
+                            <p-treeSelect [containerStyleClass]="'w-100'" class="w-100 d-flex"
+                                [(ngModel)]="selectedItems1" [ngModelOptions]="{standalone: true}"
+                                [options]="dropdownList1|async" [style]="{'width':'inherit'}"
+                                (onNodeSelect)="onDepartmentIdSelect($event)" placeholder="Select Department">
+                            </p-treeSelect>
+                        </div>
+
+                        <div class="col-xl-2 col-lg-2 col-md-4 col-xs-12 col-sm-12" id="filter">
                             <p-treeSelect [containerStyleClass]="'w-100'" class="w-100 d-flex"
                                 [(ngModel)]="selectedItems" [ngModelOptions]="{standalone: true}"
                                 [options]="dropdownList|async" [style]="{'width':'inherit'}"
@@ -57,7 +66,7 @@
                             </p-treeSelect>
                         </div>
 
-                        <div class="col-xl-7 col-sm-12 col-lg-12 col-xs-12 col-md-12 align-items-center">
+                        <div class="col-xl-4 col-sm-12 col-lg-12 col-xs-12 col-md-12 d-flex align-items-center">
                             <button class="btn default-outline me-3" (click)="ResetFilters()"
                                 *ngIf="selectedItems!=null||selectedMoments.startDate!=null">&times; Cancel
                                 Filters</button>
@@ -153,7 +162,7 @@
                             <div class="header" style="overflow: auto;">
                                 <div scope="col" class="d-flex align-items-center justify-content-center">
                                     <div>
-                                        <b>SNo</b>
+                                        <b>SNo.</b>
                                     </div>
                                 </div>
 
@@ -166,14 +175,7 @@
                                     </div>
                                 </div>
 
-                                <div scope="col" class = "d-flex justify-content-center align-items-center">
-                                    <div>
-
-                                        <b>
-                                            Camera Name
-                                        </b>
-                                    </div>
-                                </div>
+                                
 
 
                                 <div scope="col" class = "d-flex justify-content-center align-items-center">
@@ -182,11 +184,25 @@
                                     </div>
                                   </div>
 
-                                <div scope="col" class="d-flex justify-content-center align-items-center">
-                                    <b>
-                                        Detected Time
-                                    </b>
+                                  <div scope="col" class = "d-flex justify-content-center align-items-center">
+                                    <div>
+
+                                        <b>
+                                            Department
+                                        </b>
+                                    </div>
                                 </div>
+
+                                  <div scope="col" class = "d-flex justify-content-center align-items-center">
+                                    <div>
+
+                                        <b>
+                                            Camera Name
+                                        </b>
+                                    </div>
+                                </div>
+
+                                
 
                                 <div scope="col" class="d-flex justify-content-center align-items-center">
                                     <div>
@@ -194,6 +210,12 @@
                                             Location
                                         </b>
                                     </div>
+                                </div>
+
+                                <div scope="col" class="d-flex justify-content-center align-items-center">
+                                    <b>
+                                        Detected Time
+                                    </b>
                                 </div>
 
                                 
@@ -209,7 +231,7 @@
                                 </div>
                             
                             </div>
-                            <ng-container *ngIf="(violData|async).length > 0 else noData">
+                            <ng-container *ngIf="(violData|async).length>0 else noData">
                             <div *ngFor="let data of violData|async ;let i=index;trackBy: trackByFn" style="justify-content: center;"> 
                                <div *ngIf = "data?.data">
                                     <p-carousel [value]="data.data" [id] = "data.SNo">
@@ -217,33 +239,35 @@
                                                 <div class="data-wrapper p-2" >
 
                                                     <div class="d-flex justify-content-center align-items-center">
-                                                        <div class = "column-flex" style= padding-left:2rem>{{data.SNo}}.{{d.id}}</div>
+                                                        <div class = "column-flex" style= padding-left:0.5rem>{{data.SNo}}.{{d.id}}</div>
                                                     </div>
 
                                                     <div class="d-flex justify-content-center align-items-center">
                                                         <div class = "column-flex">
+                                                            <div class="column-flex">
                                                             <video width="300" *ngIf="d.processing_mode==='VIDEO'" controls preload="auto"  class="custom-video">
                                                                <source  [src]="API +'/getFireVideo/'+d.video_file_name" type="video/quicktime">
                                                                <!-- <source  [src]="API +'/getFireVideo/'+d.video_file_name" type="video/mov"> -->
                                                                <!-- <source  [src]="API +'/getFireVideo/'+d.video_file_name" type="video/mp4"> -->
                                                             </video>
                                                             <img *ngIf="d.processing_mode==='IMAGE'" loading="lazy" class="image"  [src]="API +'/GETFIRESMOKEIMAGE/'+d.video_file_name"  (click)="imageCarousal(d.video_file_name)">
-                                                        
+                                                        </div>
                                                             
                                                             <br/>
-                                                    <div style=" padding-left: 5rem;" *ngIf="d.processing_mode==='VIDEO'">
+                                                            <div class="column-flex">
+                                                    <div  *ngIf="d.processing_mode==='VIDEO'">
                                                             <button class="btn btn-sm default text-white mt-2" > 
                                                                 <a (click)="downloadVideo(API+'/getFireVideo/'+d.video_file_name)">Download Video</a>
                                                                 <fa-icon icon="download" class="ms-1 me-1" style="cursor: pointer;"></fa-icon>
                                                             </button>
                                                         </div>
 
-                                                        <div style=" padding-left: 5rem;"  *ngIf="d.processing_mode==='IMAGE'">
+                                                        <div   *ngIf="d.processing_mode==='IMAGE'">
                                                             <button class="btn btn-sm default text-white mt-2" > 
                                                               <a (click)="downloadVideo(API+'/GETFIRESMOKEIMAGE/'+d.video_file_name)">Download Image</a>
                                                               <fa-icon icon="download" class="ms-1 me-1" style="cursor: pointer;"></fa-icon>
                                                             </button>
-                                                          </div>
+                                                          </div></div>
                                                        </div>
                                                     </div>
 
@@ -288,15 +312,24 @@
 
 
                                     
-                                                    <div class="d-flex justify-content-center align-items-center">
-                                                        {{d.camera_name?d.camera_name:'null'}}
-                                                    </div>
+                                                   
 
 
                                                     <div class="d-flex justify-content-center align-items-center">
                                                         {{d.analytics_details}}
                                                     </div>
-                          
+
+                                                    <div class="d-flex justify-content-center align-items-center">
+                                                        {{d.department?d.department:'null'}}
+                                                    </div>
+
+                                                    <div class="d-flex justify-content-center align-items-center">
+                                                        {{d.camera_name?d.camera_name:'null'}}
+                                                    </div>
+
+                                                    <div class="d-flex justify-content-center align-items-center" style= padding-right:2rem>
+                                                        {{d.location}}
+                                                     </div>
 
                                                     <div class="d-flex justify-content-center align-items-center">
                                                         <div class = "column-flex">
@@ -329,14 +362,12 @@
                                                     </div>
                                                     </div>
 
-                                                    <div class="d-flex justify-content-center align-items-center" style= padding-right:2rem>
-                                                       {{d.location}}
-                                                    </div>
+                                                   
 
                                     
                                                <div class="d-flex justify-content-center align-items-center">
                                                 <div class = "column-flex">
-                                                    <div *ngIf="isEditTable" id="verify" style="width:5rem">
+                                                    <div *ngIf="isEditTable" id="verify" style="width:5rem"class="d-flex justify-content-center align-items-center" >
                                                                        
                                                         <div *ngIf="!d.violation_verificaton_status;else verified">
 
@@ -418,6 +449,10 @@
         </div>
         <div class="d-flex justify-content-center align-items-center" *ngIf="dataFetchStatus=='init'">
             <span class="spinner-border spinner-border-sm me-2" role="status" ></span>
+            <h4> Loading...</h4>
+        </div>
+        <div class="d-flex justify-content-center align-items-center" *ngIf="dataFetchStatus=='Loading'">
+            <!-- <span class="spinner-border spinner-border-sm me-2" role="status" ></span> -->
             <h4> Loading...</h4>
         </div>
         <div class="d-flex justify-content-center align-items-center" *ngIf="dataFetchStatus=='Error'"> 

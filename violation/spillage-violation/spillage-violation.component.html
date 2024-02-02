@@ -40,7 +40,7 @@
                             <div class="datePickerContainer" (click)="openDatePicker($event)">
                                 <div class="w-80">
                                     <input type="text" [showCustomRangeLabel]="true" ngxDaterangepickerMd #datepicker
-                                        [ranges]="ranges" [timePicker]="true" placeholder="Select Date"
+                                        [ranges]="ranges" [timePicker]="true" placeholder="Select Date"(datesUpdated)=" Submit()"
                                         [(ngModel)]="selectedMoments" required id="dateInput" class="form-control" />
                                 </div>
 
@@ -55,12 +55,19 @@
 
                         <div class="col-2" id="filter">
                             <p-treeSelect [containerStyleClass]="'w-100'" class="w-100 d-flex"
+                                [(ngModel)]="selectedItems1" [ngModelOptions]="{standalone: true}"
+                                [options]="dropdownList1|async" [style]="{'width':'inherit'}"
+                                (onNodeSelect)="onDepartmentIdSelect($event)" placeholder="Select Department"></p-treeSelect>
+                        </div>
+
+                        <div class="col-2" id="filter">
+                            <p-treeSelect [containerStyleClass]="'w-100'" class="w-100 d-flex"
                                 [(ngModel)]="selectedItems" [ngModelOptions]="{standalone: true}"
                                 [options]="dropdownList|async" [style]="{'width':'inherit'}"
                                 (onNodeSelect)="onCameraIdSelect($event)" placeholder="Select Camera"></p-treeSelect>
                         </div>
 
-                        <div class="col-xl-7 col-sm-12 col-lg-12 col-xs-12 col-md-12 align-items-center">
+                        <div class="col-xl-5 col-sm-12 col-lg-12 col-xs-12 col-md-12 d-flex align-items-center">
                             <button class="btn default-outline me-3" (click)="ResetFilters()"
                                 *ngIf="selectedItems!=null||selectedMoments.startDate!=null ">&times; Cancel
                                 Filters</button>
@@ -169,6 +176,14 @@
                                 <div scope="col" class = "d-flex justify-content-center align-items-center">
                                     <div>
                                         <b>
+                                            Department
+                                        </b>
+                                    </div>
+                                </div>
+
+                                <div scope="col" class = "d-flex justify-content-center align-items-center">
+                                    <div>
+                                        <b>
                                             Camera Name
                                         </b>
                                     </div>
@@ -217,10 +232,11 @@
                                                 <div class="data-wrapper p-2">
 
                                                     <div class="d-flex justify-content-center align-items-center">
-                                                        <div class = "column-flex" style= padding-left:2rem>{{data.SNo+1}}.{{d.id}}</div></div>
+                                                        <div class = "column-flex" style= padding-left:0.5rem>{{data.SNo+1}}.{{d.id}}</div></div>
 
                                                     <div class="d-flex justify-content-center align-items-center">
                                                         <div class = "column-flex">
+                                                            <div class = "column-flex">
                                                             <video width="300" *ngIf="d.processing_mode==='VIDEO'" controls preload="auto"  class="custom-video">
                                                                <source  [src]="API +'/getSpillageVideo/'+d.video_file_name" type="video/quicktime">
                                                                <!-- <source  [src]="API +'/getFireVideo/'+d.video_file_name" type="video/mov"> -->
@@ -228,17 +244,18 @@
 
 
                                                             </video>
-                                                            <img *ngIf="d.processing_mode==='IMAGE'" loading="lazy" class="image"  [src]="API +'/GETSPILLAGEIMAGE/'+d.video_file_name"  (click)="imageCarousal(d.video_file_name)">
+                                                            <img *ngIf="d.processing_mode==='IMAGE'" loading="lazy" class="image"  [src]="API +'/GETSPILLAGEIMAGE/'+d.video_file_name"  (click)="imageCarousal(d.video_file_name)"></div>
                                                         
                                                             <br/>
-                                                    <div style="padding-left: 5rem;"  *ngIf="d.processing_mode==='VIDEO'">
+                                                            <div class =" column-flex">
+                                                    <div  *ngIf="d.processing_mode==='VIDEO'">
                                                             <button class="btn btn-sm default text-white mt-2" > 
                                                                 <a (click)="downloadVideo(API+'/getSpillageVideo/'+d.video_file_name)">Download Video</a>
                                                                 <fa-icon icon="download" class="ms-1 me-1" style="cursor: pointer;"></fa-icon>
                                                             </button>
-                                                        </div>
+                                                        </div></div>
 
-                                                        <div style=" padding-left: 5rem;"  *ngIf="d.processing_mode==='IMAGE'">
+                                                        <div  *ngIf="d.processing_mode==='IMAGE'">
                                                             <button class="btn btn-sm default text-white mt-2" > 
                                                               <a (click)="downloadVideo(API+'/GETSPILLAGEIMAGE/'+d.video_file_name)">Download Image</a>
                                                               <fa-icon icon="download" class="ms-1 me-1" style="cursor: pointer;"></fa-icon>
@@ -287,6 +304,10 @@
                                                                             </div> -->
 
 
+
+                                                                            <div class="d-flex justify-content-center align-items-center">
+                                                                                {{d.department?d.department:'null'}}
+                                                                            </div>
                                     
                                                     <div class="d-flex justify-content-center align-items-center">
                                                         {{d.camera_name?d.camera_name:'null'}}
@@ -424,6 +445,10 @@
         </div>
         <div class="d-flex justify-content-center align-items-center" *ngIf="dataFetchStatus=='init'">
             <span class="spinner-border spinner-border-sm me-2" role="status" ></span>
+            <h4>Loading...</h4>
+        </div>
+        <div class="d-flex justify-content-center align-items-center" *ngIf="dataFetchStatus=='Loading'">
+            <!-- <span class="spinner-border spinner-border-sm me-2" role="status" ></span> -->
             <h4>Loading...</h4>
         </div>
         <div class="d-flex justify-content-center align-items-center" *ngIf="dataFetchStatus=='Error'">

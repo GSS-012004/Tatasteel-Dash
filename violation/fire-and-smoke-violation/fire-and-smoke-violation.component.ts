@@ -29,12 +29,15 @@ var data: any[] = [];
 
 export class FireAndSmokeViolationComponent implements OnInit, OnDestroy, AfterViewInit {
   selectedCameraId: string | null = null
+  selectedDepartment: string | null = null
   selectedItems: any
+  selectedItems1: any
   isdatewise: boolean = false;
   page: number = 1
   API: any;
   data: any[] = []
   dropdownList: Observable<any[]> = of([])
+  dropdownList1: Observable<any[]> = of([])
   isActive:string
   ranges: any = {
     'Today': [dayjs().hour(0).minute(0).second(0), dayjs()],
@@ -85,7 +88,7 @@ export class FireAndSmokeViolationComponent implements OnInit, OnDestroy, AfterV
   interval: any
   loader2: boolean = false
   Excel: boolean = false
-  // delay: number
+  delay: number
   // violationsList: any[] = []
   // objectKeys = Object.keys
   @ViewChild('dangerAlert') Violation: ElementRef<any>;
@@ -112,6 +115,7 @@ export class FireAndSmokeViolationComponent implements OnInit, OnDestroy, AfterV
     public Router: Router,) 
   {
     this.API = webServer.IP
+    this.delay = webServer.logInterval
     this.ExcelRange = 0
     this.webServer.CheckApplicationStatus().subscribe((response: any) => {
       if (response.success) {
@@ -124,6 +128,7 @@ export class FireAndSmokeViolationComponent implements OnInit, OnDestroy, AfterV
       }
     })
     this.getCameraList()
+    this.getDepartmentList()
   }
 
 
@@ -137,14 +142,17 @@ export class FireAndSmokeViolationComponent implements OnInit, OnDestroy, AfterV
     this.selectedCameraId = this.selectedItems.data
     console.log(this.selectedItems)
     // console.log(event)
+    this.Submit()
+  }
+  onDepartmentIdSelect(event: any) {
+    this.isdatewise ? this.page = 1 : ''
+    this.selectedDepartment = this.selectedItems1.data
+    console.log(this.selectedItems1)
+    // console.log(event)
+    this.Submit()
   }
 
-  ngOnDestroy() {
-    this.modalService.dismissAll()
-    clearInterval(this.interval)
-    // this.isalert = false
-    this.toasterService.clear()
-  }
+ 
 
 
   getCameraList() {
@@ -152,7 +160,7 @@ export class FireAndSmokeViolationComponent implements OnInit, OnDestroy, AfterV
     var cameraIdList: any[] = []
 
     cameralist[0] = { key: '0', label: 'All Cameras', data: 'all_cameras' }
-    this.webServer.GetCameraNames().subscribe((data: any) => {
+    this.webServer.GetCameraNames((this.selectedMoments !== null)?(this.selectedMoments.startDate.format("YYYY-MM-DD HH:mm:ss")):null,(this.selectedMoments !== null)?(this.selectedMoments.endDate.format("YYYY-MM-DD HH:mm:ss")):null).subscribe((data: any) => {
       if (data.success === true) {
         data.message.forEach((el: any, i: number) => {
           cameraIdList.push({ cameraid: i, cameraname: el })
@@ -166,6 +174,30 @@ export class FireAndSmokeViolationComponent implements OnInit, OnDestroy, AfterV
          });
         
         this.dropdownList = of(cameralist)
+      }
+    })
+  }
+
+
+  getDepartmentList() {
+    var departmentlist: any[] = []
+    var departmentIdList: any[] = []
+
+    departmentlist[0] = { key: '0', label: 'All Departments', data: 'all_departments' }
+    this.webServer.GetDepartmentNames((this.selectedMoments !== null)?(this.selectedMoments.startDate.format("YYYY-MM-DD HH:mm:ss")):null,(this.selectedMoments !== null)?(this.selectedMoments.endDate.format("YYYY-MM-DD HH:mm:ss")):null).subscribe((data: any) => {
+      if (data.success === true) {
+        data.message.forEach((el: any, i: number) => {
+          departmentIdList.push({ departmentid: i, department: el })
+        });
+        departmentIdList = departmentIdList.filter((el, i, a) => i === a.indexOf(el))
+        departmentIdList.forEach((element: any, i: number) => {
+        //   var obj;
+        //   obj = { key: ((i + 1).toString()), label: element.cameraname, data: element.cameraname }
+        //   cameralist.push(obj)
+        departmentlist.push({ key: ((i + 1).toString()), label: element.department, data: element.department })
+         });
+        
+        this.dropdownList1 = of(departmentlist)
       }
     })
   }
@@ -278,11 +310,13 @@ export class FireAndSmokeViolationComponent implements OnInit, OnDestroy, AfterV
     this.isExcel = false
     // this.selectedViolType = this.selectedViolation ? <any>this.selectedViolation.data : null
     this.selectedCameraId = this.selectedItems ? this.selectedItems.data : null
+    this.selectedDepartment = this.selectedItems1 ? this.selectedItems1.data : null
 
     var body = {
       from_date: this.selectedMoments.startDate.format('YYYY-MM-DD HH:mm:ss'),
       to_date: this.selectedMoments.endDate.format('YYYY-MM-DD HH:mm:ss'),
       cameraname: this.selectedItems ? this.selectedItems.data : 'none',
+      department:this.selectedItems1 ? this.selectedItems1.data : 'none',
     }
     // console.log(body)
 
@@ -346,12 +380,16 @@ export class FireAndSmokeViolationComponent implements OnInit, OnDestroy, AfterV
   }
 
   Submit() {
+    this.dataFetchStatus='Loading'
     this.isLatest = false
     // this.selectedViolType = this.selectedViolation ? <any>this.selectedViolation.data : null
     this.selectedCameraId = this.selectedItems ? this.selectedItems.data : null
+    this.selectedDepartment = this.selectedItems1 ? this.selectedItems1.data : null
     this.Images = []
     this.fromDate = this.selectedMoments.startDate.format('YYYY-MM-DD HH:mm:ss')
     this.toDate = this.selectedMoments.endDate.format('YYYY-MM-DD HH:mm:ss')
+    this.getCameraList();
+    this.getDepartmentList();
     this.Subsciption ? this.Subsciption.unsubscribe() : ''
     var table = document.getElementById('dataTable')
     table?.classList.add('loading')
@@ -381,10 +419,11 @@ export class FireAndSmokeViolationComponent implements OnInit, OnDestroy, AfterV
           this.webServer.DatewiseViolations(this.fromDate, this.toDate, this.page, this.pageSize, this.selectedCameraId ? this.selectedCameraId : null, this.selectedViolType ? this.selectedViolType : null).subscribe((Response: any) => {
             if (Response.success) {
               this.loading = false
-             this. GetViolationData()
+            //  this. GetViolationData()
               table?.classList.remove('loading')
               if (Response.message.length === 0) {
                 this.loading = false
+                this.dataFetchStatus='success'
                 this.notification("No violations found")
                 this.violData = of([])
                 this.isdatewise = true
@@ -403,6 +442,7 @@ export class FireAndSmokeViolationComponent implements OnInit, OnDestroy, AfterV
           },
             err => {
               this.loading = false
+              this.dataFetchStatus = 'Error'
               this.notification("Error while fetching the data")
             })
         }
@@ -415,6 +455,7 @@ export class FireAndSmokeViolationComponent implements OnInit, OnDestroy, AfterV
         this.total = of(0)
         this.loading = false
         table?.classList.remove('loading')
+        this.dataFetchStatus = 'success'
         this.notification("No violations found")
       }
     }, err => {
@@ -474,6 +515,13 @@ export class FireAndSmokeViolationComponent implements OnInit, OnDestroy, AfterV
   // }
 }
 
+ngOnDestroy() {
+  this.modalService.dismissAll()
+  clearInterval(this.interval)
+  // this.isalert = false
+  this.toasterService.clear()
+}
+
   public dataread() {
     this.interval = setInterval(() => {
       if (!this.isdate) {
@@ -481,8 +529,9 @@ export class FireAndSmokeViolationComponent implements OnInit, OnDestroy, AfterV
           this.violLength = Number(localStorage.getItem("updatedLen"))
         }
         this.Subsciption = this.webServer.GetFiresmokeLiveViolation().subscribe((FSDdata: any) => {
-          this.dataFetchStatus = 'success'
+          // this.dataFetchStatus = 'success'
           if (FSDdata.success) {
+            this.dataFetchStatus = 'success'
             var response = { ...FSDdata }
             var cviol = [...FSDdata.message]
             localStorage.setItem("updatedLen", JSON.stringify(cviol.length))
@@ -505,7 +554,12 @@ export class FireAndSmokeViolationComponent implements OnInit, OnDestroy, AfterV
               this.violData = of(FSDdata.message)
               this.sliceVD()
             }
+            else{
+              this.dataFetchStatus = 'success'
+              this.notification(FSDdata.message)
+            }
           }
+          
         else {
           this.webServer.GetFiresmokeLiveViolation().subscribe((Response: any) => {
             if (!this.latest) {
@@ -535,12 +589,14 @@ export class FireAndSmokeViolationComponent implements OnInit, OnDestroy, AfterV
               else {
                 this.tempdata = []
                 this.violData = of([])
+                this.dataFetchStatus = 'success'
                 this.total = of(0)
                 this.loader2 = false
               }
             }
           }, (err: any) => {
             console.log(err)
+            this.dataFetchStatus = 'Error'
           })
         }
       }, Err => {
@@ -549,7 +605,7 @@ export class FireAndSmokeViolationComponent implements OnInit, OnDestroy, AfterV
       )
       }
     },
-    //  this.delay
+     this.delay
      )
   }
 
@@ -686,7 +742,12 @@ export class FireAndSmokeViolationComponent implements OnInit, OnDestroy, AfterV
   ResetFilters() {
     this.selectedMoments = null
     this.selectedItems = null
+    this.selectedItems1 = null
+    // this.selectedCameraId = null
+    // this.selectedMoments = null
+   
     this.isdatewise = false
+    this.dataFetchStatus = 'Loading'
     this.dataread()
   }
 
@@ -817,7 +878,7 @@ export class FireAndSmokeViolationComponent implements OnInit, OnDestroy, AfterV
       this.pageSize = 30
       this.page = 1
       this.webServer.DatewiseViolations(this.fromDate, this.toDate, null, null, this.selectedCameraId ? this.selectedCameraId : null, this.selectedViolType ? this.selectedViolType : null).subscribe((Response: any) => {
-        this.dataFetchStatus = 'false'
+        this.dataFetchStatus = 'success'
         if (Response.success) {
           if (Response.message.length == 0) {
             this.tempdata = []
@@ -833,6 +894,7 @@ export class FireAndSmokeViolationComponent implements OnInit, OnDestroy, AfterV
               if (Response.success) {
                 table?.classList.remove('loading')
                 if (Response.message.length === 0) {
+                  this.dataFetchStatus = 'success'
                   this.notification("No violations found")
                   this.violData = of([])
                 }
@@ -858,6 +920,7 @@ export class FireAndSmokeViolationComponent implements OnInit, OnDestroy, AfterV
           this.violData = of([])
           this.total = of(0)
           table?.classList.remove('loading')
+          this.dataFetchStatus = 'success'
           this.notification("No violations found")
         }
       }, 
