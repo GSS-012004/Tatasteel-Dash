@@ -44,6 +44,9 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
   calendericon: boolean = false
   datanotfound:boolean = false 
   dataFetchStatus:string ='init'
+  licenseDetails:{added_cameras_count:number,remaining_license:number,total_license:number}
+  interval: any;
+  delay:number=0
 
   ranges: any = {
     'Today': [dayjs().hour(0).minute(0).second(0), dayjs()],
@@ -65,6 +68,11 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
   {
     this.IP = this.server.IP
     this.dashboardDelay = this.server.dashboardInterval
+    this.delay = this.server.logInterval
+    
+      
+    
+    this.GetLicenseDetails()
 
     this.server.GetPPEViolCountCamWise().subscribe((response: any) => {})
 
@@ -117,6 +125,12 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     this._lightBoxConfig.fitImageInViewPort = true
     this._lightBoxConfig.disableScrolling = false
     this._lightBoxConfig.centerVertically = false
+
+    //  this.GetLicenseDetails()
+
+    this.interval = setInterval(() =>{
+      this.GetLicenseDetails()
+    },this.delay);
 
   }
 
@@ -197,6 +211,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     this.server.GetNotWorkingCameraDetails().subscribe((response: any) => {
       table.classList.remove('loading')
       if (response.success) {
+        
         this.NWCamDetails = response.message
         this.NWCamDetails.forEach((element: any, index: number) => {
           this.images[index] = {
@@ -207,14 +222,17 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
         });
       }
       else{
+        table.classList.remove('loading')
         this.datanotfound = true
         this.dataFetchStatus='success'
       }
     }, Err => {
+      table.classList.remove('loading')
       this.datanotfound = true
       this.dataFetchStatus='Error'
       this.modalService.dismissAll()
     })
+    this.NWCamDetails=[]
   }
 
 
@@ -371,7 +389,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
         this.violationsCount={ total_count: 0, ppe_count: 0, ra_count: 0 ,cr_count:0}
         this.ChartDraw()
        }
-        if (this.selectedMoments.startDate.$D === new Date().getDate()) {
+        if (this.selectedMoments.startDate.$D.$M.$Y === new Date().getDate()) {
           this.isDatewise = false
           console.log('todays days matched')
           console.log(this.isDatewise)
@@ -450,7 +468,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
           this.datanotfound=true
            this.dataFetchStatus='Error'
           table.classList.remove('loading')
-          this.modalService.dismissAll()
+          // this.modalService.dismissAll()
           this.server.notification('Error while fetching the data')
         })
     }
@@ -561,7 +579,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
       .subscribe((response: any) => {
           table.classList.remove('loading')
           if (response.success) {
-            this.ppeViolations = response.message
+            this.ccViolations = response.message
           }
           else {
             this.datanotfound = true
@@ -644,4 +662,18 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     clearInterval(this.Interval1)
   }
 
+
+  GetLicenseDetails(){
+    this.server.GetLicenseDetails().subscribe((response:any)=>{
+      if(response.success){
+       this.licenseDetails = response.message
+      }
+      else{
+        this.server.notification(response.message,'this message is form the license server')
+      
+      }
+    },Err=>{
+      
+    })
+  }
 }

@@ -10,6 +10,7 @@ import { DatePipe } from '@angular/common';
 export class DashboardService {
   IP:string
   dashboardInterval:number
+  logInterval:number
 
   constructor(
     public http:HttpClient,
@@ -21,6 +22,7 @@ export class DashboardService {
     res=JSON.parse(res)
     this.IP=res.IP
     this.dashboardInterval=res.dashboardInterval
+    this.logInterval = res.logInterval
    }
 
    loadConfigFile(filepath:any){
@@ -127,4 +129,8 @@ export class DashboardService {
     return this.http.get(this.IP+'/cam_wise_RA_violations_count')
   }
   
+
+  GetLicenseDetails(){
+    return this.http.get(this.IP+'/license_count')
+  }
 }

@@ -1,7 +1,25 @@
 <div class="container-fluid dashboard-content">
-    <div class="page-header">
-        <h3>Dashboard</h3>
-    </div><br><br>
+    <div class="col-xl-12 col-xs-12 col-sm-12 col-md-12 col-lg-12 mb-4">
+
+        <div class="page-header">
+            <h3>Dashboard</h3>
+        </div>
+        <div class="float-end justify-centent-center">
+            <span class="me-4">
+                <span class="font-primary me-1" style="font-size:21px;">Total Camera Licenses :</span>
+                <b style="font-size:20px;">{{ licenseDetails.total_license}}</b>
+            </span>
+            <span class="me-4">
+              <span class="font-primary me-1" style="font-size:21px;">Utilized Camera Licenses :</span>
+              <b style="font-size:20px;">{{ licenseDetails.added_cameras_count }}</b>
+            </span>
+            <span class="me-4">
+              <span class="font-primary me-1" style="font-size:21px;">Remaining Camera Licenses :</span>
+              <b style="font-size:20px;">{{ licenseDetails.remaining_license }}</b>
+            </span>
+        </div>
+
+    </div>
 
     <div class="row mb-5" id=cameraStatus>
         <h5 class="sub-header ms-2">Cameras</h5>
@@ -301,8 +319,7 @@
                         <th>SNo.</th>
                         <th>Camera Image</th>
                         <th>Camera Name</th>
-                        <th>Camera IP</th>
-                        
+                        <th>Camera IP</th> 
                     </tr>
                 </thead>
 
