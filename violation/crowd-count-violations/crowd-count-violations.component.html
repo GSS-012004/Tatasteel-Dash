@@ -271,17 +271,29 @@
                                     <div *ngIf="!d.violation_verificaton_status;else verified">
                                         <div class="form-check form-check-inline" id="right">
                                             <input type="radio" [value]=0 (change)="VerifyTrueViol($event,d)"
-                                                [defaultValue]=true id="yes" class="form-check-input">
-                                            <label for="yes" class="form-check-label text-success">Yes </label>
+                                                [defaultValue]=true [id]="'yes'+d.SNo" class="form-check-input">
+                                            <label [for]="'yes'+d.SNo" class="form-check-label text-success">Yes </label>
                                         </div>
                                         <div class="form-check form-check-inline" id="wrong">
                                             <input type="radio" [value]=false (change)="VerifyFalseViol($event,d)"
-                                                [defaultValue]=false id="no" class="form-check-input">
-                                            <label for="no" class="form-check-label text-danger">No </label>
+                                                [defaultValue]=false [id]="'no'+d.SNo" class="form-check-input">
+                                            <label [for]="'no'+d.SNo" class="form-check-label text-danger">No </label>
                                         </div>
                                     </div>
                                     <ng-template #verified>
-                                        <div class="success-badge">Verified</div>
+                                        <!-- <div class="success-badge">Verified</div> -->
+                                         <div *ngIf="d.violation_verificaton_status">
+                                            <div class="form-check form-check-inline" id="right">
+                                                <input type="radio" [value]=0 (change)="VerifyTrueViol($event,d)"
+                                                    [defaultValue]=true [id]="'yes'+d.SNo" class="form-check-input" [defaultChecked]="d.violation_status === true">
+                                                <label [for]="'yes'+d.SNo" class="form-check-label text-success">Yes </label>
+                                            </div>
+                                            <div class="form-check form-check-inline" id="wrong">
+                                                <input type="radio" [value]=false (change)="VerifyFalseViol($event,d)"
+                                                    [defaultValue]=false [id]="'no'+d.SNo" class="form-check-input" [defaultChecked]="d.violation_status === false">
+                                                <label [for]="'no'+d.SNo" class="form-check-label text-danger">No </label>
+                                            </div>
+                                        </div>
                                     </ng-template>
                                 </td>
                                 <td >

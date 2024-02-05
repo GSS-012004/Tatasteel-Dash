@@ -12,15 +12,14 @@ export class PpeviolationService {
 
   constructor(
     public http:HttpClient,
-    public snackbar:MatSnackBar
-,
+    public snackbar:MatSnackBar,
     public datePipe:DatePipe
-  ) {
+  ) 
+  {
     var res=this.loadConfigFile('assets/config.json')
-  res=JSON.parse(res)
+    res=JSON.parse(res)
     this.IP=res.IP
-    this.logInterval=res.logInterval
-    
+    this.logInterval=res.logInterval 
    }
 
    loadConfigFile(filepath:any){
@@ -46,45 +45,48 @@ export class PpeviolationService {
    
    }
 
-   dateTransform(date:Date){
-    return this.datePipe.transform(date,'yyyy-MM-dd HH:mm:ss')
- 
+dateTransform(date:Date){
+    return this.datePipe.transform(date,'yyyy-MM-dd HH:mm:ss') 
  }
 
- LivePPEViolationData (cameraName?:string | null,violType?:string|null,page?:number,size?:number) {
+ LivePPEViolationData ( department?:string|null,cameraName?:string | null,page?:number,size?:number) {
 
   // cameraName=cameraName? cameraName.replace(/ /g,'_'):null
 
   cameraName==="all_cameras"?cameraName=null:''
-  violType==="all_violations"?violType=null:''
+  // violType==="all_violations"?violType=null:''
+  department ==="all_departments"?department=null:''
  
-  return    page && size && cameraName && violType? this.http.get(this.IP + '/live_data1PPE/' + cameraName + '/'+violType+'/' + page + '/' + size): 
-  !page && !size && cameraName && violType? this.http.get(this.IP + '/live_data1PPE/' + cameraName + '/'+violType):
-  page && size && cameraName && !violType ? this.http.get(this.IP + '/live_data1PPE/cameraname/' + cameraName + '/' + page + '/' + size) : 
-  !page && !size && !cameraName && violType ? this.http.get(this.IP + '/live_data1/violation/'+violType )
-  : page && size && !cameraName && violType? this.http.get(this.IP + '/live_data1PPE/violation/'+violType +'/'+ page + '/' + size) :
-  page && size && (!cameraName) && (!violType) ? this.http.get(this.IP + '/live_data1PPE/pagination/'+ page + '/' + size):
-   !page && !size &&cameraName &&!violType? this.http.get(this.IP + '/live_data1PPE/cameraname/'  + cameraName) :
+  return    page && size && cameraName ? this.http.get(this.IP + '/live_data1PPE/' + cameraName + '/' + page + '/' + size): 
+  !page && !size && cameraName ? this.http.get(this.IP + '/live_data1PPE/' + cameraName ):
+  page && size && cameraName  ? this.http.get(this.IP + '/live_data1PPE/cameraname/' + cameraName + '/' + page + '/' + size) :
+  page && size && department  ? this.http.get(this.IP + '/live_data1PPE/department/' + department + '/' + page + '/' + size) : 
+  // !page && !size && !cameraName && violType ? this.http.get(this.IP + '/live_data1/violation/'+violType )
+  // : page && size && !cameraName && violType? this.http.get(this.IP + '/live_data1PPE/violation/'+violType +'/'+ page + '/' + size) :
+  page && size && (!cameraName)  ? this.http.get(this.IP + '/live_data1PPE/pagination/'+ page + '/' + size):
+   !page && !size &&cameraName ?this.http.get(this.IP + '/live_data1PPE/cameraname/'  + cameraName) :
+   !page && !size &&department ?this.http.get(this.IP + '/live_data1PPE/department/'  + department) :
    this.http.get(this.IP + '/live_data1PPE')
 
 }
 
-DatewisePPEViolations(from: any, to: any, page?: number|null, size?: number|null, cameraName?: string | null,violType?:string|null) {
+DatewisePPEViolations(from: any, to: any, page?: number|null, size?: number|null,department?:string|null, cameraName?: string | null) {
   var fromD = this.dateTransform(from)
   var toD = this.dateTransform(to)
 
   cameraName==="all_cameras"?cameraName=null:''
-  violType==="all_violations"?violType=null:''
+  // violType==="all_violations"?violType=null:''
+  department==="all_departments"?department='none':''
   var body;
-
- violType!==null?body={from_date:fromD,to_date:toD,violation_type:violType}: body={from_date:fromD,to_date:toD}
-  return    page && size && cameraName && violType? this.http.post(this.IP + '/datewise_violationPPE/' + cameraName + '/' + page + '/' + size, body): 
-  !page && !size && cameraName && violType? this.http.post(this.IP + '/datewise_violationPPE/' + cameraName , body):
-  page && size && cameraName ? this.http.post(this.IP + '/datewisePPE/' + cameraName + '/' + page + '/' + size, body) : 
-  !page && !size && !cameraName && violType ? this.http.post(this.IP + '/datewise_violationPPE' , body)
-  : page && size && !cameraName && violType? this.http.post(this.IP + '/datewise_violationPPE/' + page + '/' + size, body) :
-  page && size && (!cameraName) && (!violType) ? this.http.post(this.IP + '/datewisePPE/'+ page + '/' + size , body):
-   !page && !size &&cameraName &&!violType? this.http.post(this.IP + '/datewisePPE/'  + cameraName, body) :
+  // page && size && cameraName && violType? this.http.post(this.IP + '/datewise_violationPPE/' + cameraName + '/' + page + '/' + size, body): 
+  // !page && !size && cameraName && violType? this.http.post(this.IP + '/datewise_violationPPE/' + cameraName , body):
+  // !page && !size && !cameraName && violType ? this.http.post(this.IP + '/datewise_violationPPE' , body)
+  // : page && size && !cameraName && violType? this.http.post(this.IP + '/datewise_violationPPE/' + page + '/' + size, body) :
+  body={from_date:fromD,to_date:toD,department_name:department !==null?department:'none'}
+  return    page && size && cameraName ? this.http.post(this.IP + '/datewisePPE/' + cameraName + '/' + page + '/' + size, body) : 
+  
+  page && size && (!cameraName)  ? this.http.post(this.IP + '/datewisePPE/'+ page + '/' + size , body):
+   !page && !size &&cameraName ? this.http.post(this.IP + '/datewisePPE/'  + cameraName, body) :
    this.http.post(this.IP + '/datewisePPE', body)
 
 }

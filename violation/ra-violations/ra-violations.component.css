@@ -265,3 +265,88 @@ input[type='radio'] {
     
     }
     
+
+
+    #verify #wrong input:checked + label::before {
+      /* margin-left: 3px;
+      margin-right:2rem !important; */
+      font-size: larger;
+      font-family: 500;
+      color :#cc1d1d;
+      /* color: rgba(83, 128, 16, 0.788); */
+      /* content: '\2716';  */
+      content: '\2713';
+    
+    }
+    
+    #verify #right input:checked + label::before {
+      /* margin-left: 3px;
+      margin-right:2rem !important; */
+      font-size: larger;
+      font-family: 500;
+      color :rgb(29, 196, 29);
+      /* color: rgba(83, 128, 16, 0.788); */
+      content: '\2713';
+    }
+      
+    
+    #verify label {
+      pointer-events: all;
+      display: block;
+      position: relative;
+      /* padding: 0px 5px 5px 0px; */
+      border-top: 1px dashed #fff;
+      order: 4;
+      cursor: pointer;
+      animation: undone .5s;
+      /* margin-left: 10px !important; */
+    }
+    
+    #verify label::before {
+      content: '\25EF'; /* circle outline */
+      display: block;
+      position: absolute;
+      /* top: 15px; */
+      /* margin-right: 10px !important; */
+      /* right: 1rem; */
+    
+      font-weight: 500;
+      color:rgb(201, 201, 201);
+      right: 2rem;
+      /* font: 1.1em 'FontAwesome'; */
+    }
+    
+    #verify input:checked + label {
+      order: 2;
+      animation: done .5s;
+    }
+    
+    #verify #wrong input:checked + label::before {
+      /* margin-left: 3px;
+      margin-right:2rem !important; */
+      font-size: larger;
+      font-family: 500;
+      color :#cc1d1d;
+      /* color: rgba(83, 128, 16, 0.788); */
+      /* content: '\2716';  */
+      content: '\2713';
+    
+    }
+    
+    #verify #right input:checked + label::before {
+      /* margin-left: 3px;
+      margin-right:2rem !important; */
+      font-size: larger;
+      font-family: 500;
+      color :rgb(29, 196, 29);
+      /* color: rgba(83, 128, 16, 0.788); */
+      content: '\2713';
+    }
+    
+    input[type='radio'] {
+      visibility: hidden;
+    }
+    
+    #custome input[type ='radio'] {
+      visibility:visible
+    }

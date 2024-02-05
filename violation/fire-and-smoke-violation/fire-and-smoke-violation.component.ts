@@ -531,11 +531,11 @@ ngOnDestroy() {
         this.Subsciption = this.webServer.GetFiresmokeLiveViolation().subscribe((FSDdata: any) => {
           // this.dataFetchStatus = 'success'
           if (FSDdata.success) {
-            this.dataFetchStatus = 'success'
+            // this.dataFetchStatus = 'success'
             var response = { ...FSDdata }
             var cviol = [...FSDdata.message]
-            localStorage.setItem("updatedLen", JSON.stringify(cviol.length))
-            var updatedLen = Number(localStorage.getItem("updatedLen"))
+            // localStorage.setItem("updatedLen", JSON.stringify(cviol.length))
+            // var updatedLen = Number(localStorage.getItem("updatedLen"))
             if ((response.now_live_count - response.previous_live_count) > 0) {
               var diff = response.now_live_count - response.previous_live_count;
               // if (this.alert) {
@@ -641,6 +641,9 @@ ngOnDestroy() {
   //-----------------METHOD TO GO BACK TO LIVE-------------------------
 
   BackToToday() {
+    this.selectedMoments = null
+    this.selectedItems = null
+    this.selectedItems1 = null
     this.page = 1
     this.Images = []
     this.latest = false
@@ -653,7 +656,7 @@ ngOnDestroy() {
     this.Images = []
     var table = document.getElementById('dataTable')
     table?.classList.add('loading')
-    this.loader2 = true
+    // this.loader2 = true
     this.isdate = false
     this.tempdata = []
     this.total = of(0)
@@ -663,10 +666,7 @@ ngOnDestroy() {
         table?.classList.remove('loading')
         this.imageData = FSDdata.message
         this.total = of(FSDdata.message.length)
-        if (!FSDdata.success) {
-          this.notification(FSDdata.message)
-          this.total = of(0)
-        }
+        
         var cviol = FSDdata.message
         FSDdata.success ? this.tempdata = FSDdata.message : this.tempdata = []
         this.sliceVD()
@@ -674,6 +674,12 @@ ngOnDestroy() {
         this.isdatewise = false
         localStorage.setItem("updatedLen", JSON.stringify(cviol.length))
         var updatedLen = Number(localStorage.getItem("updatedLen"))
+      }
+      if (!FSDdata.success) {
+        this.notification(FSDdata.message)
+        this.total = of(0)
+        this.loader2 = false
+        this.dataFetchStatus = 'success'
       }
     })
     this.dataread()
@@ -747,8 +753,9 @@ ngOnDestroy() {
     // this.selectedMoments = null
    
     this.isdatewise = false
+    this.loader2=false
     this.dataFetchStatus = 'Loading'
-    this.dataread()
+    this.BackToToday()
   }
 
   IsDeleteData(modal: any, violationData: any) {

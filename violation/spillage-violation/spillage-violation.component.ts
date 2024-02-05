@@ -883,6 +883,9 @@ console.log('this is spillage')
   //-----------------METHOD TO GO BACK TO LIVE-------------------------
 
   BackToToday() {
+    this.selectedMoments = null
+    this.selectedItems = null
+    this.selectedItems = null
     this.page = 1
 
     this.Images = []
@@ -907,9 +910,7 @@ console.log('this is spillage')
         table?.classList.remove('loading')
         this.imageData = Sdata.message
         this.total = of(Sdata.message.length)
-        if (!Sdata.success) {
-          this.notification(Sdata.message)
-        }
+        
         var cviol = Sdata.message
         Sdata.success ? this.tempdata = Sdata.message : this.tempdata = []
         this.sliceVD()
@@ -917,6 +918,13 @@ console.log('this is spillage')
         this.isdatewise = false
         localStorage.setItem("updatedLen", JSON.stringify(cviol.length))
         var updatedLen = Number(localStorage.getItem("updatedLen"))
+      }
+      if (!Sdata.success) {
+        this.dataFetchStatus = 'success'
+        this.loader2 = false
+        // this.violdata = of()
+        this.notification(Sdata.message)
+        
       }
 
     })
@@ -1058,7 +1066,8 @@ console.log('this is spillage')
     // this.violData = of()
     
     this.dataFetchStatus = "Loading"
-    this.dataread()
+    // this.dataread()
+    this.BackToToday();
     // this.Submit();
   }
 

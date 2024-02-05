@@ -291,7 +291,8 @@ export class PpeviolationComponent implements OnInit, OnDestroy, AfterViewInit {
     this.selectedItems = null;
     this.selectedItems1 = null;
 
-    this.dataread();
+    // this.dataread();
+    this.BackToToday();
   }
 
   ngAfterViewInit() {
@@ -310,7 +311,7 @@ export class PpeviolationComponent implements OnInit, OnDestroy, AfterViewInit {
           this.violLength = Number(localStorage.getItem("updatedLen"));
         }
         this.Subsciption = this.webServer
-          .LivePPEViolationData(this.selectedCameraId, this.selectedViolType)
+          .LivePPEViolationData(this.selectedDepartment,this.selectedCameraId)
           .subscribe(
             (Rdata: any) => {
               // console.log(Rdata)
@@ -492,8 +493,10 @@ export class PpeviolationComponent implements OnInit, OnDestroy, AfterViewInit {
           this.toDate,
           this.page,
           this.pageSize,
+          this.selectedDepartment?this.selectedDepartment:null,
           this.selectedCameraId ? this.selectedCameraId : null,
-          this.selectedViolType ? this.selectedViolType : null
+          // this.selectedViolType ? this.selectedViolType : null,
+          
         )
         .subscribe((Response: any) => {
           if (Response.success) {
@@ -539,8 +542,9 @@ export class PpeviolationComponent implements OnInit, OnDestroy, AfterViewInit {
         this.toDate,
         null,
         null,
+        this.selectedDepartment?this.selectedDepartment:null,
         this.selectedCameraId ? this.selectedCameraId : null,
-        this.selectedViolType ? this.selectedViolType : null
+        // this.selectedViolType ? this.selectedViolType : null
       )
       .subscribe(
         (Response: any) => {
@@ -566,8 +570,9 @@ export class PpeviolationComponent implements OnInit, OnDestroy, AfterViewInit {
                   this.toDate,
                   this.page,
                   this.pageSize,
+                  this.selectedDepartment?this.selectedDepartment:null,
                   this.selectedCameraId ? this.selectedCameraId : null,
-                  this.selectedViolType ? this.selectedViolType : null
+                  // this.selectedViolType ? this.selectedViolType : null
                 )
                 .subscribe(
                   (Response: any) => {
@@ -699,6 +704,9 @@ export class PpeviolationComponent implements OnInit, OnDestroy, AfterViewInit {
 
   BackToToday() {
     // this.dataFetchStatus = "init";
+    this.selectedMoments = null
+    this.selectedItems = null
+    this.selectedItems1 = null
     this.page = 1;
 
     this.Images = [];
@@ -866,7 +874,8 @@ export class PpeviolationComponent implements OnInit, OnDestroy, AfterViewInit {
     fromDate: any,
     toDate: any,
     cameraName: any,
-    violationType?: any
+    violationType?: any,
+    department?:any
   ) {
     this.excelLoader = true;
     var length;
@@ -876,8 +885,9 @@ export class PpeviolationComponent implements OnInit, OnDestroy, AfterViewInit {
         toDate,
         null,
         null,
+        department ? department:null,
         cameraName ? cameraName : null,
-        violationType ? violationType : null
+        // violationType ? violationType : null
       )
       .subscribe((Response: any) => {
         if (Response.success) {
@@ -1201,8 +1211,9 @@ export class PpeviolationComponent implements OnInit, OnDestroy, AfterViewInit {
           this.toDate,
           null,
           null,
+          this.selectedDepartment?this.selectedDepartment:null,
           this.selectedCameraId ? this.selectedCameraId : null,
-          this.selectedViolType ? this.selectedViolType : null
+          // this.selectedViolType ? this.selectedViolType : null
         )
         .subscribe(
           (Response: any) => {
@@ -1227,8 +1238,9 @@ export class PpeviolationComponent implements OnInit, OnDestroy, AfterViewInit {
                     this.toDate,
                     this.page,
                     this.pageSize,
+                    this.selectedDepartment?this.selectedDepartment:null,
                     this.selectedCameraId ? this.selectedCameraId : null,
-                    this.selectedViolType ? this.selectedViolType : null
+                    // this.selectedViolType ? this.selectedViolType : null
                   )
                   .subscribe(
                     (Response: any) => {

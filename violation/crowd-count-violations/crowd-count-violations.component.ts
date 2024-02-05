@@ -261,7 +261,7 @@ export class CrowdCountViolationsComponent
           this.violLength = Number(localStorage.getItem("updatedLen"));
         }
         this.Subsciption = this.webServer
-          .LiveCCViolationData(this.selectedCameraId, this.selectedViolType)
+          .LiveCCViolationData(this.selectedDepartment,this.selectedCameraId)
           .subscribe(
             (Rdata: any) => {
               this.dataFetchStatus = "success";
@@ -401,8 +401,9 @@ export class CrowdCountViolationsComponent
           this.toDate,
           this.page,
           this.pageSize,
+          this.selectedDepartment?this.selectedDepartment:null,
           this.selectedCameraId ? this.selectedCameraId : null,
-          this.selectedViolType ? this.selectedViolType : null
+          // this.selectedViolType ? this.selectedViolType : null
         )
         .subscribe((Response: any) => {
           if (Response.success) {
@@ -423,9 +424,9 @@ export class CrowdCountViolationsComponent
   Submit() {
     this.dataFetchStatus='Loading'
     this.isLatest = false;
-    this.selectedViolType = this.selectedViolation
-      ? <any>this.selectedViolation.data
-      : null;
+    // this.selectedViolType = this.selectedViolation
+    //   ? <any>this.selectedViolation.data
+    //   : null;
     this.selectedCameraId = this.selectedItems ? this.selectedItems.data : null;
     this.selectedDepartment = this.selectedItems1 ? this.selectedItems1.data : null;
 
@@ -450,20 +451,22 @@ export class CrowdCountViolationsComponent
         this.toDate,
         null,
         null,
+        this.selectedDepartment?this.selectedDepartment:null,
         this.selectedCameraId ? this.selectedCameraId : null,
-        this.selectedViolType ? this.selectedViolType : null
+        // this.selectedViolType ? this.selectedViolType : null
       )
       .subscribe(
         (Response: any) => {
-          this.dataFetchStatus = "success";
+          // this.dataFetchStatus = "success";
           if (Response.success) {
-            if (Response.message.length == 0) {
+            if (Response.message.length === 0) {
               this.tempdata = [];
               this.violData = of([]);
               this.loading = false;
               this.isdatewise = true;
               this.total = of(0);
               table?.classList.remove("loading");
+              this.dataFetchStatus='success'
               this.notification(
                 "No violations found for entered date and time"
               );
@@ -477,8 +480,9 @@ export class CrowdCountViolationsComponent
                   this.toDate,
                   this.page,
                   this.pageSize,
+                  this.selectedDepartment?this.selectedDepartment:null,
                   this.selectedCameraId ? this.selectedCameraId : null,
-                  this.selectedViolType ? this.selectedViolType : null
+                  // this.selectedViolType ? this.selectedViolType : null
                 )
                 .subscribe(
                   (Response: any) => {
@@ -488,6 +492,7 @@ export class CrowdCountViolationsComponent
                       // console.log(Response.message)
                       if (Response.message.length === 0) {
                         this.notification("No violations found");
+                        this.dataFetchStatus='success'
                         this.violData = of([]);
                         this.isdatewise = true;
                         this.loading = false;
@@ -497,10 +502,17 @@ export class CrowdCountViolationsComponent
                         this.isdatewise = true;
                         this.violData = of(this.tempdata);
                         this.sliceVD();
-
                         this.loading = false;
                         table?.classList.remove("loading");
                       }
+                    }
+                    else{
+                      this.loading = false;
+                      this.violData = of([])
+                      table?.classList.remove("loading");
+                      this.dataFetchStatus='success'
+                      this.notification(Response.message)
+
                     }
 
                     // this.loading = false;
@@ -519,8 +531,10 @@ export class CrowdCountViolationsComponent
             this.loading = false;
             this.isdatewise = true;
             this.total = of(0);
+
             table?.classList.remove("loading");
             table?.classList.remove("loading");
+            this.dataFetchStatus='success'
             this.notification("No violations found");
             this.loading = false;
           }
@@ -572,6 +586,9 @@ export class CrowdCountViolationsComponent
   //-----------------METHOD TO GO BACK TO LIVE-------------------------
 
   BackToToday() {
+    this.selectedMoments = null
+    this.selectedItems = null
+    this.selectedItems1 = null
     this.page = 1;
 
     this.Images = [];
@@ -595,6 +612,7 @@ export class CrowdCountViolationsComponent
         this.imageData = Rdata.message;
         this.total = of(Rdata.message.length);
         if (!Rdata.success) {
+          this.dataFetchStatus = 'success'
           this.notification(Rdata.message);
         }
         var cviol = Rdata.message;
@@ -732,7 +750,8 @@ export class CrowdCountViolationsComponent
     fromDate: any,
     toDate: any,
     cameraName: any,
-    violationType?: any
+    // violationType?: any
+    department:any
   ) {
     var length;
     this.webServer
@@ -741,8 +760,9 @@ export class CrowdCountViolationsComponent
         toDate,
         null,
         null,
+        department?department:null,
         cameraName ? cameraName : null,
-        violationType ? violationType : null
+        // violationType ? violationType : null
       )
       .subscribe((Response: any) => {
         if (Response.success) {
@@ -993,10 +1013,12 @@ export class CrowdCountViolationsComponent
     this.selectedMoments = null;
     this.selectedItems = null;
     this.selectedItems1 = null;
-    this.selectedCameraId = null;
-    this.selectedDepartment = null;
+    // this.selectedCameraId = null;
+    // this.selectedDepartment = null;
 
-    this.dataread();
+    // this.dataread();
+    this.BackToToday();
+
   }
 
   //function to get the live  violation data

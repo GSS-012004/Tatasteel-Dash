@@ -19,7 +19,7 @@
                                         <div class="ms-3 date-picker container">
                                             <input ngxDaterangepickerMd #datepicker (datesUpdated)="dateUpdated($event)"
                                                 [showCustomRangeLabel]="true" [timePicker]="true" placeholder="Select Date" class="form-control"
-                                                [(ngModel)]="selectedMoments" required >
+                                                [(ngModel)]="selectedMoments" required>
                                             <fa-icon icon="calendar"></fa-icon>
                                         </div>
                                         <!-- <label><fa-icon icon="calendar"></fa-icon> </label>
@@ -87,10 +87,23 @@
                                 [tableStyle]="{'min-width':'100%'}" *ngIf="(tcData|async).length>0;else noData">
 
                                     <ng-template pTemplate="header">
+                                        <!-- <tr>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th>Entry</th>
+                                            
+                                            <th>Exit</th>
+                                            <th></th>
+                                            <th></th>
+                      
+                                        </tr> -->
                                         <tr>
                                             <th>SNo.</th>
+                                            <th>Department</th>
                                             <th>Camera Name</th>
                                             <th>Entry</th>
+                                            
                                             <th>Exit</th>
                                             <th>Region</th>
                                             <th>Time</th>
@@ -101,6 +114,11 @@
                                         let-rowspan="rowspan">
                                         <tr [pSelectableRow]="rowgroup">
                                             <td>{{rowIndex+1}}.</td>
+                                            <td *ngIf="rowgroup" [attr.rowspan]="rowspan">
+                                                <!-- <p-treeTableToggler [rowNode]="rowNode"></p-treeTableToggler> -->
+                                                {{ rowData.department?rowData.department:'null' }}
+                                            </td>
+
                                             <td *ngIf="rowgroup" [attr.rowspan]="rowspan">
                                                 <!-- <p-treeTableToggler [rowNode]="rowNode"></p-treeTableToggler> -->
                                                 {{ rowData.camera_name }}

@@ -167,11 +167,11 @@ export class TrafficCountComponent implements OnInit,AfterViewInit,OnDestroy {
   @ViewChild(DaterangepickerDirective, { static: true }) pickerDirective: DaterangepickerDirective
 
   constructor(
-    public AppServer:ServerService,
-    public APIService:TrafficCountService) 
+    // public server:serviceService,
+    public service:TrafficCountService) 
     { 
-    clearInterval(this.AppServer.liveViolInterval)
-    clearInterval(this.AppServer.ccLiveInterval)
+    clearInterval(this.service.liveViolInterval)
+    clearInterval(this.service.ccLiveInterval)
     this.getCameraList();
     this.getDepartmentList();
   }
@@ -187,10 +187,10 @@ export class TrafficCountComponent implements OnInit,AfterViewInit,OnDestroy {
     var dataContainer=document.getElementById('data-container')
     dataContainer.classList.add('loading')
 
-    this.APIService.GetTCLiveData().subscribe((response:any)=>{
+    this.service.GetTCLiveData().subscribe((response:any)=>{
     console.log(response.message)
     
-    this.lastUpdatedDate=this.AppServer.dateTransformbyPattern(new Date(),"YYYY-MM-dd HH:mm:ss")
+    this.lastUpdatedDate=this.service.dateTransformbyPattern(new Date(),"YYYY-MM-dd HH:mm:ss")
 
     if(response.success){
         dataContainer.classList.remove('loading')
@@ -205,13 +205,13 @@ export class TrafficCountComponent implements OnInit,AfterViewInit,OnDestroy {
     else{
       dataContainer.classList.remove('loading')
       this.dataFetchStatus='success'
-      this.AppServer.notification(response.message,'Retry')
+      this.service.notification(response.message,'Retry')
     }
     },
     Err=>{
       dataContainer.classList.remove('loading')
       this.dataFetchStatus='Error'
-     this.AppServer.notification('Error while fetching the data','Retry') 
+     this.service.notification('Error while fetching the data','Retry') 
     })
     
   }
@@ -235,21 +235,21 @@ export class TrafficCountComponent implements OnInit,AfterViewInit,OnDestroy {
  
   GetLiveData(){
     this.dataFetchStatus = 'init'
-
+    this.getCameraList();
+    this.getDepartmentList();
     if(this.isLive){
     // console.log('hiiiiiiiiiiiii')
     this.tempData=[]
     var dataContainer=document.getElementById('data-container')
     dataContainer?dataContainer.classList.add('loading'):''
     dataContainer.classList.add('loading')
-    this.APIService.GetTCLiveData().subscribe((response:any)=>{
-       this.lastUpdatedDate=this.AppServer.dateTransformbyPattern(new Date(),'YYYY-MM-dd HH:mm:ss')
+    this.service.GetTCLiveData().subscribe((response:any)=>{
+       this.lastUpdatedDate=this.service.dateTransformbyPattern(new Date(),'YYYY-MM-dd HH:mm:ss')
            if(response.success){
             dataContainer?dataContainer.classList.remove('loading'):''
             dataContainer.classList.remove('loading')
             // this.dataFetchStatus = 'init'
-            this.getCameraList();
-            this.getDepartmentList();
+            
             // response.message.forEach((data:any) => {
             //   // console.log(data)
             //   // var temp={data:data.data[0],children:data.data.slice(1,data.data.length).map((element:any) => {
@@ -277,7 +277,7 @@ export class TrafficCountComponent implements OnInit,AfterViewInit,OnDestroy {
             this.dataFetchStatus = 'success'
             dataContainer.classList.remove('loading')
             // this.tcData=of()
-            this.AppServer.notification(response.message,'Retry')
+            this.service.notification(response.message,'Retry')
             
            }
           //  Err=>{
@@ -290,7 +290,7 @@ export class TrafficCountComponent implements OnInit,AfterViewInit,OnDestroy {
       this.dataFetchStatus = 'Error'
       dataContainer.classList.remove('loading')
       dataContainer?dataContainer.classList.remove('loading'):''
-      this.AppServer.notification('Error while fetching the data','Retry')
+      this.service.notification('Error while fetching the data','Retry')
       
     })
     
@@ -313,7 +313,7 @@ export class TrafficCountComponent implements OnInit,AfterViewInit,OnDestroy {
     var cameraIdList: any[] = []
 
     cameralist[0] = { key: '0', label: 'All Cameras', data: 'all_cameras' }
-    this.APIService.GetTCCameraDetails((this.selectedMoments !== null)?(this.selectedMoments.startDate.format("YYYY-MM-DD HH:mm:ss")):null,(this.selectedMoments !== null)?(this.selectedMoments.endDate.format("YYYY-MM-DD HH:mm:ss")):null).subscribe((data: any) => {
+    this.service.GetTCCameraDetails((this.selectedMoments !== null)?(this.selectedMoments.startDate.format("YYYY-MM-DD HH:mm:ss")):null,(this.selectedMoments !== null)?(this.selectedMoments.endDate.format("YYYY-MM-DD HH:mm:ss")):null).subscribe((data: any) => {
       if (data.success === true) {
         data.message.forEach((el: any, i: number) => {
           cameraIdList.push({ cameraid: i, cameraname: el })
@@ -341,8 +341,8 @@ export class TrafficCountComponent implements OnInit,AfterViewInit,OnDestroy {
     var departmentlist: any[] = []
     var departmentIdList: any[] = []
 
-    departmentlist[0] = { key: '0', label: 'All Department', data: 'all_department' }
-    this.APIService.GetTCDepartmentDetails((this.selectedMoments !== null)?(this.selectedMoments.startDate.format("YYYY-MM-DD HH:mm:ss")):null,(this.selectedMoments !== null)?(this.selectedMoments.endDate.format("YYYY-MM-DD HH:mm:ss")):null).subscribe((data: any) => {
+    departmentlist[0] = { key: '0', label: 'All Departments', data: 'all_departments' }
+    this.service.GetTCDepartmentDetails((this.selectedMoments !== null)?(this.selectedMoments.startDate.format("YYYY-MM-DD HH:mm:ss")):null,(this.selectedMoments !== null)?(this.selectedMoments.endDate.format("YYYY-MM-DD HH:mm:ss")):null).subscribe((data: any) => {
       if (data.success === true) {
         data.message.forEach((el: any, i: number) => {
           departmentIdList.push({ deparmentid: i, department: el })
@@ -389,7 +389,8 @@ export class TrafficCountComponent implements OnInit,AfterViewInit,OnDestroy {
     this.selectedDepartment = null
     this.isLive = true
     // this.GetLiveData()
-    this.GetTCDataByFilters();
+    this.GetLiveData()
+    // this.GetTCDataByFilters();
   }
 
   RefreshDetails(){
@@ -402,7 +403,7 @@ export class TrafficCountComponent implements OnInit,AfterViewInit,OnDestroy {
     var dataContainer=document.getElementById('data-container')
     dataContainer.classList.add('loading')
     this.tempData=[]
-    this.APIService.GetTCDataByFilters(this.fromDate,this.toDate,this.page,this.size,this.selectedCamera?this.selectedCamera.data:null).subscribe((response:any)=>{
+    this.service.GetTCDataByFilters(this.fromDate,this.toDate,this.page,this.size,this.selectedDepartment?this.selectedDepartment.data:null,this.selectedCamera?this.selectedCamera.data:null).subscribe((response:any)=>{
            
       if(response.success){
         dataContainer.classList.remove('loading') 
@@ -417,7 +418,7 @@ export class TrafficCountComponent implements OnInit,AfterViewInit,OnDestroy {
       dataContainer.classList.remove('loading')
       this.tcData=of([])
       this.dataFetchStatus = 'success'
-      this.AppServer.notification(response.message)
+      this.service.notification(response.message)
       }
     },
     Err=>{
@@ -425,7 +426,7 @@ export class TrafficCountComponent implements OnInit,AfterViewInit,OnDestroy {
       dataContainer.classList.remove('loading')
       this.dataFetchStatus='Error'
       // this.tcData=of([])
-      this.AppServer.notification('Error while fetching the data','Retry')
+      this.service.notification('Error while fetching the data','Retry')
     })
 
   }
